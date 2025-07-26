@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.env/
+.env.*
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# VSCode / Cursor
+.vscode/
+.history/
+
+# Secrets
+.env
+*.key
+*.pem
+
+# Outputs and logs
+outputs/
+vectorstore/
+*.log
+log/
+logs/
+
+# Data
+*.csv
+*.tsv
+*.xls
+*.xlsx
+*.db
+*.sqlite3
+
+# Models and Checkpoints
+models/
+checkpoints/
+*.pkl
+*.pt
+*.h5
+*.joblib
+
+# OS files
+.DS_Store
+Thumbs.db 

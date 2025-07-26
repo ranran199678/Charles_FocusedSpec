@@ -1,0 +1,511 @@
+{
+  "symbol": "TSLA",
+  "timestamp": "2025-07-26T20:27:17.548850",
+  "alpha_engine": {
+    "symbol": "TSLA",
+    "score": 12.69,
+    "signals": {
+      "RSICompressionSniffer": 20,
+      "VolumeTensionMeter": 40,
+      "ParabolicAgent": 20,
+      "BreakoutRetestRecognizer": 1,
+      "SupportZoneStrengthDetector": 1,
+      "MovingAveragePressureBot": 1,
+      "BullishPatternSpotter": 1,
+      "FloatPressureEvaluator": 1,
+      "ShortSqueezePotentialAnalyzer": 1,
+      "EarningsSurpriseTracker": 1,
+      "GrowthConsistencyScanner": 1,
+      "ValuationAnomalyDetector": 1,
+      "SentimentScorer": 1,
+      "GeopoliticalRiskMonitor": 1,
+      "GapDetectorUltimate": 1,
+      "AnalystRatingAgent": 1,
+      "ADXScoreAgent": 60,
+      "NewsCatalystAgent": 1,
+      "SocialMediaHypeScanner": 88,
+      "MacroTrendScanner": 71,
+      "PatternRecognitionAgent": 1,
+      "AnomalyDetectionAgent": 1,
+      "LiquidityTrapAgent": 1,
+      "BollingerSqueezeAgent": 1,
+      "VolumeSpikeAgent": 1,
+      "GoldenCrossAgent": 1,
+      "VCPSuperPatternAgent": 1,
+      "ReversalPatternAgent": 1,
+      "FundamentalAnomalyAgent": 1,
+      "MarketRegimeAgent": 1,
+      "BigMoneyInflowAgent": 1,
+      "RiskEventMonitorAgent": 1,
+      "TrendShiftAgent": 1,
+      "EventScanner": 36,
+      "NLPAnalyzer": 50
+    },
+    "explanations": {
+      "RSICompressionSniffer": "No significant RSI squeeze detected.",
+      "VolumeTensionMeter": "VCP: 3 contraction cycles",
+      "ParabolicAgent": "No strong parabolic move detected.",
+      "BreakoutRetestRecognizer": "שגיאת agent: analyze() takes 2 positional arguments but 3 were given\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\alpha_score_engine.py\", line 111, in evaluate\n    output = agent.analyze(symbol, price_df)\nTypeError: analyze() takes 2 positional arguments but 3 were given\n",
+      "SupportZoneStrengthDetector": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "MovingAveragePressureBot": "שגיאת agent: analyze() takes 2 positional arguments but 3 were given\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\alpha_score_engine.py\", line 111, in evaluate\n    output = agent.analyze(symbol, price_df)\nTypeError: analyze() takes 2 positional arguments but 3 were given\n",
+      "BullishPatternSpotter": "שגיאת agent: analyze() takes 2 positional arguments but 3 were given\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\alpha_score_engine.py\", line 111, in evaluate\n    output = agent.analyze(symbol, price_df)\nTypeError: analyze() takes 2 positional arguments but 3 were given\n",
+      "FloatPressureEvaluator": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "ShortSqueezePotentialAnalyzer": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "EarningsSurpriseTracker": "שגיאת agent: module 'utils.data_fetcher' has no attribute 'get_last_earnings_surprise'\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\alpha_score_engine.py\", line 111, in evaluate\n    output = agent.analyze(symbol, price_df)\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\earnings_surprise_tracker.py\", line 8, in analyze\n    _, surprise_pct = data_fetcher.get_last_earnings_surprise(symbol)\nAttributeError: module 'utils.data_fetcher' has no attribute 'get_last_earnings_surprise'\n",
+      "GrowthConsistencyScanner": "שגיאת agent: module 'utils.data_fetcher' has no attribute 'get_growth_rate'\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\alpha_score_engine.py\", line 111, in evaluate\n    output = agent.analyze(symbol, price_df)\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\growth_scanner.py\", line 8, in analyze\n    growth = data_fetcher.get_growth_rate(symbol)\nAttributeError: module 'utils.data_fetcher' has no attribute 'get_growth_rate'\n",
+      "ValuationAnomalyDetector": "שגיאת agent: module 'utils.data_fetcher' has no attribute 'get_pe_ratio'\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\alpha_score_engine.py\", line 111, in evaluate\n    output = agent.analyze(symbol, price_df)\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\valuation_detector.py\", line 8, in analyze\n    pe, sector_pe = data_fetcher.get_pe_ratio(symbol)\nAttributeError: module 'utils.data_fetcher' has no attribute 'get_pe_ratio'\n",
+      "SentimentScorer": "שגיאת agent: module 'utils.data_fetcher' has no attribute 'get_sentiment_score'\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\alpha_score_engine.py\", line 111, in evaluate\n    output = agent.analyze(symbol, price_df)\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\sentiment_scorer.py\", line 8, in analyze\n    sentiment = data_fetcher.get_sentiment_score(symbol)\nAttributeError: module 'utils.data_fetcher' has no attribute 'get_sentiment_score'\n",
+      "GeopoliticalRiskMonitor": "שגיאת agent: module 'utils.data_fetcher' has no attribute 'get_geo_risk_score'\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\alpha_score_engine.py\", line 111, in evaluate\n    output = agent.analyze(symbol, price_df)\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\geopolitical_risk_monitor.py\", line 8, in analyze\n    geo = data_fetcher.get_geo_risk_score(symbol)\nAttributeError: module 'utils.data_fetcher' has no attribute 'get_geo_risk_score'\n",
+      "GapDetectorUltimate": "שגיאת agent: 'tuple' object has no attribute 'get'\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\alpha_score_engine.py\", line 112, in evaluate\n    score = int(output.get(\"score\", 1))\nAttributeError: 'tuple' object has no attribute 'get'\n",
+      "AnalystRatingAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "ADXScoreAgent": "ADX בינוני (25.46) - יתכן טרנד מתפתח. המגמה עולה (+0.24)",
+      "NewsCatalystAgent": "שגיאת agent: analyze() takes 2 positional arguments but 3 were given\nTraceback (most recent call last):\n  File \"C:\\Users\\User\\OneDrive\\שולחן העבודה\\Charles_FocusedSpec\\core\\alpha_score_engine.py\", line 111, in evaluate\n    output = agent.analyze(symbol, price_df)\nTypeError: analyze() takes 2 positional arguments but 3 were given\n",
+      "SocialMediaHypeScanner": "",
+      "MacroTrendScanner": "",
+      "PatternRecognitionAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "AnomalyDetectionAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "LiquidityTrapAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "BollingerSqueezeAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "VolumeSpikeAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "GoldenCrossAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "VCPSuperPatternAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "ReversalPatternAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "FundamentalAnomalyAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "MarketRegimeAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "BigMoneyInflowAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "RiskEventMonitorAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "TrendShiftAgent": "Agent זה טרם מומש, יש להשלים את הקוד בעתיד.",
+      "EventScanner": "",
+      "NLPAnalyzer": ""
+    },
+    "recommendation": "No Signal"
+  },
+  "nlp_analyzer": {
+    "score": 50,
+    "sentiment": "neutral",
+    "topics": [],
+    "key_phrases": [],
+    "summary": "סנטימנט דומיננטי: neutral (ביטחון: 100.0%). אירועים חשובים: management_changes: 1 אירועים. טקסטים נותחו: 2",
+    "details": {
+      "sentiment_analysis": {
+        "dominant_sentiment": "neutral",
+        "average_score": 0.5,
+        "positive_count": 0,
+        "negative_count": 0,
+        "neutral_count": 2,
+        "total_texts": 2,
+        "confidence": 1.0
+      },
+      "impact_analysis": {
+        "impact_score": 1,
+        "text_count": 2,
+        "keyword_count": 0,
+        "sentiment_influence": 0.0
+      },
+      "trend_analysis": {
+        "daily_sentiments": {
+          "2025-07-26": {
+            "positive": 0,
+            "negative": 0,
+            "neutral": 2
+          }
+        },
+        "trend_direction": "stable",
+        "trend_strength": 0.0,
+        "recent_change": 0.0
+      },
+      "event_analysis": {
+        "events": {
+          "earnings_reports": [],
+          "guidance_changes": [],
+          "restructuring": [],
+          "management_changes": [
+            {
+              "title": "Elon Musk’s Neuralink joins bionic eye study (TSLA:NASDAQ)",
+              "source": "marketaux",
+              "sentiment": "neutral",
+              "relevance_score": 3.0
+            }
+          ],
+          "product_launches": [],
+          "regulatory_issues": []
+        },
+        "importance": {
+          "earnings_reports": 0.0,
+          "guidance_changes": 0.0,
+          "restructuring": 0.0,
+          "management_changes": 1.0,
+          "product_launches": 0.0,
+          "regulatory_issues": 0.0
+        },
+        "total_events": 1
+      },
+      "market_context": {
+        "sector_performance": "neutral",
+        "competitor_mentions": [],
+        "market_sentiment": "neutral",
+        "industry_trends": [
+          {
+            "trend": "AI",
+            "context": "Elon Musk’s Neuralink joins bionic eye study (TSLA:NASDAQ)",
+            "sentiment": "neutral"
+          }
+        ]
+      },
+      "text_count": 2
+    },
+    "timestamp": "2025-07-26T20:26:25.072215",
+    "symbol": "TSLA"
+  },
+  "event_scanner": {
+    "score": 36,
+    "events": {
+      "geopolitical": [],
+      "economic": [
+        {
+          "title": "Federal Reserve Interest Rate Decision",
+          "description": "Fed expected to maintain current rates",
+          "category": "economic",
+          "impact": "medium"
+        },
+        {
+          "title": "Inflation Data Release",
+          "description": "CPI data shows inflation trends",
+          "category": "economic",
+          "impact": "high"
+        }
+      ],
+      "financial": [
+        {
+          "title": "Why Is Wall Street So Bearish on Lucid Group? There's 1 Key Reason.",
+          "description": "While investors get excited about the potential of robotaxis, EV makers will face severe financial challenges in 2025 and beyond.",
+          "url": "https://finance.yahoo.com/news/why-wall-street-bearish-lucid-132958829.html",
+          "published_at": "2025-07-26T13:29:58.000000Z",
+          "source": "finance.yahoo.com",
+          "sentiment": "neutral"
+        }
+      ],
+      "regulatory": [],
+      "company_specific": [
+        {
+          "title": "Notable analyst calls this week: Netflix, Lockheed Martin and Spotify among top picks",
+          "description": "Analyzing weekly Wall Street updates with major stock upgrades and downgrades, including Tesla, Netflix, Lockheed Martin, and more! Stay informed on market...",
+          "url": "https://seekingalpha.com/news/4472155-notable-analyst-calls-this-week-netflix-lockheed-martin-and-spotify-among-top-picks",
+          "published_at": "2025-07-26T13:35:38.000000Z",
+          "source": "seekingalpha.com",
+          "sentiment": "neutral"
+        },
+        {
+          "title": "Elon Musk’s Neuralink joins bionic eye study (TSLA:NASDAQ)",
+          "description": "Neuralink, co-founded by Tesla (TSLA) CEO Elon Musk joins clinical trials to restore vision using AI-powered bionic eyes. Read more here.",
+          "url": "https://seekingalpha.com/news/4472533-elon-musk-s-neuralink-joins-bionic-eye-study",
+          "published_at": "2025-07-26T12:47:39.000000Z",
+          "source": "seekingalpha.com",
+          "sentiment": "neutral"
+        }
+      ]
+    },
+    "summary": "ציון השפעה: 36/100 (בינונית). אירועים כלכליים: 2, אירועים פיננסיים: 1, אירועים ספציפיים לחברה: 2",
+    "timestamp": "2025-07-26T20:26:25.547546",
+    "symbol": "TSLA"
+  },
+  "macro_scanner": {
+    "score": 71,
+    "sentiment": "bullish",
+    "summary": "מגמות מאקרו חיוביות. השפעה חיובית על סקטור technology. מגמות חזקות: inflation: declining",
+    "details": {
+      "macro_data": {
+        "inflation": {
+          "current": 3.2,
+          "previous": 3.8,
+          "trend": "declining",
+          "score": 70
+        },
+        "interest_rates": {
+          "current": 5.25,
+          "previous": 5.5,
+          "trend": "stable",
+          "score": 50
+        },
+        "pmi": {
+          "current": 52.1,
+          "previous": 50.9,
+          "trend": "improving",
+          "score": 65
+        },
+        "employment": {
+          "current": 3.7,
+          "previous": 3.8,
+          "trend": "improving",
+          "score": 75
+        },
+        "consumer_sentiment": {
+          "current": 68.2,
+          "previous": 65.7,
+          "trend": "improving",
+          "score": 70
+        }
+      },
+      "trend_analysis": {
+        "inflation": {
+          "current_value": 3.2,
+          "previous_value": 3.8,
+          "change": -0.5999999999999996,
+          "trend_direction": "declining",
+          "trend_strength": "strong",
+          "score": 70,
+          "impact": "positive"
+        },
+        "interest_rates": {
+          "current_value": 5.25,
+          "previous_value": 5.5,
+          "change": -0.25,
+          "trend_direction": "declining",
+          "trend_strength": "moderate",
+          "score": 50,
+          "impact": "positive"
+        },
+        "pmi": {
+          "current_value": 52.1,
+          "previous_value": 50.9,
+          "change": 1.2000000000000028,
+          "trend_direction": "improving",
+          "trend_strength": "moderate",
+          "score": 65,
+          "impact": "positive"
+        },
+        "employment": {
+          "current_value": 3.7,
+          "previous_value": 3.8,
+          "change": -0.09999999999999964,
+          "trend_direction": "declining",
+          "trend_strength": "moderate",
+          "score": 75,
+          "impact": "negative"
+        },
+        "consumer_sentiment": {
+          "current_value": 68.2,
+          "previous_value": 65.7,
+          "change": 2.5,
+          "trend_direction": "improving",
+          "trend_strength": "moderate",
+          "score": 70,
+          "impact": "positive"
+        }
+      },
+      "sector_impact": {
+        "sector": "technology",
+        "positive_factors": 4,
+        "negative_factors": 1,
+        "overall_impact": "positive"
+      },
+      "recommendations": [
+        "ירידת אינפלציה - סביבה חיובית לצמיחה",
+        "ירידת ריביות - תמיכה בשווקים"
+      ]
+    }
+  },
+  "hype_scanner": {
+    "score": 88,
+    "sentiment": "very_bullish",
+    "summary": "סנטימנט חיובי ברשתות. רמת hype בינונית. Hype עולה. סה\"כ 536 אזכורים ברשתות",
+    "details": {
+      "social_data": {
+        "reddit": {
+          "mentions": 45,
+          "sentiment": "positive",
+          "hype_score": 70
+        },
+        "twitter": {
+          "mentions": 234,
+          "sentiment": "positive",
+          "hype_score": 75
+        },
+        "stocktwits": {
+          "mentions": 156,
+          "sentiment": "positive",
+          "hype_score": 65
+        },
+        "youtube": {
+          "mentions": 12,
+          "sentiment": "positive",
+          "hype_score": 60
+        },
+        "google_trends": {
+          "mentions": 89,
+          "sentiment": "positive",
+          "hype_score": 70
+        }
+      },
+      "sentiment_analysis": {
+        "platform_scores": {
+          "reddit": {
+            "mentions": 45,
+            "sentiment": "positive",
+            "sentiment_score": 75,
+            "hype_score": 70,
+            "weight": 0.35
+          },
+          "twitter": {
+            "mentions": 234,
+            "sentiment": "positive",
+            "sentiment_score": 75,
+            "hype_score": 75,
+            "weight": 0.3
+          },
+          "stocktwits": {
+            "mentions": 156,
+            "sentiment": "positive",
+            "sentiment_score": 75,
+            "hype_score": 65,
+            "weight": 0.2
+          },
+          "youtube": {
+            "mentions": 12,
+            "sentiment": "positive",
+            "sentiment_score": 75,
+            "hype_score": 60,
+            "weight": 0.1
+          },
+          "google_trends": {
+            "mentions": 89,
+            "sentiment": "positive",
+            "sentiment_score": 75,
+            "hype_score": 70,
+            "weight": 0.05
+          }
+        },
+        "total_mentions": 536,
+        "overall_sentiment_score": 73,
+        "dominant_sentiment": "positive"
+      },
+      "hype_analysis": {
+        "platform_indicators": {
+          "reddit": {
+            "mentions": 45,
+            "hype_score": 70,
+            "hype_level": "moderate",
+            "trend": "rising",
+            "weight": 0.35
+          },
+          "twitter": {
+            "mentions": 234,
+            "hype_score": 75,
+            "hype_level": "extreme",
+            "trend": "rising",
+            "weight": 0.3
+          },
+          "stocktwits": {
+            "mentions": 156,
+            "hype_score": 65,
+            "hype_level": "extreme",
+            "trend": "rising",
+            "weight": 0.2
+          },
+          "youtube": {
+            "mentions": 12,
+            "hype_score": 60,
+            "hype_level": "low",
+            "trend": "stable",
+            "weight": 0.1
+          },
+          "google_trends": {
+            "mentions": 89,
+            "hype_score": 70,
+            "hype_level": "high",
+            "trend": "rising",
+            "weight": 0.05
+          }
+        },
+        "overall_hype_score": 69,
+        "hype_level": "moderate",
+        "trend": "rising"
+      },
+      "trend_analysis": {
+        "reddit": {
+          "volume_trend": "moderate",
+          "sentiment_trend": "bullish",
+          "overall_trend": "bullish"
+        },
+        "twitter": {
+          "volume_trend": "exploding",
+          "sentiment_trend": "bullish",
+          "overall_trend": "very_bullish"
+        },
+        "stocktwits": {
+          "volume_trend": "exploding",
+          "sentiment_trend": "bullish",
+          "overall_trend": "very_bullish"
+        },
+        "youtube": {
+          "volume_trend": "low",
+          "sentiment_trend": "neutral",
+          "overall_trend": "neutral"
+        },
+        "google_trends": {
+          "volume_trend": "high",
+          "sentiment_trend": "bullish",
+          "overall_trend": "very_bullish"
+        }
+      },
+      "recommendations": [
+        "סנטימנט חיובי - אפשרות לקנייה"
+      ]
+    }
+  },
+  "overall_score": 41,
+  "recommendations": [
+    "🟠 החזקה - ציון בינוני",
+    "⚠️ סוכנים טכניים לא ממליצים",
+    "🚀 Hype גבוה - זהירות"
+  ],
+  "alerts": [
+    {
+      "type": "hype_spike",
+      "message": "Hype גבוה מאוד: 88/100",
+      "severity": "medium"
+    }
+  ],
+  "detailed_report": {
+    "summary": {
+      "symbol": "TSLA",
+      "overall_score": 41,
+      "timestamp": "2025-07-26T20:27:17.548850",
+      "recommendation": "Hold"
+    },
+    "agent_scores": {
+      "Alpha Score Engine": 12.69,
+      "NLP Analyzer": 50,
+      "Event Scanner": 36,
+      "Macro Scanner": 71,
+      "Hype Scanner": 88
+    },
+    "sentiment_analysis": {
+      "nlp_sentiment": "neutral",
+      "macro_sentiment": "bullish",
+      "hype_sentiment": "very_bullish"
+    },
+    "key_insights": [
+      "זוהו 1 אירועי management_changes",
+      "אירועי economic: 2 אירועים",
+      "אירועי financial: 1 אירועים",
+      "אירועי company_specific: 2 אירועים",
+      "מגמות חזקות: inflation",
+      "רמת Hype: moderate"
+    ],
+    "risk_assessment": {
+      "risk_score": 20,
+      "risk_level": "low",
+      "risk_factors": [
+        "ציון כולל נמוך"
+      ]
+    },
+    "opportunity_analysis": {
+      "opportunity_score": 20,
+      "opportunity_level": "low",
+      "opportunities": [
+        "סביבה מאקרו חיובית"
+      ]
+    }
+  }
+}

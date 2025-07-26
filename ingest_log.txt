@@ -1,0 +1,208 @@
+✅ קבצים שנקלטו בהצלחה:
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\agents_status_report.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\all_binary_files.txt
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\all_text_files.txt
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\example_run.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\ingest_log.txt
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\merge_files_split.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\README_transfer_and_run.txt
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\realtime_feed.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\test_gap_detector_ultimate.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\test_openai_embedding.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\test_single_stock.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\__init__.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\document_loader.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\ingest_documents.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\main.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\query_engine.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\gpt_interface\gpt_client.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\logs\charles_architect_memory.log
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\מערכת חיזוי מניות פורצות – מסמך אפיון מפורט.pdf
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\מערכת חיזוי מניות פורצות – מסמך אפיון מפורט.txt
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\מערכת חיזוי מניות פורצות – מפרט טכני מפורט (1).pdf
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\מערכת חיזוי מניות פורצות – מפרט טכני מפורט (1).txt
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\מערכת רב־סוכנים לחיזוי מניות פורצות – ניתוח טכני מקיף.pdf
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\מערכת רב־סוכנים לחיזוי מניות פורצות – ניתוח טכני מקיף.txt
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\ניתוח מעמיק_ זיהוי סימנים מוקדמים לפני זינוקים של 1000% ויותר במניות (1).pdf
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\ניתוח מעמיק_ זיהוי סימנים מוקדמים לפני זינוקים של 1000% ויותר במניות (1).txt
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\סוכני_המערכת_המלאים (9).xlsx
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\סימנים מוקדמים לעליות חדות במניות (2000–2025).pdf
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\סימנים מוקדמים לעליות חדות במניות (2000–2025).txt
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs\פירוט קבצי מערכת.xlsx
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_logging\memory_log.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\run_engine\runner.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\adx_score_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\alpha_score_engine.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\analyst_rating_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\atr_score_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\atr_volatility_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\bollinger_squeeze.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\breakout_retest_recognizer.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\bullish_pattern_spotter.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\candlestick_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\classic_volume_surge_detector.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\earnings_surprise_tracker.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\financial_stability_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\gap_detector_ultimate.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\geopolitical_risk_monitor.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\golden_cross_detector.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\growth_scanner.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\high_conviction_orchestrator.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\macd_momentum_detector.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\meta_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\midterm_momentum_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\moving_average_pressure_bot.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\multi_agent_validator.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\news_catalyst_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\parabolic_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\return_forecaster.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\rsi_sniffer.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\sentiment_scorer.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\social_media_hype_scanner.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\support_zone_strength_detector.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\trend_detector.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\trend_shift_detector.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\valuation_detector.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\volatility_score_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\volume_tension_meter.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\vwap_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\vwap_trend_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\v_reversal_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__init__.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\base\base_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\base\live_executable_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\subagents\macd_rsi_divergence_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\live\agent_runner.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\live\multi_agent_runner.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\outputs\forecast_report.xlsx
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\outputs\zones_results.xlsx
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\outputs\zones_results_QBTS.xlsx
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\outputs\forecast_logs\forecast_log.csv
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\outputs\forecast_logs\trend_shift_signals.csv
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_alpha_score_engine.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_breakout_retest.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_breakout_screener.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_data_fetcher.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_engine.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_parabolic_agent.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_return_forecaster.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_rsi_sniffer.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_support_zone_strength.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_trend_detector.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_trend_shift_detector.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\test_volume_tension.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__init__.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\constants.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\credentials.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\data_fetcher.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\finnhub_utils.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\fix_cert.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\fmp_utils.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\forecast_logger.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\twelve_utils.py
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\__init__.py
+
+⚠️ קבצים שלא נתמכים:
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\config
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\data
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\live
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\log
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\media
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\models
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\outputs
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\__pycache__
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\gpt_interface
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\logs
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_docs
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_logging
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\run_engine
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\__pycache__
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\gpt_interface\__pycache__
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\gpt_interface\__pycache__\gpt_client.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_logging\__pycache__
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\project_logging\__pycache__\memory_log.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\charles_architect_env\__pycache__\document_loader.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\config\config.yaml
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\base
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\subagents
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\base\__pycache__
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\base\__pycache__\live_executable_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\subagents\__pycache__
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\subagents\__pycache__\macd_rsi_divergence_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\adx_score_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\alpha_score_engine.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\analyst_rating_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\atr_score_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\atr_volatility_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\bollinger_squeeze.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\breakout_retest_recognizer.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\bullish_pattern_spotter.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\candlestick_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\earnings_surprise_tracker.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\financial_stability_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\float_pressure_evaluator.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\gap_detector.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\gap_detector_ultimate.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\geopolitical_risk_monitor.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\growth_scanner.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\meta_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\midterm_momentum_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\moving_average_pressure_bot.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\multi_agent_validator.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\news_catalyst_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\parabolic_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\return_forecaster.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\rsi_sniffer.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\sentiment_scorer.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\short_squeeze_analyzer.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\social_media_hype_scanner.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\support_zone_strength_detector.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\trend_detector.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\trend_shift_detector.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\valuation_detector.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\volatility_score_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\volume_tension_meter.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\vwap_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\v_reversal_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\core\__pycache__\__init__.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\live\outputs
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\live\__pycache__
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\live\__pycache__\multi_agent_runner.cpython-313-pytest-8.4.1.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\models\QBTS_boosting_model.pkl
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\outputs\forecast_logs
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\outputs\zones_summary_plot.png
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\outputs\zones_summary_plot_QBTS.png
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_alpha_score_engine.cpython-313-pytest-8.4.1.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_breakout_retest.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_breakout_screener.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_engine.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_parabolic_agent.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_return_forecaster.cpython-313-pytest-8.4.1.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_return_forecaster.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_rsi_sniffer.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_support_zone_strength.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_trend_shift_detector.cpython-313-pytest-8.4.1.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\test_volume_tension.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\tests\__pycache__\__init__.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\__pycache__
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\__pycache__\constants.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\__pycache__\credentials.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\__pycache__\data_fetcher.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\__pycache__\finnhub_utils.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\__pycache__\fmp_utils.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\__pycache__\forecast_logger.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\__pycache__\twelve_utils.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\utils\__pycache__\__init__.cpython-313.pyc
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\__pycache__\__init__.cpython-313.pyc
+
+❌ קבצים שגרמו לשגיאה:
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\requirements.txt | Error loading C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\requirements.txt
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\live\outputs\BollingerSqueezeAgent_QBTS_live.json | Not a valid ndjson
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\live\outputs\BreakoutRetestRecognizer_QBTS_live.json | Not a valid ndjson
+C:\Users\User\OneDrive\שולחן העבודה\Charles_FocusedSpec\live\outputs\TrendShiftDetector_QBTS_live.json | Not a valid ndjson

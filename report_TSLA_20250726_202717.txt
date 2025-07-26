@@ -1,0 +1,21 @@
+
+=== דוח ניתוח מניית TSLA ===
+תאריך: 2025-07-26T20:27:17.548850
+
+ציון כולל: 41/100
+המלצה: Hold
+
+=== ציוני סוכנים ===
+Alpha Score Engine: 12.69/100
+NLP Analyzer: 50/100
+Event Scanner: 36/100
+Macro Scanner: 71/100
+Hype Scanner: 88/100
+
+=== המלצות ===
+- 🟠 החזקה - ציון בינוני
+- ⚠️ סוכנים טכניים לא ממליצים
+- 🚀 Hype גבוה - זהירות
+
+=== התראות ===
+- Hype גבוה מאוד: 88/100 (medium)
