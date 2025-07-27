@@ -1,9 +1,10 @@
-from core.multi_agent_validator import MultiAgentCrossValidator
+from core.multi_agent_validator import MultiAgentValidator
 
-class HighConvictionSignalOrchestrator:
-    def __init__(self):
+class HighConvictionOrchestrator:
+    def __init__(self, config=None):
         """אתחול האורקסטרטור עם מודול הולידציה לחצייה."""
-        self.validator = MultiAgentCrossValidator()
+        self.config = config or {}
+        self.validator = MultiAgentValidator()
 
     def decide(self, analysis_result):
         """

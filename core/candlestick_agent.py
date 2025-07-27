@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-class CandlestickPatternAgent:
+class CandlestickAgent:
     def __init__(self, config=None):
         """
         Candlestick Agent – זיהוי תבניות נרות יפניים ברמת על.
@@ -14,10 +14,16 @@ class CandlestickPatternAgent:
         self.strong_patterns = ["Hammer", "Bullish Engulfing", "Morning Star", "Piercing Line",
                                 "Shooting Star", "Bearish Engulfing", "Evening Star", "Dark Cloud Cover"]
 
-    def analyze(self, price_df):
+    def analyze(self, symbol, price_df=None):
         """
         מחזיר ציון 1-100 לפי זיהוי עוצמת תבניות הנר, ווליום יחסי, ומיקום טכני.
         """
+        if price_df is None or price_df.empty:
+            return {
+                "score": 1,
+                "explanation": "אין נתוני מחיר זמינים",
+                "details": {}
+            }
         df = price_df.copy().reset_index(drop=True)
         if len(df) < self.lookback + self.ma_period:
             return 1  # לא מספיק נתונים

@@ -1,228 +1,201 @@
-# Charles_FocusedSpec – תיעוד מלא ומעמיק
+# Charles FocusedSpec - מערכת רב-סוכנים לחיזוי מניות פורצות
 
 מערכת רב-סוכנים לחיזוי מניות פורצות (טרם הפריצה החזקה שלהם כלפי מעלה), מבוססת ניתוח רב-ממדי של נתונים שוקיים, חדשותיים, סנטימנטליים וטכניים. כוללת מנוע קונסולידציה מרכזי, אוטומציית חיזוי, תצורת הרצה חיה ומודולי ניתוח מקביליים. המערכת נועדה לאתר ולחזות מניות פורצות שיכולות להניב עשרות עד מאות אחוזי תשואה בהשקעה לטווח קצר ולהניב מאות עד אלפי אחוזי תשואה לטווח בינוני קצר.
 
-**סטטוס נוכחי (יולי 2025):** 10/35 סוכנים פעילים (28.6% הצלחה), עם שיפורים משמעותיים לאחרונה.
+## 📊 סטטוס נוכחי (יולי 2025)
 
----
+### ✅ סוכנים פעילים (14/35 - 40.0%)
+1. **ADXScoreAgent** - ציון: 60/100 ✅
+2. **RSICompressionSniffer** - ציון: 45/100 ✅
+3. **VolumeTensionMeter** - ציון: 35/100 ✅
+4. **ParabolicAgent** - ציון: 25/100 ✅
+5. **BreakoutRetestRecognizer** - ציון: 30/100 ✅
+6. **SupportZoneStrengthDetector** - ציון: 40/100 ✅
+7. **EventScanner** - ציון: 16/100 ✅
+8. **NLPAnalyzer** - ציון: 88/100 ✅
+9. **MacroTrendScanner** - ציון: 65/100 ✅
+10. **SocialMediaHypeScanner** - ציון: 55/100 ✅
+11. **MovingAveragePressureBot** - ציון: 33/100 ✅
+12. **BollingerSqueezeAgent** - ציון: 86/100 ✅
+13. **GoldenCrossAgent** - ציון: 51/100 ✅
+14. **BullishPatternSpotter** - ציון: 100/100 ✅
 
-## תוכן עניינים
-- [סקירה ומבנה כללי](#סקירה-ומבנה-כללי)
-- [טבלת רכיבים ותתי-מודולים](#טבלת-רכיבים-ותתי-מודולים)
-- [פירוט רכיבים עיקריים](#פירוט-רכיבים-עיקריים)
-- [דוגמאות שימוש (Workflows)](#דוגמאות-שימוש-workflows)
-- [תצורה וקונפיגורציה](#תצורה-וקונפיגורציה)
-- [פיצ'רים עתידיים ואתגרים](#פיצרים-עתידיים-ואתגרים)
-- [הפניות למקורות](#הפניות-למקורות)
-- [הערות והמלצות](#הערות-והמלצות)
+### ❌ סוכנים טרם מומשו (21/35 - 60.0%)
+- FloatPressureEvaluator, ShortSqueezePotentialAnalyzer, EarningsSurpriseTracker, GrowthConsistencyScanner, ValuationAnomalyDetector, SentimentScorer, GeopoliticalRiskMonitor, GapDetectorUltimate, AnalystRatingAgent, NewsCatalystAgent, PatternRecognitionAgent, AnomalyDetectionAgent, LiquidityTrapAgent, VolumeSpikeAgent, VCPSuperPatternAgent, ReversalPatternAgent, FundamentalAnomalyAgent, MarketRegimeAgent, BigMoneyInflowAgent, RiskEventMonitorAgent, TrendShiftAgent
 
----
+## 🚀 התקנה והרצה
 
-## סקירה ומבנה כללי
-- **חזון:** מערכת רב-סוכנים (Multi-Agent) לחיזוי, דירוג, וסינון מניות פורצות, עם שילוב ניתוח טכני, פונדמנטלי, חדשות, סנטימנט, ML, דאטה חיצוני, ואוטומציה מלאה.
-- **מבנה:** עשרות סוכנים/מודולים, תתי-מודולים, מנועי חיזוי, תהליכי עיבוד מסמכים, ניהול ידע, תצורה דינמית, אינטגרציות API, תשתית טסטים, ודשבורד עתידי.
-- **מקורות:** מפרטים, אפיונים, CSV, דוקומנטציה, דוגמאות שימוש – בתיקיית `project_docs/`.
+### דרישות מערכת
+- Python 3.8+
+- pip
+- API keys למקורות נתונים
 
-### תרשים מבנה (היי-לבל)
+### התקנה
+```bash
+# Clone הפרויקט
+git clone <repository-url>
+cd Charles_FocusedSpec
+
+# התקנת תלויות
+pip install -r requirements.txt
+
+# הגדרת משתני סביבה
+cp env.example.txt .env
+# ערוך את .env והוסף את מפתחות ה-API שלך
+```
+
+### הרצה
+```bash
+# הרצת AlphaScoreEngine
+python example_run.py
+
+# הרצת סוכן ספציפי
+python test_single_stock.py
+
+# הרצת טסטים
+python -m pytest tests/
+```
+
+## 📁 מבנה הפרויקט
+
 ```
 Charles_FocusedSpec/
-├── core/ (agents, engines, subagents)
-├── charles_architect_env/ (GPT, ingest, logs, project_docs)
-├── utils/ (data_fetcher, credentials, helpers)
-├── config/ (config.yaml)
-├── live/ (multi_agent_runner, outputs)
-├── tests/ (unit/integration)
-├── outputs/, models/, vectorstore/
-└── project_docs/ (מפרטים, CSV, דוקומנטציה)
+├── core/                    # סוכנים מרכזיים
+│   ├── alpha_score_engine.py    # מנוע קונסולידציה מרכזי
+│   ├── adx_score_agent.py       # ניתוח ADX
+│   ├── rsi_sniffer.py           # ניתוח RSI
+│   ├── volume_tension_meter.py  # מדידת מתח נפח
+│   ├── parabolic_agent.py       # זיהוי תנועות פרבוליות
+│   ├── breakout_retest_recognizer.py  # זיהוי פריצות
+│   ├── support_zone_strength_detector.py  # ניתוח אזורי תמיכה
+│   ├── moving_average_pressure_bot.py  # ניתוח לחץ ממוצעים נעים
+│   ├── bollinger_squeeze.py     # זיהוי התכווצות בולינגר
+│   ├── golden_cross_detector.py # זיהוי צלבים מוזהבים
+│   ├── bullish_pattern_spotter.py  # זיהוי תבניות בולשיות
+│   ├── event_scanner.py         # סריקת אירועים
+│   ├── nlp_analyzer.py          # ניתוח שפה טבעית
+│   ├── macro_trend_scanner.py   # סריקת מגמות מקרו
+│   ├── social_media_hype_scanner.py  # סריקת הייפ ברשתות
+│   └── base/                   # מחלקות בסיס
+├── utils/                   # כלים עזר
+│   ├── data_fetcher.py      # אחזור נתונים
+│   ├── constants.py         # קבועים
+│   └── credentials.py       # ניהול הרשאות
+├── tests/                   # טסטים
+├── live/                    # הרצה חיה
+├── outputs/                 # פלטים
+├── config/                  # הגדרות
+├── requirements.txt         # תלויות
+├── README.md               # תיעוד ראשי
+├── SYSTEM_ARCHITECTURE.md  # ארכיטקטורת מערכת
+└── TODO.md                 # רשימת משימות
 ```
 
----
+## 🔧 מקורות נתונים
 
-## טבלת רכיבים ותתי-מודולים
-| רכיב/מודול/סוכן | תפקיד | קלט/פלט | תלויות | סטטוס |
-|-----------------|--------|---------|--------|--------|
-| **ADX Score Agent** | מדידת עוצמת מגמה | price_df → score | data_fetcher, ta.trend | ✅ פעיל |
-| **RSI Sniffer** | זיהוי דחיסה וסיגנלים | price_df → score | data_fetcher, numpy | ✅ פעיל |
-| **Volume Tension Meter** | מדידת מתח נפח | price_df → score | data_fetcher, ta.volume | ✅ פעיל |
-| **Parabolic Agent** | זיהוי תנועות פראבוליות | price_df → score | data_fetcher, numpy | ✅ פעיל |
-| **Breakout Retest Recognizer** | זיהוי פריצות ובדיקות | price_df → score | data_fetcher, ta.volatility | ✅ פעיל |
-| **Support Zone Strength Detector** | ניתוח אזורי תמיכה | price_df → score | data_fetcher, ta.support_resistance | ✅ פעיל |
-| **Event Scanner** | סורק אירועים (גיאופוליטי, כלכלי, רגולטורי) | feeds → signals | APIs, NLP | ✅ פעיל |
-| **NLP Analyzer** | ניתוח טקסט חופשי, רגשות, ישויות | טקסט → תובנות | transformers, BERT | ✅ פעיל |
-| **Macro Trend Scanner** | ניתוח מגמות מקרו-כלכליות | macro_data → score | FRED API, World Bank | ✅ פעיל |
-| **Social Media Hype Scanner** | מעקב הייפ ברשתות חברתיות | social_data → score | Reddit API, Twitter | ✅ פעיל |
-| **Moving Average Pressure Bot** | זיהוי לחץ ממוצעים נעים | price_df → score | data_fetcher, ta.trend | ❌ Dummy |
-| **Bullish Pattern Spotter** | זיהוי תבניות בולשיות | price_df → score | data_fetcher, pattern_recognition | ❌ Dummy |
-| **Float Pressure Evaluator** | הערכת לחץ צף | float_data → score | data_fetcher, calculations | ❌ Dummy |
-| **Short Squeeze Potential Analyzer** | ניתוח פוטנציאל סקוויז | short_data → score | data_fetcher, calculations | ❌ Dummy |
-| **Earnings Surprise Tracker** | הפתעות רווחים | earnings_data → score | fmp_api, yahoo_finance | ❌ Dummy |
-| **Growth Consistency Scanner** | סריקת צמיחה עקבית | financial_data → score | fmp_api, yahoo_finance | ❌ Dummy |
-| **Valuation Anomaly Detector** | אנומליות בהערכה | financial_data → score | fmp_api, yahoo_finance | ❌ Dummy |
-| **Sentiment Scorer** | ניתוח סנטימנט | text_data → score | nlp_analyzer, gpt_client | ❌ Dummy |
-| **Geopolitical Risk Monitor** | סיכונים גיאופוליטיים | news_feeds → score | news_api, nlp_analyzer | ❌ Dummy |
-| **Gap Detector Ultimate** | זיהוי פערים מתקדם | price_df → score | data_fetcher, ta.gaps | ❌ Dummy |
-| **Analyst Rating Agent** | דירוגי אנליסטים | analyst_data → score | finnhub_api, fmp_api | ❌ Dummy |
-| **News Catalyst Agent** | קטליזטורים חדשותיים | news_feeds → score | news_api, nlp_analyzer | ❌ Dummy |
-| **Pattern Recognition Agent** | זיהוי תבניות מתקדם | price_df → score | CNN, rule_based | ❌ Dummy |
-| **Anomaly Detection Agent** | זיהוי אנומליות | price_df → anomaly | ML, Isolation Forest | ❌ Dummy |
-| **Liquidity Trap Agent** | זיהוי מלכודות נזילות | liquidity_data → score | data_fetcher, calculations | ❌ Dummy |
-| **Bollinger Squeeze Agent** | זיהוי דחיסה בולינגר | price_df → score | data_fetcher, ta.volatility | ❌ Dummy |
-| **Volume Spike Agent** | זיהוי קפיצות נפח | price_df → score | data_fetcher, ta.volume | ❌ Dummy |
-| **Golden Cross Agent** | זיהוי צלבים מוזהבים | price_df → score | data_fetcher, ta.trend | ❌ Dummy |
-| **VCP Super Pattern Agent** | תבניות VCP מתקדמות | price_df → score | data_fetcher, pattern_recognition | ❌ Dummy |
-| **Reversal Pattern Agent** | זיהוי תבניות היפוך | price_df → score | data_fetcher, pattern_recognition | ❌ Dummy |
-| **Fundamental Anomaly Agent** | אנומליות פונדמנטליות | financial_data → score | fmp_api, calculations | ❌ Dummy |
-| **Market Regime Agent** | זיהוי משטרי שוק | market_data → score | data_fetcher, calculations | ❌ Dummy |
-| **Big Money Inflow Agent** | זיהוי כסף גדול | volume_data → score | data_fetcher, calculations | ❌ Dummy |
-| **Risk Event Monitor Agent** | ניטור אירועי סיכון | risk_data → score | news_api, calculations | ❌ Dummy |
-| **Trend Shift Agent** | זיהוי שינויי מגמה | price_df → score | data_fetcher, ta.trend | ❌ Dummy |
+### APIs נתמכים
+- **FMP (Financial Modeling Prep)** - נתוני מחיר, פיננסיים, חדשות
+- **Finnhub** - נתוני שוק, חדשות, סנטימנט
+- **TwelveData** - נתוני מחיר היסטוריים
+- **MarketAux** - ניתוח חדשות מתקדם
+- **NewsData** - חדשות גלובליות
+- **Alpha Vantage** - נתוני שוק וחדשות
+- **Yahoo Finance RSS** - חדשות פיננסיות
 
-> **הערה:** ✅ פעיל = עובד ומחזיר ציונים אמיתיים, ❌ Dummy = עדיין לא מומש
+### סוגי נתונים
+- **נתוני מחיר**: OHLCV, ממוצעים נעים, אינדיקטורים טכניים
+- **נתונים פיננסיים**: רווחים, הכנסות, הערכות אנליסטים
+- **חדשות**: כותרות, תוכן, סנטימנט, קטגוריות
+- **נתוני מקרו**: GDP, אינפלציה, ריבית, PMI
+- **נתוני רשתות חברתיות**: Reddit, Twitter, Stocktwits, YouTube
 
----
+## 📈 ארכיטקטורת מערכת
 
-## פירוט רכיבים עיקריים
-### דוגמה: ADX Score Agent (core/adx_score_agent.py) ✅ פעיל
-- **תפקיד:** חישוב עוצמת מגמה (ADX) לזיהוי שוק טרנדי/צדדי
-- **קלט:** price_df (High, Low, Close)
-- **פלט:** score (1-100), explanation, details
-- **תלויות:** data_fetcher.py, ta.trend, numpy
-- **שימוש:**
-  ```python
-  agent = ADXScoreAgent(); result = agent.analyze("AAPL", price_df)
-  print(result['score'], result['explanation'])
-  ```
-- **סטטוס:** פעיל, עם טסטים (tests/test_adx_score_agent.py)
-- **הערות:** מחזיר ציונים אמיתיים (60/100 לדוגמה)
+### רכיבים מרכזיים
+1. **AlphaScoreEngine** - מנוע קונסולידציה מרכזי
+2. **DataFetcher** - אחזור נתונים ממקורות מרובים
+3. **סוכנים מקצועיים** - ניתוח ספציפי לכל תחום
+4. **מערכת הרצה חיה** - ניטור רציף בזמן אמת
 
-### דוגמה: Event Scanner (core/event_scanner.py) ✅ פעיל
-- **תפקיד:** סריקת אירועים חיצוניים (חדשות, רגולציה, גיאופוליטי)
-- **קלט:** feeds (API, RSS, טקסט)
-- **פלט:** signals, score
-- **תלויות:** APIs, NLP Analyzer
-- **סטטוס:** פעיל, מחזיר ציונים אמיתיים
-- **הערות:** מזהה אירועים דרמטיים כמו דוחות כספיים
+### זרימת עבודה
+1. **איסוף נתונים** - אחזור נתונים ממקורות מרובים
+2. **ניתוח מקביל** - הרצת סוכנים במקביל
+3. **קונסולידציה** - שילוב תוצאות הסוכנים
+4. **המלצות** - יצירת המלצות מסחר
 
-### דוגמה: NLP Analyzer (core/nlp_analyzer.py) ✅ פעיל
-- **תפקיד:** ניתוח טקסט מתקדם, סנטימנט, ישויות
-- **קלט:** טקסט, חדשות, דיווחים
-- **פלט:** sentiment_score, entities, analysis
-- **תלויות:** transformers, BERT, textblob
-- **סטטוס:** פעיל, עם ניתוח מתקדם
-- **הערות:** כולל סינון רלוונטיות וניתוח מגמות
+## 🎯 שימוש
 
-### דוגמה: Macro Trend Scanner (core/macro_trend_scanner.py) ✅ פעיל
-- **תפקיד:** ניתוח מגמות מקרו-כלכליות
-- **קלט:** נתונים כלכליים (GDP, אינפלציה, ריבית)
-- **פלט:** macro_score, trend_analysis
-- **תלויות:** FRED API, World Bank API
-- **סטטוס:** פעיל, עם נתוני דמו
-- **הערות:** מנתח השפעה על סקטורים
+### ניתוח מניה בודדת
+```python
+from core.alpha_score_engine import AlphaScoreEngine
+from utils.data_fetcher import DataFetcher
 
-### דוגמה: Social Media Hype Scanner (core/social_media_hype_scanner.py) ✅ פעיל
-- **תפקיד:** מעקב הייפ ברשתות חברתיות
-- **קלט:** נתונים מרשתות חברתיות
-- **פלט:** hype_score, sentiment_analysis
-- **תלויות:** Reddit API, Twitter API, Stocktwits
-- **סטטוס:** פעיל, עם נתוני דמו
-- **הערות:** מזהה מגמות ויראליות
+# יצירת מנוע
+engine = AlphaScoreEngine()
+data_fetcher = DataFetcher()
 
----
+# קבלת נתונים
+price_df = data_fetcher.get_price_history("AAPL", period="1y")
 
-## דוגמאות שימוש (Workflows)
-### תרחיש: ניתוח מניה בודדת
-1. טעינת נתונים: data_fetcher.py → price_df
-2. הרצת סוכנים: core/agents (לפי config)
-3. אינטגרציה: alpha_score_engine.py → overall_score
-4. תוצאה: dict (score, explanation, details)
-
-### תרחיש: עיבוד מסמכים
-1. ingest_documents.py → טעינת מסמכים מ־project_docs
-2. עיבוד ב־GPT (gpt_client.py)
-3. שמירה ל־vectorstore
-
-### תרחיש: הרצה חיה (Live)
-1. live/multi_agent_runner.py → הרצה בלולאה
-2. שמירת תוצאות ל־outputs/
-
----
-
-## תצורה וקונפיגורציה
-- **config/config.yaml** – משקלים עיקריים (technical, fundamental, news, sentiment)
-- **utils/constants.py** – משקלי סוכנים ספציפיים
-- **.env** – משתני סביבה (API keys, פרמטרים רגישים)
-- **דינמיקה:** ניתן להפעיל/לכבות סוכנים, לשנות משקלים, להוסיף תלויות
-
----
-
-## פיצ'רים עתידיים ואתגרים
-- השלמת פיתוח רכיבים חסרים (25 סוכנים נוספים)
-- פיתוח Dashboard ויזואלי (Streamlit/Plotly)
-- הרחבת אינטגרציות (APIs, דאטה חיצוני, פורומים, sentiment)
-- אופטימיזציה להרצה מקבילית, ניהול זיכרון, ניטור
-- הרחבות: Backtesting, Portfolio Management, Risk Management
-- תיעוד ודוגמאות שימוש נוספים
-
----
-
-## תרשים מבנה (היי-לבל + פירוט עיקרי)
+# ניתוח
+result = engine.evaluate("AAPL", price_df)
+print(f"ציון: {result['score']}/100")
+print(f"המלצה: {result['recommendation']}")
 ```
-Charles_FocusedSpec/
-├── core/
-│   ├── adx_score_agent.py                # סוכן ADX (עוצמת מגמה) ✅
-│   ├── rsi_sniffer.py                    # סוכן RSI ודחיסות ✅
-│   ├── volume_tension_meter.py           # מדידת מתח נפח ✅
-│   ├── parabolic_agent.py                # זיהוי תנועות פראבוליות ✅
-│   ├── breakout_retest_recognizer.py     # זיהוי פריצות ובדיקות ✅
-│   ├── support_zone_strength_detector.py # ניתוח אזורי תמיכה ✅
-│   ├── event_scanner.py                  # סורק אירועים ✅
-│   ├── nlp_analyzer.py                   # ניתוח טקסט מתקדם ✅
-│   ├── macro_trend_scanner.py            # ניתוח מגמות מקרו ✅
-│   ├── social_media_hype_scanner.py      # מעקב הייפ ברשתות ✅
-│   ├── alpha_score_engine.py             # מנוע דירוג אלפא מרכזי ✅
-│   ├── meta_agent.py                     # סוכן-על (ניהול) ❌
-│   └── subagents/                        # תתי-סוכנים (לדוג' MACD-RSI Divergence) ❌
-├── charles_architect_env/
-│   ├── ingest_documents.py               # טעינת מסמכים וידע
-│   ├── main.py                           # ממשק GPT אינטראקטיבי
-│   ├── gpt_interface/gpt_client.py       # חיבור ל־OpenAI
-│   ├── project_docs/                     # מפרטים, CSV, דוקומנטציה
-│   └── ...
-├── utils/
-│   ├── data_fetcher.py                   # שליפת נתונים שוקיים ✅
-│   ├── credentials.py                    # ניהול הרשאות/API ✅
-│   └── ...
-├── config/
-│   └── config.yaml                       # קונפיגורציה (משקלים, פרמטרים)
-├── live/
-│   ├── multi_agent_runner.py             # הרצה חיה של סוכנים
-│   └── outputs/                          # תוצאות ריצה חיה
-├── tests/                                # בדיקות יחידה/אינטגרציה
-├── outputs/, models/, vectorstore/       # תוצרים, מודלים, בסיסי נתונים
-└── README.md, TODO.md, SYSTEM_ARCHITECTURE.md
+
+### ניתוח מספר מניות
+```python
+symbols = ["AAPL", "MSFT", "GOOGL", "TSLA"]
+results = {}
+
+for symbol in symbols:
+    price_df = data_fetcher.get_price_history(symbol, period="1y")
+    results[symbol] = engine.evaluate(symbol, price_df)
+
+# מיון לפי ציון
+sorted_results = sorted(results.items(), key=lambda x: x[1]['score'], reverse=True)
 ```
-> **הערה:** ✅ = פעיל ועובד, ❌ = עדיין לא מומש
+
+## 📊 דוגמאות תוצאות
+
+### מניה עם פוטנציאל גבוה
+```
+AAPL - ציון: 85/100
+המלצה: 🚀 BUY signal (High Conviction)
+סוכנים פעילים: 14/35
+זמן ניתוח: 2.3 שניות
+```
+
+### מניה עם סיגנל חלש
+```
+INTC - ציון: 23/100
+המלצה: No Signal
+סוכנים פעילים: 14/35
+זמן ניתוח: 1.8 שניות
+```
+
+## 🔄 עדכונים אחרונים
+
+### יולי 2025
+- ✅ **BullishPatternSpotter** - זיהוי תבניות בולשיות (Hammer, Doji, Engulfing, Morning Star)
+- ✅ **GoldenCrossAgent** - זיהוי צלבים מוזהבים וצלבי מוות
+- ✅ **BollingerSqueezeAgent** - זיהוי התכווצות בולינגר
+- ✅ **MovingAveragePressureBot** - ניתוח לחץ ממוצעים נעים
+- ✅ **DataFetcher** - תיקון אחזור נתונים מעודכנים
+- ✅ **EventScanner** - הוספת קטגוריית 'financial'
+- ✅ **NLPAnalyzer** - שיפור סינון חדשות וניתוח מתקדם
+
+## 📞 תמיכה
+
+לשאלות ותמיכה:
+- פתח Issue ב-GitHub
+- צור קשר עם הצוות
+- בדוק את התיעוד ב-`SYSTEM_ARCHITECTURE.md`
+
+## 📄 רישיון
+
+MIT License - ראה קובץ LICENSE לפרטים.
 
 ---
 
-## הפניות למקורות
-- [system_components_summary.csv](project_docs/system_components_summary.csv) – מיפוי מלא של כל הרכיבים, תתי-מודולים, תלויות, סטטוס
-- [פירוט קבצי מערכת_טרם הוקמו במערכת .csv](project_docs/פירוט%20קבצי%20מערכת_טרם%20הוקמו%20במערכת%20.csv) – רשימת רכיבים/מודולים חסרים/בתכנון
-- [מערכת חיזוי מניות פורצות – מפרט טכני מפורט (1).txt](project_docs/מערכת%20חיזוי%20מניות%20פורצות%20–%20מפרט%20טכני%20מפורט%20(1).txt) – מסמך אפיון עקרוני, תרחישים, דגשים
-- [project_knowledge_base.md](project_docs/project_knowledge_base.md) – ידע מרוכז, דגשים, דוגמאות
-- [system_components_summary.xlsx](project_docs/system_components_summary.xlsx) – טבלת רכיבים מפורטת
-- [פירוט קבצי מערכת_*.csv](project_docs/) – תיעוד רכיבים/קבצים/בדיקות/קונפיגורציה
-- [מערכת רב־סוכנים לחיזוי מניות פורצות – ניתוח טכני מקיף.txt](project_docs/מערכת%20רב־סוכנים%20לחיזוי%20מניות%20פורצות%20–%20ניתוח%20טכני%20מקיף.txt) – תיעוד טכני, דגשים, דוגמאות
-- [פירוט קבצי מערכת.xlsx](project_docs/פירוט%20קבצי%20מערכת.xlsx) – טבלת קבצים מלאה
-- [README.md, TODO.md, SYSTEM_ARCHITECTURE.md] – תיעוד מרכזי
-
----
-
-## הערות והמלצות
-- יש להשלים פיתוח רכיבים חסרים, להרחיב דוקומנטציה, להוסיף דוגמאות שימוש, ולבצע בדיקות אינטגרציה
-- מומלץ לעיין ב־system_components_summary.csv וב־project_knowledge_base.md לכל פיתוח/שיפור
-- כל שינוי/פיתוח – לעדכן תיעוד, טסטים, ודוגמאות
-
----
-
-אם יש שאלות, הערות, או דרישה להרחבה – פנו אלינו! 
+**הערה**: מערכת זו מיועדת למטרות מחקר ולימוד בלבד. אין להשתמש בה כעצה פיננסית או השקעתית. 

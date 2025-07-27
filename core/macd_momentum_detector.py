@@ -7,7 +7,14 @@ class MACDMomentumDetector:
         self.signal = config.get("signal", 9) if config else 9
         self.freshness_days = config.get("freshness_days", 5) if config else 5
 
-    def analyze(self, price_df):
+    def analyze(self, symbol, price_df=None):
+        if price_df is None:
+            return {
+                "score": 50,
+                "explanation": "אין נתוני מחיר זמינים",
+                "details": {}
+            }
+        
         df = price_df.copy()
         df["ema_fast"] = df["close"].ewm(span=self.fast, adjust=False).mean()
         df["ema_slow"] = df["close"].ewm(span=self.slow, adjust=False).mean()
@@ -28,4 +35,12 @@ class MACDMomentumDetector:
         else:
             score = max(1, 50 + int(last_hist * 100))   # סיגנל שלילי מוחלש
 
-        return int(score)
+        return {
+            "score": int(score),
+            "explanation": f"MACD Histogram: {last_hist:.4f}, חיובי: {pos}, שלילי: {neg}",
+            "details": {
+                "macd_histogram": last_hist,
+                "positive_days": pos,
+                "negative_days": neg
+            }
+        }

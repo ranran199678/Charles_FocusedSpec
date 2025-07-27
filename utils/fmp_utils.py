@@ -47,3 +47,26 @@ def fmp_get_price_df(ticker, verify_ssl=True):
 def fmp_get_float_ratio(ticker, verify_ssl=True):
     # נתוני float ratio לא תמיד זמינים. מחזיר None כברירת מחדל.
     return None
+
+def fetch_analyst_estimates(ticker, verify_ssl=True):
+    """
+    שליפת הערכות אנליסטים מ-FMP
+    """
+    try:
+        url = f"https://financialmodelingprep.com/api/v3/analyst-estimates/{ticker}?apikey={FMP_API_KEY}&limit=10"
+        response = requests.get(url, verify=verify_ssl, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if isinstance(data, list) and len(data) > 0:
+                return data
+            else:
+                print(f"אין נתוני הערכות אנליסטים עבור {ticker}")
+                return None
+        else:
+            print(f"שגיאה בקבלת הערכות אנליסטים: HTTP {response.status_code}")
+            return None
+            
+    except Exception as e:
+        print(f"שגיאה בקבלת הערכות אנליסטים עבור {ticker}: {e}")
+        return None

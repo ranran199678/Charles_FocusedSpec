@@ -108,7 +108,7 @@ class ParabolicAgent:
 
         return score, explanation, details
 
-    def analyze(self, symbol, price_df):
+    def analyze(self, symbol, price_df=None):
         try:
             score, explanation, details = self.detect_parabolic_run(price_df)
         except Exception as e:

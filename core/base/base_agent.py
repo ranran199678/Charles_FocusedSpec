@@ -33,6 +33,19 @@ class BaseAgent(ABC):
         if self.debug:
             traceback.print_exc()
 
+    def _get_dummy_result(self, explanation: str = "Agent לא מומש"):
+        """
+        מחזיר תוצאה דמוית עבור סוכנים שלא מומשו או שנכשלו
+        :param explanation: הסבר למה התוצאה היא דמוית
+        :return: dict עם תוצאה דמוית
+        """
+        return {
+            "score": 1,
+            "explanation": explanation,
+            "details": {},
+            "timestamp": None
+        }
+
     def validate_input(self, *args, **kwargs):
         """ניתן לממש בעתיד עבור כל סוכן – לבדוק תקינות קלט"""
         return True

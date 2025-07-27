@@ -79,7 +79,7 @@ class MovingAveragePressureBot(BaseAgent):
 
     def _calculate_moving_averages(self, price_df: pd.DataFrame) -> Dict:
         """חישוב ממוצעים נעים שונים"""
-        close = price_df["Close"]
+        close = price_df["close"]
         
         return {
             "short_ma": close.rolling(self.short_ma).mean(),
@@ -155,10 +155,10 @@ class MovingAveragePressureBot(BaseAgent):
 
     def _analyze_volume_pressure(self, price_df: pd.DataFrame) -> Dict:
         """ניתוח לחץ נפח"""
-        if "Volume" not in price_df.columns:
+        if "volume" not in price_df.columns:
             return {}
         
-        volume = price_df["Volume"]
+        volume = price_df["volume"]
         avg_volume = volume.rolling(20).mean()
         current_volume = volume.iloc[-1]
         avg_volume_current = avg_volume.iloc[-1]

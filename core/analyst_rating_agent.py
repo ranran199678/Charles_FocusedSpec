@@ -19,7 +19,7 @@ class AnalystRatingAgent:
             if not data or not isinstance(data, list):
                 return {
                     "score": 1,
-                    "explanation": f"❌ {AGENT_NAMES['AnalystRatingAgent']}: לא נמצאו הערכות אנליסטים עבור הסימבול",
+                    "explanation": f"❌ AnalystRatingAgent: לא נמצאו הערכות אנליסטים עבור הסימבול",
                     "details": {}
                 }
 
@@ -39,7 +39,7 @@ class AnalystRatingAgent:
             totals = count_totals(recent_estimates)
             total_analysts = sum(totals.values())
 
-            explanation = f"🔍 {AGENT_NAMES['AnalystRatingAgent']} – ניתוח {self.consistency_window} הערכות אחרונות: {totals} | סה\"כ אנליסטים: {total_analysts}. "
+            explanation = f"🔍 AnalystRatingAgent – ניתוח {self.consistency_window} הערכות אחרונות: {totals} | סה\"כ אנליסטים: {total_analysts}. "
 
             if total_analysts < self.min_analysts:
                 return {
@@ -83,6 +83,6 @@ class AnalystRatingAgent:
         except Exception as e:
             return {
                 "score": 1,
-                "explanation": f"שגיאת {AGENT_NAMES['AnalystRatingAgent']}: {e}\n{traceback.format_exc()}",
+                "explanation": f"שגיאת AnalystRatingAgent: {e}\n{traceback.format_exc()}",
                 "details": {}
             }

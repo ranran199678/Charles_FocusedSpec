@@ -153,7 +153,7 @@ class TrendShiftDetector(LiveExecutableAgent):
         df = self.compute_indicators(df.sort_index())
         return self.detect_shift(df)
 
-    def analyze(self, symbol, price_df):
+    def analyze(self, symbol, price_df=None):
         """
         עטיפת analyze תואמת AlphaScoreEngine
         """

@@ -100,8 +100,14 @@ class BreakoutRetestRecognizer:
         breakouts = (grouped['close'][-7:] > high).sum()
         return breakouts
 
-    def analyze(self, symbol, price_df):
+    def analyze(self, symbol, price_df=None):
         """Standard analyze method for AlphaScoreEngine compatibility"""
+        if price_df is None or price_df.empty:
+            return {
+                "score": 1,
+                "explanation": "אין נתוני מחיר זמינים",
+                "details": {}
+            }
         self.symbol = symbol
         return self._analyze_internal(price_df)
 

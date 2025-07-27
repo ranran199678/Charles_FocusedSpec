@@ -6,15 +6,37 @@ class ClassicVolumeSurgeDetector:
         self.threshold_sigma = config.get("threshold_sigma", 2) if config else 2
         self.freshness_days = config.get("freshness_days", 5) if config else 5
 
-    def analyze(self, price_df):
-        df = price_df.copy()
-        df["vol_ma"] = df["volume"].rolling(self.window).mean()
-        df["vol_std"] = df["volume"].rolling(self.window).std()
-        df["vol_sigma"] = (df["volume"] - df["vol_ma"]) / df["vol_std"]
-        last = df.iloc[-self.freshness_days:]
-        max_sigma = last["vol_sigma"].max()
-        # ניקוד לפי חריגות: כל סטיית תקן = 15 נק', capped
-        if max_sigma < self.threshold_sigma:
-            return 1
-        score = min(100, int((max_sigma - self.threshold_sigma) * 15 + 50))
-        return max(1, score)
+    def analyze(self, symbol, price_df=None):
+        if price_df is None:
+            return {
+                "score": 50,
+                "explanation": "אין נתוני מחיר זמינים",
+                "details": {}
+            }
+        
+        # חישוב נפח ממוצע
+        avg_volume = price_df['volume'].mean()
+        current_volume = price_df['volume'].iloc[-1]
+        
+        # חישוב יחס נפח
+        volume_ratio = current_volume / avg_volume if avg_volume > 0 else 1
+        
+        # חישוב ציון
+        if volume_ratio > 2:
+            score = 90
+        elif volume_ratio > 1.5:
+            score = 70
+        elif volume_ratio > 1.2:
+            score = 50
+        else:
+            score = 30
+            
+        return {
+            "score": score,
+            "explanation": f"יחס נפח: {volume_ratio:.2f}x",
+            "details": {
+                "volume_ratio": volume_ratio,
+                "current_volume": current_volume,
+                "avg_volume": avg_volume
+            }
+        }

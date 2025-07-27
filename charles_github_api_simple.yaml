@@ -1,0 +1,107 @@
+openapi: 3.1.0
+info:
+  title: Charles GitHub API
+  version: 1.0.0
+  description: API for accessing Charles_FocusedSpec GitHub repository files and directories
+servers:
+  - url: https://api.github.com/repos/ranran199678/Charles_FocusedSpec
+    description: GitHub API direct access
+paths:
+  /contents:
+    get:
+      operationId: listFiles
+      summary: List files and directories
+      description: Lists all files and directories in the repository
+      parameters:
+        - in: query
+          name: path
+          schema:
+            type: string
+          required: false
+          description: Path to the folder (e.g., core/, utils/, etc.). Leave empty for root directory.
+          example: "core/"
+      responses:
+        "200":
+          description: List of files and directories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the file or directory
+                    path:
+                      type: string
+                      description: Full path to the file or directory
+                    type:
+                      type: string
+                      enum: [file, dir]
+                      description: Type of item (file or directory)
+                    download_url:
+                      type: string
+                      description: URL to download file content (for files only)
+        "404":
+          description: Path not found
+        "401":
+          description: Unauthorized
+  /contents/{path}:
+    get:
+      operationId: getFileInfo
+      summary: Get file information
+      description: Get information about a specific file
+      parameters:
+        - in: path
+          name: path
+          required: true
+          schema:
+            type: string
+          description: Path to the file
+          example: "core/trend_shift_detector.py"
+      responses:
+        "200":
+          description: File information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  path:
+                    type: string
+                  type:
+                    type: string
+                  download_url:
+                    type: string
+                  content:
+                    type: string
+                    description: Base64 encoded content
+        "404":
+          description: File not found
+components:
+  schemas:
+    FileInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        type:
+          type: string
+          enum: [file, dir]
+        download_url:
+          type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+tags:
+  - name: Files
+    description: File and directory operations
+  - name: Repository
+    description: Repository information 

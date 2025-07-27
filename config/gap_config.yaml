@@ -1,0 +1,58 @@
+# GapDetectorUltimate Configuration
+# =================================
+
+# Basic gap detection parameters
+gap_threshold_pct: 3.0          # Minimum gap percentage to consider
+rare_gap_percentile: 90         # Percentile for rare gap classification
+max_gap_days: 5                 # Maximum days to look back for gaps
+
+# Volume validation parameters
+min_volume_ratio: 1.5           # Minimum volume ratio for validation
+volume_ma_period: 20            # Moving average period for volume
+volume_validation_threshold: 0.7 # Threshold for volume validation score
+
+# Gap & Run pattern parameters
+gap_run_min_follow_through: 5.0  # Minimum follow-through percentage
+gap_run_max_days: 10            # Maximum days to track follow-through
+gap_run_volume_persistence: 3   # Days of volume persistence required
+
+# Historical validation parameters
+historical_lookback_periods: 252 # Days to look back for historical analysis
+min_historical_samples: 10      # Minimum samples for historical validation
+
+# Analysis parameters
+follow_through_days: 10         # Days to track price follow-through
+reversal_penalty: 0.3           # Penalty for price reversals
+trend_lookback: 20              # Days to look back for trend analysis
+history_window: 120             # Days for historical gap analysis
+
+# Scoring weights
+quality_weight: 0.4             # Weight for gap quality in scoring
+volume_weight: 0.3              # Weight for volume validation
+historical_weight: 0.3          # Weight for historical success rate
+
+# Output configuration
+verbose: false                  # Enable verbose logging
+max_gap_events_return: 10       # Maximum gap events to return in details
+
+# Gap type classification thresholds
+breakaway_gap_min: 8.0          # Minimum percentage for breakaway gap
+runaway_gap_min: 5.0            # Minimum percentage for runaway gap
+exhaustion_gap_min: 6.0         # Minimum percentage for exhaustion gap
+
+# Volume analysis parameters
+volume_trend_weight: 0.2        # Weight for volume trend in validation
+extreme_volume_threshold: 3.0   # Threshold for extreme volume spike
+volume_persistence_weight: 0.3  # Weight for volume persistence
+
+# Historical success rate parameters
+success_threshold: 5.0          # Percentage gain considered success
+success_lookback_days: 10       # Days to look forward for success
+success_rate_smoothing: 0.8     # Smoothing factor for success rate
+
+# Gap quality scoring parameters
+size_weight: 0.3                # Weight for gap size in quality score
+volume_weight_quality: 0.25     # Weight for volume in quality score
+type_weight: 0.2                # Weight for gap type in quality score
+historical_weight_quality: 0.1  # Weight for historical success in quality score
+gap_run_bonus: 0.15             # Bonus for gap & run patterns 

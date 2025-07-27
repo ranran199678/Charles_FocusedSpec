@@ -1,6 +1,7 @@
-class MultiAgentCrossValidator:
-    def __init__(self):
+class MultiAgentValidator:
+    def __init__(self, config=None):
         """אתחול מודול ולידציה חוצה-סוכנים (אין פרמטרים קבועים בשלב זה)."""
+        self.config = config or {}
         pass
 
     def detect_conflicts(self, signals):

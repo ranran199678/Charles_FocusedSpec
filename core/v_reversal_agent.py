@@ -21,71 +21,34 @@ class VReversalAgent:
         self.min_vol_increase = cfg.get("min_vol_increase", 1.5)
         self.v_min_speed = cfg.get("v_min_speed", 1.4)
 
-    def analyze(self, price_df):
-        """
-        מחזיר ציון 1-100: 100 = V reversal מושלם (מהירות, עוצמה, ווליום, קרבה לתמיכה).
-        60-80 = V reversal חזק, 40-59 = תיקון V סביר, 1-30 = אין V.
-        """
-        df = price_df.copy().reset_index(drop=True)
-        if len(df) < self.window + self.pivot_lookback + 3:
-            return 1  # לא מספיק נתונים
-
-        recent = df[-self.window:].copy()
-        close = recent["close"].values
-        vol = recent["volume"].values
-
-        # מציאת נקודת שפל לוקאלית
-        piv_idx = np.argmin(close)
-        pivot = close[piv_idx]
-
-        # תנאי: השפל לא צמוד לקצה (לפחות pivot_lookback ימים מכל צד)
-        if piv_idx < self.pivot_lookback or piv_idx > len(close) - self.pivot_lookback - 1:
-            return 1
-
-        # חלק 1: ירידה לפני השפל
-        high_before = np.max(close[:piv_idx+1])
-        drop_pct = 100 * (high_before - pivot) / high_before if high_before > 0 else 0
-
-        # חלק 2: עלייה אחרי השפל
-        high_after = np.max(close[piv_idx:])
-        rise_pct = 100 * (high_after - pivot) / pivot if pivot > 0 else 0
-
-        # מהירות: נרות מהשיא לשפל ומהשפל לשיא
-        drop_speed = piv_idx
-        rise_speed = len(close) - piv_idx - 1
-        speed_ratio = (rise_pct / rise_speed) / (drop_pct / drop_speed) if drop_speed > 0 and rise_speed > 0 else 0
-
-        # ווליום ביום היפוך V לעומת ממוצע 10 ימים קודמים
-        vol_before = np.mean(vol[max(0, piv_idx-10):piv_idx]) if piv_idx >= 2 else 1
-        vol_ratio = vol[piv_idx] / vol_before if vol_before > 0 else 1
-
-        # הצללת נר (V אמיתי = נר היפוך רחב, נר שאחרי עולה)
-        reversal_candle = (
-            (recent.iloc[piv_idx]["close"] > recent.iloc[piv_idx]["open"]) and
-            (recent.iloc[piv_idx+1]["close"] > recent.iloc[piv_idx+1]["open"]) and
-            (recent.iloc[piv_idx+1]["close"] > recent.iloc[piv_idx]["close"])
-        )
-
-        # תמיכה: האם השפל קרוב לשפל 60 יום/נמוך שנתי
-        try:
-            low_60d = df["close"][-60:].min()
-            support_proximity = abs(pivot - low_60d) / low_60d < 0.03
-        except Exception:
-            support_proximity = False
-
-        # ניקוד: כל תנאי מוסיף ניקוד – שילוב חוזק V, ווליום, proximity, reversal candle
-        score = 1
-        if (drop_pct > self.min_drop_pct and rise_pct > self.min_rise_pct and speed_ratio > self.v_min_speed):
-            score += 40 + int(min(drop_pct, rise_pct) * min(1.5, speed_ratio))  # חוזק התבנית
-            if vol_ratio > self.min_vol_increase:
-                score += 20  # ווליום פורץ
-            if reversal_candle:
-                score += 18
-            if support_proximity:
-                score += 12
-        elif drop_pct > 0.7 * self.min_drop_pct and rise_pct > 0.7 * self.min_rise_pct:
-            score += 25 + int(min(drop_pct, rise_pct) * 0.8)
-
-        # Limit score range
-        score = int(min(score, 100))
-        return score
+    def analyze(self, symbol, price_df=None):
+        if price_df is None:
+            return {
+                "score": 50,
+                "explanation": "אין נתוני מחיר זמינים",
+                "details": {}
+            }
+        
+        # ניתוח תבנית V
+        closes = price_df['close']
+        
+        # חישוב שיפועים
+        slope_1 = (closes.iloc[-5] - closes.iloc[-10]) / 5
+        slope_2 = (closes.iloc[-1] - closes.iloc[-5]) / 5
+        
+        # בדיקה אם יש תבנית V (ירידה ואז עלייה)
+        if slope_1 < 0 and slope_2 > 0:
+            score = 80
+            explanation = "תבנית V זוהתה - היפוך מגמה"
+        else:
+            score = 30
+            explanation = "אין תבנית V ברורה"
+            
+        return {
+            "score": score,
+            "explanation": explanation,
+            "details": {
+                "slope_1": slope_1,
+                "slope_2": slope_2
+            }
+        }

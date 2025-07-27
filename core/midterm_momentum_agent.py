@@ -6,28 +6,34 @@ class MidtermMomentumAgent:
         self.long_period = config.get("long_period", 63) if config else 63     # 3 חודשים
         self.weight_short = config.get("weight_short", 0.5) if config else 0.5
 
-    def analyze(self, price_df):
-        if price_df is None or len(price_df) < self.long_period:
-            return 1
-
-        # ממוצע נע קצר וארוך
-        price_df = price_df.copy()
-        price_df["SMA_short"] = price_df["close"].rolling(window=self.short_period).mean()
-        price_df["SMA_long"] = price_df["close"].rolling(window=self.long_period).mean()
-
-        # שינוי אחוזי מחיר ל-3 ו-6 חודשים
-        last_price = price_df["close"].iloc[-1]
-        try:
-            change_short = (last_price / price_df["close"].iloc[-self.short_period] - 1) * 100
-        except Exception:
-            change_short = 0
-        try:
-            change_long = (last_price / price_df["close"].iloc[-self.long_period] - 1) * 100
-        except Exception:
-            change_long = 0
-
-        # ניקוד מומנטום: 1-100
+    def analyze(self, symbol, price_df=None):
+        if price_df is None:
+            return {
+                "score": 50,
+                "explanation": "אין נתוני מחיר זמינים",
+                "details": {}
+            }
+        
+        closes = price_df['close']
+        
+        # חישוב שינויי מחיר
+        change_short = (closes.iloc[-1] - closes.iloc[-10]) / closes.iloc[-10] * 100
+        change_long = (closes.iloc[-1] - closes.iloc[-20]) / closes.iloc[-20] * 100
+        
+        # חישוב ציונים
         score_short = max(1, min(100, int(change_short + 50)))
         score_long = max(1, min(100, int(change_long + 50)))
-        score = int(self.weight_short * score_short + (1 - self.weight_short) * score_long)
-        return max(1, min(100, score))
+        
+        # ציון ממוצע
+        score = int((score_short + score_long) / 2)
+        
+        return {
+            "score": score,
+            "explanation": f"שינוי קצר: {change_short:.1f}%, שינוי ארוך: {change_long:.1f}%",
+            "details": {
+                "change_short": change_short,
+                "change_long": change_long,
+                "score_short": score_short,
+                "score_long": score_long
+            }
+        }

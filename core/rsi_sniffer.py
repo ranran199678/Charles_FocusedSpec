@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-class RSICompressionSniffer:
+class RSISniffer:
     """
     Ultimate RSI Compression Detector:
     - Multi-Timeframe RSI (e.g., 14d daily + 14w weekly)
@@ -42,7 +42,13 @@ class RSICompressionSniffer:
         squeeze = (upper - lower) / rolling_mean
         return squeeze
 
-    def analyze(self, symbol, price_df):
+    def analyze(self, symbol, price_df=None):
+        if price_df is None or price_df.empty:
+            return {
+                "score": 1,
+                "explanation": "אין נתוני מחיר זמינים",
+                "details": {}
+            }
         results = []
         for lookback in self.rsi_lookbacks:
             close = price_df['close']

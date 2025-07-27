@@ -67,7 +67,7 @@ def find_double_top(highs, threshold=0.01):
         return True, idxs
     return False, []
 
-class SupportResistanceZoneStrengthDetector:
+class SupportZoneStrengthDetector:
     def __init__(self, config=None):
         cfg = config or {}
         self.window = cfg.get("window", 50)
@@ -100,8 +100,14 @@ class SupportResistanceZoneStrengthDetector:
                     n += 1
         return n >= 2
 
-    def analyze(self, symbol, price_df):
+    def analyze(self, symbol, price_df=None):
         """Standard analyze method for AlphaScoreEngine compatibility"""
+        if price_df is None or price_df.empty:
+            return {
+                "score": 1,
+                "explanation": "אין נתוני מחיר זמינים",
+                "details": {}
+            }
         result = self._analyze_internal(symbol, price_df)
         # Convert the result to the expected format
         if isinstance(result, dict) and "support_zones" in result:

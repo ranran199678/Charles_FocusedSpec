@@ -585,7 +585,7 @@ class DataFetcher:
         
         Args:
             symbol: סימבול המניה
-            period: תקופה (1y, 6m, 3m, 1m)
+            period: תקופה (1y, 6m, 3m, 1m, או מספר ימים כמו "100d")
             
         Returns:
             DataFrame עם נתוני מחירים
@@ -598,14 +598,18 @@ class DataFetcher:
             "1m": 30
         }
         
-        days = period_days.get(period, 365)
+        # בדיקה אם period הוא מספר ימים (למשל "100d")
+        if isinstance(period, str) and period.endswith('d'):
+            try:
+                days = int(period[:-1])
+            except ValueError:
+                days = 365
+        else:
+            days = period_days.get(period, 365)
         
-        # נסה לקבל נתונים מ-FMP
-        df = self._fetch_fmp_prices(symbol)
+        # נסה לקבל נתונים מ-FMP עם הגבלת ימים
+        df = self._fetch_fmp_prices_with_limit(symbol, days)
         if df is not None and not df.empty:
-            # הגבל לימים הנדרשים
-            if len(df) > days:
-                df = df.tail(days)
             return df
         
         # נסה TwelveData
@@ -624,6 +628,28 @@ class DataFetcher:
         
         # אם לא הצלחנו לקבל נתונים, החזר DataFrame ריק
         return pd.DataFrame(columns=['open', 'close', 'volume', 'high', 'low'])
+
+    def _fetch_fmp_prices_with_limit(self, symbol: str, days: int = 365):
+        """
+        מביא נתוני מחירים מ-FMP עם הגבלת ימים
+        """
+        url = f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}?apikey={self.fmp_key}"
+        raw = self._safe_request(url)
+        df = pd.DataFrame(raw.get('historical', []))
+        if not df.empty and {'close', 'volume', 'high', 'low', 'date', 'open'}.issubset(df.columns):
+            df['timestamp'] = pd.to_datetime(df['date'])
+            df.set_index('timestamp', inplace=True)
+            df = df[['open', 'close', 'volume', 'high', 'low']].astype(float)
+            
+            # מיון לפי תאריך (הכי חדש קודם)
+            df = df.sort_index(ascending=True)
+            
+            # הגבלה לימים הנדרשים
+            if len(df) > days:
+                df = df.tail(days)
+            
+            return df
+        return None
 
     def get_pe_ratio(self, symbol: str) -> tuple:
         """
