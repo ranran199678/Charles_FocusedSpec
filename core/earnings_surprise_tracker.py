@@ -24,6 +24,7 @@ from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from utils.data_fetcher import data_fetcher
 from utils.credentials import APICredentials
+from utils.fmp_utils import fmp_client
 
 @dataclass
 class EarningsEvent:
@@ -60,15 +61,10 @@ class EarningsSurpriseTracker:
         earnings_events = []
         
         try:
-            # FMP API for earnings history
-            api_key = self.credentials.get_fmp_key()
-            if api_key:
-                # Get earnings calendar history
-                url = f"https://financialmodelingprep.com/api/v3/historical/earning_calendar/{symbol}?apikey={api_key}"
-                response = requests.get(url, timeout=10)
-                
-                if response.status_code == 200:
-                    earnings_data = response.json()
+            # שימוש במודול fmp_utils המעודכן
+            earnings_data = fmp_client.fmp_get_historical_earnings_calendar(symbol, verify_ssl=False)
+            
+            if earnings_data:
                     
                     for earning in earnings_data[:self.lookback_quarters]:
                         if not earning:
@@ -633,17 +629,13 @@ class EarningsSurpriseTracker:
         קבלת לוח זמנים של דיווחי רווחים עתידיים
         """
         try:
-            api_key = self.credentials.get_fmp_key()
-            if not api_key:
-                return {"message": "No API key available"}
+            # שימוש במודול fmp_utils המעודכן
+            from_date = datetime.now().strftime('%Y-%m-%d')
+            to_date = (datetime.now() + timedelta(days=90)).strftime('%Y-%m-%d')
             
-            # Get upcoming earnings
-            url = f"https://financialmodelingprep.com/api/v3/earning_calendar?from={datetime.now().strftime('%Y-%m-%d')}&to={(datetime.now() + timedelta(days=90)).strftime('%Y-%m-%d')}&apikey={api_key}"
-            response = requests.get(url, timeout=10)
+            calendar_data = fmp_client.fmp_get_earnings_calendar(from_date, to_date, verify_ssl=False)
             
-            if response.status_code == 200:
-                calendar_data = response.json()
-                
+                        if calendar_data:
                 # Filter for specific symbol
                 symbol_events = [event for event in calendar_data if event.get('symbol') == symbol]
                 

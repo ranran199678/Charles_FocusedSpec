@@ -25,6 +25,7 @@ from collections import defaultdict
 import numpy as np
 from utils.data_fetcher import data_fetcher
 from utils.credentials import APICredentials
+from utils.fmp_utils import fmp_client
 
 @dataclass
 class GeopoliticalEvent:
@@ -119,15 +120,10 @@ class GeopoliticalRiskMonitor:
         events = []
         
         try:
-            # Fetch general news and filter for geopolitical content
-            api_key = self.credentials.get_fmp_key()
-            if api_key:
-                # Get general market news
-                url = f"https://financialmodelingprep.com/api/v3/stock_news?limit=50&apikey={api_key}"
-                response = requests.get(url, timeout=10)
-                
-                if response.status_code == 200:
-                    news_data = response.json()
+            # שימוש במודול fmp_utils המעודכן
+            news_data = fmp_client.fmp_get_stock_news(limit=50, verify_ssl=False)
+            
+            if news_data:
                     
                     for article in news_data:
                         if not isinstance(article, dict):

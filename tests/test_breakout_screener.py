@@ -1,6 +1,9 @@
 from core.breakout_retest_recognizer import BreakoutRetestRecognizer
-from utils import data_fetcher
+from utils.data_fetcher import DataFetcher
 import time
+
+# יצירת מופע של DataFetcher
+data_fetcher = DataFetcher()
 
 tickers = [
     "SMCI", "NVDA", "META", "CELH", "TSLA", "ARM", "CAVA", "UBER",

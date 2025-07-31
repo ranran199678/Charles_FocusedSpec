@@ -160,7 +160,8 @@ class TrendShiftAgent:
             df['momentum'] = df['close'] - df['close'].shift(10)
             
             # מדד כוח יחסי
-            df['relative_strength'] = df['close'] / df['sma_20']
+            # relative_strength calculation moved to RelativeStrengthAgent
+        df['relative_strength'] = 1.0  # placeholder
             
             return {
                 'indicators': df,

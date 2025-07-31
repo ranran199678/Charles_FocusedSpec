@@ -2,9 +2,11 @@ import pandas as pd
 from core.rsi_sniffer import RSISniffer
 from utils.data_fetcher import DataFetcher
 
-symbol = "AMZN"
+# יצירת מופע של DataFetcher
 data_fetcher = DataFetcher()
+
+symbol = "AAPL"
 price_df = data_fetcher.get_price_history(symbol, period="1y")
 agent = RSISniffer()
-result = agent.analyze(symbol, price_df)
-print(result)
+result = agent.analyze(price_df)
+print(f"Result: {result}")

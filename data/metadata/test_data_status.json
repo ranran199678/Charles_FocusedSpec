@@ -1,0 +1,59 @@
+{
+  "created_date": "2025-07-30T04:34:45.891682",
+  "test_run": true,
+  "demo_data": true,
+  "total_symbols": 5,
+  "symbols": [
+    "GOOGL",
+    "AMZN",
+    "META",
+    "NVDA",
+    "NFLX"
+  ],
+  "results": {
+    "GOOGL": {
+      "prices": true,
+      "technical": true,
+      "fundamentals": false,
+      "news": true,
+      "rows_count": 2519
+    },
+    "AMZN": {
+      "prices": true,
+      "technical": true,
+      "fundamentals": false,
+      "news": true,
+      "rows_count": 2519
+    },
+    "META": {
+      "prices": true,
+      "technical": true,
+      "fundamentals": false,
+      "news": true,
+      "rows_count": 2519
+    },
+    "NVDA": {
+      "prices": true,
+      "technical": true,
+      "fundamentals": false,
+      "news": true,
+      "rows_count": 2519
+    },
+    "NFLX": {
+      "prices": true,
+      "technical": true,
+      "fundamentals": false,
+      "news": true,
+      "rows_count": 2519
+    }
+  },
+  "data_types": [
+    "prices",
+    "technical_indicators",
+    "fundamentals",
+    "news",
+    "market_data"
+  ],
+  "period_years": 2,
+  "note": "נתונים מדומים לניסיון - לא נתונים אמיתיים"
+}

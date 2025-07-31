@@ -1,0 +1,441 @@
+{
+  "last_updated": "2025-07-30T20:20:28.460112",
+  "total_symbols": 54,
+  "daily_files": 64,
+  "weekly_files": 54,
+  "monthly_files": 54,
+  "symbols": {
+    "AAPL": {
+      "has_daily": true,
+      "daily_rows": 258,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "MSFT": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "GOOGL": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "AMZN": {
+      "has_daily": true,
+      "daily_rows": 258,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "TSLA": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "META": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "NVDA": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "NFLX": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "JPM": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "JNJ": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "V": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "PG": {
+      "has_daily": true,
+      "daily_rows": 365,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "UNH": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "HD": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "MA": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "DIS": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "PYPL": {
+      "has_daily": true,
+      "daily_rows": 365,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "BAC": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "ADBE": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "CRM": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "INTC": {
+      "has_daily": true,
+      "daily_rows": 365,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "ORCL": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "CSCO": {
+      "has_daily": true,
+      "daily_rows": 365,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "PFE": {
+      "has_daily": true,
+      "daily_rows": 365,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "ABT": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "TMO": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "ACN": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "WMT": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "KO": {
+      "has_daily": true,
+      "daily_rows": 365,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "PEP": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "AVGO": {
+      "has_daily": true,
+      "daily_rows": 365,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "COST": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "DHR": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "NEE": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "LLY": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "TXN": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "HON": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "UNP": {
+      "has_daily": true,
+      "daily_rows": 365,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "LOW": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "UPS": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "CAT": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "DE": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "BA": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "AXP": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "SPGI": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "RTX": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "IBM": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "GE": {
+      "has_daily": true,
+      "daily_rows": 209,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "MMC": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "BLK": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "GS": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "MS": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "SCHW": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    },
+    "CME": {
+      "has_daily": true,
+      "daily_rows": 257,
+      "date_range": {
+        "start": "unknown",
+        "end": "unknown"
+      }
+    }
+  }
+}

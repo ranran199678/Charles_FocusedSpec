@@ -23,6 +23,7 @@ from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from utils.data_fetcher import data_fetcher
 from utils.credentials import APICredentials
+from utils.fmp_utils import fmp_client
 
 @dataclass
 class ValuationMetrics:
@@ -64,20 +65,13 @@ class ValuationDetector:
         שליפת מדדי הערכה מתקדמים
         """
         try:
-            api_key = self.credentials.get_fmp_key()
-            if not api_key:
-                return None
+            # שימוש במודול fmp_utils המעודכן
+            metrics_df = fmp_client.fmp_get_key_metrics(symbol, verify_ssl=False)
+            ratios_df = fmp_client.fmp_get_ratios(symbol, verify_ssl=False)
             
-            # Get key metrics
-            metrics_url = f"https://financialmodelingprep.com/api/v3/key-metrics/{symbol}?apikey={api_key}"
-            ratios_url = f"https://financialmodelingprep.com/api/v3/ratios/{symbol}?apikey={api_key}"
-            
-            metrics_response = requests.get(metrics_url, timeout=10)
-            ratios_response = requests.get(ratios_url, timeout=10)
-            
-            if metrics_response.status_code == 200 and ratios_response.status_code == 200:
-                metrics_data = metrics_response.json()
-                ratios_data = ratios_response.json()
+            if metrics_df is not None and not metrics_df.empty and ratios_df is not None and not ratios_df.empty:
+                metrics_data = metrics_df.reset_index().to_dict('records')
+                ratios_data = ratios_df.reset_index().to_dict('records')
                 
                 if metrics_data and ratios_data:
                     latest_metrics = metrics_data[0]

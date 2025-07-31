@@ -518,16 +518,16 @@ class MarketDataConnector:
     def _get_fmp_data(self, symbol: str) -> Dict:
         """קבלת נתונים מ-FMP (Financial Modeling Prep)"""
         try:
-            from utils.fmp_utils import fmp_get_price_df, fmp_get
+            from utils.fmp_utils import fmp_client
             
             # קבלת נתוני מחיר
-            price_df = fmp_get_price_df(symbol)
+            price_df = fmp_client.fmp_get_price_df(symbol, verify_ssl=False)
             
             # קבלת חדשות
-            news_data = fmp_get(f"stock_news?tickers={symbol}&limit=10")
+            news_data = fmp_client.fmp_get_stock_news(tickers=symbol, limit=10, verify_ssl=False)
             
             # קבלת נתונים פונדמנטליים
-            fundamental_data = fmp_get(f"quote/{symbol}")
+            fundamental_data = fmp_client.fmp_get_company_profile(symbol, verify_ssl=False)
             
             return {
                 "price_data": price_df,

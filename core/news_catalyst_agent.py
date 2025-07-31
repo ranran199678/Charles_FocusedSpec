@@ -21,6 +21,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from utils.credentials import APICredentials
+from utils.fmp_utils import fmp_client
 
 @dataclass
 class NewsItem:
@@ -285,12 +286,10 @@ class NewsCatalystAgent:
         
         # FMP News
         try:
-            api_key = self.credentials.get_fmp_key()
-            if api_key:
-                url = f"https://financialmodelingprep.com/api/v3/stock_news?tickers={symbol}&limit={self.max_news_items}&apikey={api_key}"
-                resp = requests.get(url, timeout=10)
-                if resp.status_code == 200:
-                    fmp_news = resp.json()
+            # שימוש במודול fmp_utils המעודכן
+            fmp_news = fmp_client.fmp_get_stock_news(tickers=symbol, limit=self.max_news_items, verify_ssl=False)
+            
+            if fmp_news:
                     for item in fmp_news:
                         if isinstance(item, dict):
                             news_items.append(NewsItem(

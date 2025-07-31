@@ -10,13 +10,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from utils.data_fetcher import DataFetcher
 from core.trend_shift_detector import TrendShiftDetector
-from core.bollinger_squeeze import BollingerSqueezeAgent
+from core.bollinger_squeeze import BollingerSqueeze
 from core.breakout_retest_recognizer import BreakoutRetestRecognizer
 
 # רשימת הסוכנים הפעילים
 agent_classes = {
     "TrendShiftDetector": TrendShiftDetector,
-    "BollingerSqueezeAgent": BollingerSqueezeAgent,
+    "BollingerSqueezeAgent": BollingerSqueeze,
     "BreakoutRetestRecognizer": BreakoutRetestRecognizer,
 }
 

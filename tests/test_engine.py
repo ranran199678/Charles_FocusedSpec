@@ -1,9 +1,11 @@
-from core.alpha_score_engine import AlphaScoreEngine
+from core.breakout_retest_recognizer import BreakoutRetestRecognizer
 from utils.data_fetcher import DataFetcher
 
-symbol = "AMZN"
+# יצירת מופע של DataFetcher
 data_fetcher = DataFetcher()
+
+symbol = "AAPL"
 price_df = data_fetcher.get_price_history(symbol, period="1y")
-engine = AlphaScoreEngine()
-result = engine.evaluate(symbol, price_df)
-print(result)
+agent = BreakoutRetestRecognizer()
+result = agent.analyze(symbol, price_df)
+print(f"Result: {result}")

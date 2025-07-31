@@ -1,0 +1,571 @@
+{
+  "api_calls": {},
+  "data_requests": {
+    "AAPL": {
+      "total_requests": 12,
+      "days_requested": 15610,
+      "sources_used": {
+        "api": 10,
+        "local": 1,
+        "local+api": 1
+      },
+      "avg_duration": 0.7817575534184774
+    },
+    "MSFT": {
+      "total_requests": 2,
+      "days_requested": 4015,
+      "sources_used": {
+        "api": 2
+      },
+      "avg_duration": 0.5500243902206421
+    },
+    "TSLA": {
+      "total_requests": 4,
+      "days_requested": 7755,
+      "sources_used": {
+        "api": 3,
+        "local+api": 1
+      },
+      "avg_duration": 1.101515531539917
+    },
+    "GE": {
+      "total_requests": 6,
+      "days_requested": 11495,
+      "sources_used": {
+        "api": 5,
+        "local+api": 1
+      },
+      "avg_duration": 0.7380172808965048
+    },
+    "JNJ": {
+      "total_requests": 7,
+      "days_requested": 15145,
+      "sources_used": {
+        "api": 6,
+        "local+api": 1
+      },
+      "avg_duration": 0.7231535230364118
+    },
+    "WFC": {
+      "total_requests": 5,
+      "days_requested": 11130,
+      "sources_used": {
+        "api": 5
+      },
+      "avg_duration": 0.6712655067443848
+    },
+    "CP": {
+      "total_requests": 1,
+      "days_requested": 3650,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 7.696362733840942
+    },
+    "AMZN": {
+      "total_requests": 11,
+      "days_requested": 16330,
+      "sources_used": {
+        "api": 10,
+        "local+api": 1
+      },
+      "avg_duration": 0.5165996118025347
+    },
+    "RTX": {
+      "total_requests": 2,
+      "days_requested": 4015,
+      "sources_used": {
+        "api": 2
+      },
+      "avg_duration": 0.8416669368743896
+    },
+    "AVGO": {
+      "total_requests": 4,
+      "days_requested": 11315,
+      "sources_used": {
+        "api": 3,
+        "local": 1
+      },
+      "avg_duration": 0.5672570466995239
+    },
+    "ORCL": {
+      "total_requests": 6,
+      "days_requested": 11495,
+      "sources_used": {
+        "api": 5,
+        "local+api": 1
+      },
+      "avg_duration": 0.49317773183186847
+    },
+    "UPS": {
+      "total_requests": 6,
+      "days_requested": 11495,
+      "sources_used": {
+        "api": 5,
+        "local+api": 1
+      },
+      "avg_duration": 0.6698729197184244
+    },
+    "SPGI": {
+      "total_requests": 5,
+      "days_requested": 11405,
+      "sources_used": {
+        "api": 4,
+        "local+api": 1
+      },
+      "avg_duration": 0.7555928230285645
+    },
+    "CNI": {
+      "total_requests": 3,
+      "days_requested": 7390,
+      "sources_used": {
+        "api": 3
+      },
+      "avg_duration": 0.9449890454610189
+    },
+    "NKE": {
+      "total_requests": 1,
+      "days_requested": 3650,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.7811827659606934
+    },
+    "CSCO": {
+      "total_requests": 3,
+      "days_requested": 7665,
+      "sources_used": {
+        "api": 2,
+        "local": 1
+      },
+      "avg_duration": 0.48937511444091797
+    },
+    "PYPL": {
+      "total_requests": 2,
+      "days_requested": 4015,
+      "sources_used": {
+        "api": 1,
+        "local": 1
+      },
+      "avg_duration": 0.3805999755859375
+    },
+    "FDX": {
+      "total_requests": 1,
+      "days_requested": 3650,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.7499287128448486
+    },
+    "HD": {
+      "total_requests": 4,
+      "days_requested": 7755,
+      "sources_used": {
+        "api": 3,
+        "local+api": 1
+      },
+      "avg_duration": 0.622687816619873
+    },
+    "CAT": {
+      "total_requests": 4,
+      "days_requested": 7755,
+      "sources_used": {
+        "api": 3,
+        "local+api": 1
+      },
+      "avg_duration": 0.8024281859397888
+    },
+    "INTC": {
+      "total_requests": 2,
+      "days_requested": 4015,
+      "sources_used": {
+        "api": 1,
+        "local": 1
+      },
+      "avg_duration": 0.39392781257629395
+    },
+    "PFE": {
+      "total_requests": 2,
+      "days_requested": 4015,
+      "sources_used": {
+        "api": 1,
+        "local": 1
+      },
+      "avg_duration": 0.49548161029815674
+    },
+    "PG": {
+      "total_requests": 2,
+      "days_requested": 4015,
+      "sources_used": {
+        "api": 1,
+        "local": 1
+      },
+      "avg_duration": 0.4143104553222656
+    },
+    "GOOGL": {
+      "total_requests": 16,
+      "days_requested": 15955,
+      "sources_used": {
+        "api": 15,
+        "local+api": 1
+      },
+      "avg_duration": 0.48790597915649414
+    },
+    "JPM": {
+      "total_requests": 8,
+      "days_requested": 15235,
+      "sources_used": {
+        "api": 7,
+        "local+api": 1
+      },
+      "avg_duration": 0.6869141459465027
+    },
+    "KO": {
+      "total_requests": 2,
+      "days_requested": 4015,
+      "sources_used": {
+        "api": 1,
+        "local": 1
+      },
+      "avg_duration": 0.4875882863998413
+    },
+    "BA": {
+      "total_requests": 4,
+      "days_requested": 7755,
+      "sources_used": {
+        "api": 3,
+        "local+api": 1
+      },
+      "avg_duration": 0.8036766648292542
+    },
+    "AXP": {
+      "total_requests": 4,
+      "days_requested": 7755,
+      "sources_used": {
+        "api": 3,
+        "local+api": 1
+      },
+      "avg_duration": 0.9198259711265564
+    },
+    "META": {
+      "total_requests": 10,
+      "days_requested": 18975,
+      "sources_used": {
+        "api": 9,
+        "local+api": 1
+      },
+      "avg_duration": 0.5357383251190185
+    },
+    "ADBE": {
+      "total_requests": 6,
+      "days_requested": 11495,
+      "sources_used": {
+        "api": 5,
+        "local+api": 1
+      },
+      "avg_duration": 0.7222539186477661
+    },
+    "NSC": {
+      "total_requests": 1,
+      "days_requested": 3650,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.6944425106048584
+    },
+    "QCOM": {
+      "total_requests": 5,
+      "days_requested": 11130,
+      "sources_used": {
+        "api": 5
+      },
+      "avg_duration": 0.6383708477020263
+    },
+    "AMD": {
+      "total_requests": 3,
+      "days_requested": 7390,
+      "sources_used": {
+        "api": 3
+      },
+      "avg_duration": 0.5478991667429606
+    },
+    "CRM": {
+      "total_requests": 4,
+      "days_requested": 7755,
+      "sources_used": {
+        "api": 3,
+        "local+api": 1
+      },
+      "avg_duration": 0.7664995789527893
+    },
+    "UNP": {
+      "total_requests": 2,
+      "days_requested": 4015,
+      "sources_used": {
+        "api": 1,
+        "local": 1
+      },
+      "avg_duration": 0.5535917282104492
+    },
+    "V": {
+      "total_requests": 7,
+      "days_requested": 11585,
+      "sources_used": {
+        "api": 6,
+        "local+api": 1
+      },
+      "avg_duration": 0.5741521630968366
+    },
+    "DE": {
+      "total_requests": 5,
+      "days_requested": 7845,
+      "sources_used": {
+        "api": 4,
+        "local+api": 1
+      },
+      "avg_duration": 0.6665120601654053
+    },
+    "ABT": {
+      "total_requests": 5,
+      "days_requested": 7845,
+      "sources_used": {
+        "api": 4,
+        "local+api": 1
+      },
+      "avg_duration": 0.6154202938079834
+    },
+    "NVDA": {
+      "total_requests": 9,
+      "days_requested": 15325,
+      "sources_used": {
+        "api": 8,
+        "local+api": 1
+      },
+      "avg_duration": 0.5341179370880127
+    },
+    "HON": {
+      "total_requests": 3,
+      "days_requested": 4105,
+      "sources_used": {
+        "api": 2,
+        "local+api": 1
+      },
+      "avg_duration": 0.7517886956532797
+    },
+    "UNH": {
+      "total_requests": 3,
+      "days_requested": 4105,
+      "sources_used": {
+        "api": 2,
+        "local+api": 1
+      },
+      "avg_duration": 0.5332473913828532
+    },
+    "LOW": {
+      "total_requests": 3,
+      "days_requested": 4105,
+      "sources_used": {
+        "api": 2,
+        "local+api": 1
+      },
+      "avg_duration": 0.7113196849822998
+    },
+    "BAC": {
+      "total_requests": 3,
+      "days_requested": 4105,
+      "sources_used": {
+        "api": 2,
+        "local+api": 1
+      },
+      "avg_duration": 0.62006942431132
+    },
+    "IBM": {
+      "total_requests": 3,
+      "days_requested": 4105,
+      "sources_used": {
+        "api": 2,
+        "local+api": 1
+      },
+      "avg_duration": 1.715331236521403
+    },
+    "MA": {
+      "total_requests": 5,
+      "days_requested": 7845,
+      "sources_used": {
+        "api": 4,
+        "local+api": 1
+      },
+      "avg_duration": 0.6602466583251954
+    },
+    "DIS": {
+      "total_requests": 3,
+      "days_requested": 4105,
+      "sources_used": {
+        "api": 2,
+        "local+api": 1
+      },
+      "avg_duration": 0.8262592951456705
+    },
+    "CMCSA": {
+      "total_requests": 4,
+      "days_requested": 7480,
+      "sources_used": {
+        "api": 4
+      },
+      "avg_duration": 0.6251527070999146
+    },
+    "WMT": {
+      "total_requests": 3,
+      "days_requested": 4105,
+      "sources_used": {
+        "api": 2,
+        "local+api": 1
+      },
+      "avg_duration": 0.5358560085296631
+    },
+    "LMT": {
+      "total_requests": 2,
+      "days_requested": 3740,
+      "sources_used": {
+        "api": 2
+      },
+      "avg_duration": 0.54954993724823
+    },
+    "PEP": {
+      "total_requests": 3,
+      "days_requested": 4105,
+      "sources_used": {
+        "api": 2,
+        "local+api": 1
+      },
+      "avg_duration": 0.5710346698760986
+    },
+    "VZ": {
+      "total_requests": 2,
+      "days_requested": 3740,
+      "sources_used": {
+        "api": 2
+      },
+      "avg_duration": 0.5226060152053833
+    },
+    "NFLX": {
+      "total_requests": 5,
+      "days_requested": 7845,
+      "sources_used": {
+        "api": 4,
+        "local+api": 1
+      },
+      "avg_duration": 0.6390083789825439
+    },
+    "TMO": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.5439646244049072
+    },
+    "ACN": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.5228748321533203
+    },
+    "COST": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.41825032234191895
+    },
+    "DHR": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.8881292343139648
+    },
+    "NEE": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 1.0441534519195557
+    },
+    "LLY": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 1.009782314300537
+    },
+    "TXN": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.9074223041534424
+    },
+    "MMC": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.9669663906097412
+    },
+    "BLK": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 1.0531315803527832
+    },
+    "GS": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.8828134536743164
+    },
+    "MS": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 1.0781080722808838
+    },
+    "SCHW": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 0.9523770809173584
+    },
+    "CME": {
+      "total_requests": 1,
+      "days_requested": 365,
+      "sources_used": {
+        "api": 1
+      },
+      "avg_duration": 1.2512221336364746
+    }
+  },
+  "cache_stats": {
+    "hits": 0,
+    "misses": 241
+  },
+  "performance": {},
+  "errors": []
+}

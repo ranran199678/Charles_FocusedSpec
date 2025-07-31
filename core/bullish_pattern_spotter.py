@@ -647,67 +647,24 @@ class BullishPatternSpotter(BaseAgent):
         }
 
     def _analyze_relative_strength(self, price_df: pd.DataFrame) -> Dict:
-        """ניתוח חוזק יחסי לעומת השוק"""
+        """ניתוח חוזק יחסי מתקדם - עכשיו משתמש ב-RelativeStrengthAgent"""
         try:
-            # חישוב RSI
-            close_prices = price_df['close']
-            delta = close_prices.diff()
-            gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
-            loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
-            rs = gain / loss
-            rsi = 100 - (100 / (1 + rs))
+            from core.relative_strength import RelativeStrengthAgent
             
-            # חישוב חוזק יחסי
-            current_price = close_prices.iloc[-1]
-            price_20d_ago = close_prices.iloc[-self.relative_strength_period]
-            relative_strength = (current_price / price_20d_ago - 1) * 100
+            rs_agent = RelativeStrengthAgent()
+            rs_result = rs_agent.analyze(self.symbol, price_df)
             
-            # חישוב Beta (פשט)
-            returns = close_prices.pct_change().dropna()
-            volatility = returns.std() * np.sqrt(252)  # שנתי
-            
-            # ניתוח מגמה
-            sma_20 = close_prices.rolling(20).mean()
-            sma_50 = close_prices.rolling(50).mean()
-            
-            trend_strength = 0
-            if len(sma_20) > 0 and len(sma_50) > 0:
-                current_sma_20 = sma_20.iloc[-1]
-                current_sma_50 = sma_50.iloc[-1]
-                price = close_prices.iloc[-1]
-                
-                if price > current_sma_20 > current_sma_50:
-                    trend_strength = 100  # מגמה חזקה
-                elif price > current_sma_20:
-                    trend_strength = 70   # מגמה בינונית
-                elif price > current_sma_50:
-                    trend_strength = 40   # מגמה חלשה
-                else:
-                    trend_strength = 10   # מגמה שלילית
-            
-            # ציון כללי
-            rsi_score = 50
-            if 30 <= rsi.iloc[-1] <= 70:
-                rsi_score = 80  # RSI נורמלי
-            elif rsi.iloc[-1] < 30:
-                rsi_score = 100  # RSI נמוך - פוטנציאל קנייה
-            elif rsi.iloc[-1] > 70:
-                rsi_score = 20   # RSI גבוה - פוטנציאל מכירה
-            
-            relative_strength_score = min(100, max(0, relative_strength * 10 + 50))
-            
-            overall_score = (rsi_score + relative_strength_score + trend_strength) / 3
-            
+            # המרה לפורמט הישן לתאימות
             return {
-                "rsi": rsi.iloc[-1],
-                "rsi_score": rsi_score,
-                "relative_strength": relative_strength,
-                "relative_strength_score": relative_strength_score,
-                "volatility": volatility,
-                "trend_strength": trend_strength,
-                "sma_20": current_sma_20 if len(sma_20) > 0 else None,
-                "sma_50": current_sma_50 if len(sma_50) > 0 else None,
-                "overall_score": overall_score
+                "rsi": rs_result.get("details", {}).get("rs_metrics", {}).get("momentum_score", 50),
+                "rsi_score": rs_result.get("details", {}).get("rs_metrics", {}).get("momentum_score", 50),
+                "relative_strength": rs_result.get("details", {}).get("rs_metrics", {}).get("rs_value", 1.0) - 1.0,
+                "relative_strength_score": rs_result.get("score", 50),
+                "volatility": rs_result.get("details", {}).get("rs_metrics", {}).get("rs_volatility", 0.0),
+                "trend_strength": rs_result.get("details", {}).get("rs_metrics", {}).get("historical_rank", 50),
+                "sma_20": price_df['close'].rolling(window=20).mean().iloc[-1],
+                "sma_50": price_df['close'].rolling(window=50).mean().iloc[-1],
+                "overall_score": rs_result.get("score", 50)
             }
             
         except Exception as e:

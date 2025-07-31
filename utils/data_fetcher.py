@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 from datetime import datetime
 from utils.credentials import APICredentials
+from utils.fmp_utils import fmp_client
 import time
 import urllib3
 import logging
@@ -69,7 +70,7 @@ class DataFetcher:
                 result[symbol] = self.price_cache[symbol]
                 continue
 
-            df = self._fetch_fmp_prices(symbol) if interval == "1day" else None
+            df = self._fetch_fmp_prices(symbol, interval=interval)
 
             if df is None:
                 df = self._fallback_twelve_prices(symbol, interval)
@@ -83,15 +84,38 @@ class DataFetcher:
 
         return result
 
-    def _fetch_fmp_prices(self, symbol):
-        url = f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}?apikey={self.fmp_key}"
-        raw = self._safe_request(url)
-        df = pd.DataFrame(raw.get('historical', []))
-        if not df.empty and {'close', 'volume', 'high', 'low', 'date', 'open'}.issubset(df.columns):
-            df['timestamp'] = pd.to_datetime(df['date'])
-            df.set_index('timestamp', inplace=True)
-            return df[['open', 'close', 'volume', 'high', 'low']].astype(float)
-        return None
+    def _fetch_fmp_prices(self, symbol, interval="1day"):
+        """
+        שליפת נתוני מחירים מ-FMP באמצעות המערכת החכמה, תומך באינטרוולים: 1d, 1wk, 1mo, 1h, 5m, 15m
+        """
+        try:
+            from utils.smart_data_manager import smart_data_manager
+            interval_map = {
+                "1day": ("1d", 90),
+                "1d": ("1d", 90),
+                "1wk": ("1wk", 104),
+                "1mo": ("1mo", 60),
+                "1h": ("1h", 7),
+                "5min": ("5m", 5),
+                "5m": ("5m", 5),
+                "15min": ("15m", 5),
+                "15m": ("15m", 5)
+            }
+            fmp_interval, days = interval_map.get(interval, ("1d", 90))
+            df = smart_data_manager.get_stock_data(symbol, days=days, interval=fmp_interval, include_live=True)
+            if df is not None and not df.empty:
+                df.index.name = 'timestamp'
+                df = df.reset_index()
+                df = df.set_index('timestamp')
+                required_columns = ['open', 'close', 'volume', 'high', 'low']
+                available_columns = [col for col in required_columns if col in df.columns]
+                if available_columns:
+                    return df[available_columns].astype(float)
+            return None
+        except Exception as e:
+            logging.warning(f"שגיאה בשליפת נתונים מ-FMP עבור {symbol} (interval={interval}): {e}")
+            return None
+
 
     def _fallback_twelve_prices(self, symbol, interval="1day"):
         url = f"https://api.twelvedata.com/time_series?symbol={symbol}&interval={interval}&outputsize=100&apikey={self.twelve_key}"
@@ -103,6 +127,68 @@ class DataFetcher:
             df.set_index('timestamp', inplace=True)
             df = df[['open', 'close', 'volume', 'high', 'low']].astype(float)
             return df
+        # אם TwelveData לא מחזיר נתונים, ננסה Yahoo Finance
+        return self._fallback_yahoo_prices(symbol, interval)
+
+    def _fallback_yahoo_prices(self, symbol, interval="1day"):
+        """
+        שליפת נתוני מחירים מ-Yahoo Finance (ללא API key), תומך באינטרוולים: 1d, 1wk, 1mo, 1h, 5m, 15m
+        """
+        try:
+            from datetime import datetime, timedelta
+            end_date = datetime.now()
+            # ברירת מחדל: 100 ימים אחורה
+            days = 100
+            interval_map = {
+                "1day": "1d",
+                "1d": "1d",
+                "1wk": "1wk",
+                "1mo": "1mo",
+                "1h": "1h",
+                "5min": "5m",
+                "5m": "5m",
+                "15min": "15m",
+                "15m": "15m"
+            }
+            yf_interval = interval_map.get(interval, "1d")
+            # קביעת טווח זמן מתאים לפי אינטרוול
+            if yf_interval in ["1d", "1wk", "1mo"]:
+                start_date = end_date - timedelta(days=days)
+            elif yf_interval in ["1h", "5m", "15m"]:
+                start_date = end_date - timedelta(days=7)  # נתוני תוך-יומי מוגבלים ל-7 ימים אחורה
+            else:
+                start_date = end_date - timedelta(days=days)
+            start_ts = int(start_date.timestamp())
+            end_ts = int(end_date.timestamp())
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?period1={start_ts}&period2={end_ts}&interval={yf_interval}"
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            response = requests.get(url, headers=headers, timeout=10)
+            if response.status_code != 200:
+                return None
+            data = response.json()
+            result = data.get('chart', {}).get('result', [{}])[0]
+            if not result or 'indicators' not in result or 'quote' not in result['indicators']:
+                return None
+            closes = result['indicators']['quote'][0].get('close', [])
+            opens = result['indicators']['quote'][0].get('open', [])
+            highs = result['indicators']['quote'][0].get('high', [])
+            lows = result['indicators']['quote'][0].get('low', [])
+            volumes = result['indicators']['quote'][0].get('volume', [])
+            dates = result.get('timestamp', [])
+            if not closes or not dates:
+                return None
+            df = pd.DataFrame({
+                'timestamp': pd.to_datetime(dates, unit='s'),
+                'open': opens,
+                'close': closes,
+                'high': highs,
+                'low': lows,
+                'volume': volumes
+            })
+            df.set_index('timestamp', inplace=True)
+            return df[['open', 'close', 'volume', 'high', 'low']]
+        except Exception as e:
+            logging.warning(f"שגיאה בשליפת נתונים מ-Yahoo Finance עבור {symbol}: {e}")
         return None
 
     def _fallback_finnhub_prices(self, symbol, interval="1day"):
@@ -148,9 +234,15 @@ class DataFetcher:
             if symbol in self.fundamentals_cache:
                 result[symbol] = self.fundamentals_cache[symbol]
                 continue
-            url = f"https://financialmodelingprep.com/api/v3/profile/{symbol}?apikey={self.fmp_key}"
-            data = self._safe_request(url)
-            output = data[0] if data else {}
+            
+            # שימוש במודול fmp_utils המעודכן
+            try:
+                company_data = fmp_client.fmp_get_company_profile(symbol, verify_ssl=False)
+                output = company_data if company_data else {}
+            except Exception as e:
+                logging.warning(f"שגיאה בשליפת נתוני חברה עבור {symbol}: {e}")
+                output = {}
+            
             self.fundamentals_cache[symbol] = output
             result[symbol] = output
         return result
@@ -631,25 +723,32 @@ class DataFetcher:
 
     def _fetch_fmp_prices_with_limit(self, symbol: str, days: int = 365):
         """
-        מביא נתוני מחירים מ-FMP עם הגבלת ימים
+        מביא נתוני מחירים מ-FMP עם הגבלת ימים באמצעות המערכת החכמה
         """
-        url = f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}?apikey={self.fmp_key}"
-        raw = self._safe_request(url)
-        df = pd.DataFrame(raw.get('historical', []))
-        if not df.empty and {'close', 'volume', 'high', 'low', 'date', 'open'}.issubset(df.columns):
-            df['timestamp'] = pd.to_datetime(df['date'])
-            df.set_index('timestamp', inplace=True)
-            df = df[['open', 'close', 'volume', 'high', 'low']].astype(float)
+        try:
+            # שימוש במערכת החכמה החדשה
+            from utils.smart_data_manager import smart_data_manager
             
-            # מיון לפי תאריך (הכי חדש קודם)
-            df = df.sort_index(ascending=True)
+            df = smart_data_manager.get_stock_data(symbol, days=days, include_live=True)
             
-            # הגבלה לימים הנדרשים
-            if len(df) > days:
-                df = df.tail(days)
+            if df is not None and not df.empty:
+                # המרת האינדקס ל-timestamp
+                df.index.name = 'timestamp'
+                df = df.reset_index()
+                df = df.set_index('timestamp')
+                
+                # בחירת העמודות הנדרשות
+                required_columns = ['open', 'close', 'volume', 'high', 'low']
+                available_columns = [col for col in required_columns if col in df.columns]
+                
+                if available_columns:
+                    return df[available_columns].astype(float)
             
-            return df
-        return None
+            return None
+            
+        except Exception as e:
+            logging.warning(f"שגיאה בשליפת נתונים מ-FMP עבור {symbol}: {e}")
+            return None
 
     def get_pe_ratio(self, symbol: str) -> tuple:
         """

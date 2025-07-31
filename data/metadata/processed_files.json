@@ -1,0 +1,163 @@
+{
+  "Apple Stock Price History.csv": {
+    "hash": "163286_1753708569.12",
+    "processed_at": "2025-07-29T01:08:58.181916",
+    "rows": 2514,
+    "symbol": "APPLE STOCK PRICE HISTORY.CSV"
+  },
+  "NVIDIA Stock Price History.csv": {
+    "hash": "80893_1753731650.828",
+    "processed_at": "2025-07-29T01:08:58.612871",
+    "rows": 1256,
+    "symbol": "NVIDIA STOCK PRICE HISTORY.CSV"
+  },
+  "Tesla Stock Price History.csv": {
+    "hash": "163435_1753733094.357",
+    "processed_at": "2025-07-29T01:08:59.248328",
+    "rows": 2515,
+    "symbol": "TESLA STOCK PRICE HISTORY.CSV"
+  },
+  "D Wave Quantum Stock Price History.csv": {
+    "hash": "73166_1753733185.071",
+    "processed_at": "2025-07-29T01:08:59.737365",
+    "rows": 1159,
+    "symbol": "D WAVE QUANTUM STOCK PRICE HISTORY.CSV"
+  },
+  "D Wave Quantum Stock Price History (1).csv": {
+    "hash": "15441_1753733215.104",
+    "processed_at": "2025-07-29T01:08:59.997941",
+    "rows": 242,
+    "symbol": "D WAVE QUANTUM STOCK PRICE HISTORY (1).CSV"
+  },
+  "D Wave Quantum Stock Price History (2).csv": {
+    "hash": "3538_1753733232.151",
+    "processed_at": "2025-07-29T01:09:00.314156",
+    "rows": 55,
+    "symbol": "D WAVE QUANTUM STOCK PRICE HISTORY (2).CSV"
+  },
+  "AAPL.csv": {
+    "upload_date": "2025-07-29T01:16:00.588260",
+    "rows": 1258,
+    "date_range": {
+      "start": "01/02/2020",
+      "end": "12/31/2024"
+    },
+    "columns": [
+      "Date",
+      "Price",
+      "Open",
+      "High",
+      "Low",
+      "Vol.",
+      "Change %"
+    ],
+    "source": "Yahoo Finance API",
+    "format": "CSV"
+  },
+  "MSFT.csv": {
+    "upload_date": "2025-07-29T01:16:00.588260",
+    "rows": 1258,
+    "date_range": {
+      "start": "01/02/2020",
+      "end": "12/31/2024"
+    },
+    "columns": [
+      "Date",
+      "Price",
+      "Open",
+      "High",
+      "Low",
+      "Vol.",
+      "Change %"
+    ],
+    "source": "Yahoo Finance API",
+    "format": "CSV"
+  },
+  "GOOGL.csv": {
+    "upload_date": "2025-07-29T01:16:00.588260",
+    "rows": 1258,
+    "date_range": {
+      "start": "01/02/2020",
+      "end": "12/31/2024"
+    },
+    "columns": [
+      "Date",
+      "Price",
+      "Open",
+      "High",
+      "Low",
+      "Vol.",
+      "Change %"
+    ],
+    "source": "Yahoo Finance API",
+    "format": "CSV"
+  },
+  "AMZN.csv": {
+    "upload_date": "2025-07-29T01:16:00.588260",
+    "rows": 1258,
+    "date_range": {
+      "start": "01/02/2020",
+      "end": "12/31/2024"
+    },
+    "columns": [
+      "Date",
+      "Price",
+      "Open",
+      "High",
+      "Low",
+      "Vol.",
+      "Change %"
+    ],
+    "source": "Yahoo Finance API",
+    "format": "CSV"
+  },
+  "TSLA.csv": {
+    "upload_date": "2025-07-29T01:16:00.588260",
+    "rows": 1258,
+    "date_range": {
+      "start": "01/02/2020",
+      "end": "12/31/2024"
+    },
+    "columns": [
+      "Date",
+      "Price",
+      "Open",
+      "High",
+      "Low",
+      "Vol.",
+      "Change %"
+    ],
+    "source": "Yahoo Finance API",
+    "format": "CSV"
+  },
+  "RGTI Stock Price History.csv": {
+    "hash": "107585_1753743172.006",
+    "processed_at": "2025-07-29T01:53:22.684820",
+    "rows": 36,
+    "symbol": "RGTI STOCK PRICE HISTORY.CSV"
+  },
+  "BIIB Stock Price History.csv": {
+    "hash": "138348_1753744487.587",
+    "processed_at": "2025-07-29T02:18:46.748572",
+    "rows": 1,
+    "symbol": "BIIB STOCK PRICE HISTORY.CSV"
+  },
+  "CNC Stock Price History.csv": {
+    "hash": "139027_1753744496.289",
+    "processed_at": "2025-07-29T02:18:47.537204",
+    "rows": 1,
+    "symbol": "CNC STOCK PRICE HISTORY.CSV"
+  },
+  "HES Stock Price History.csv": {
+    "hash": "141075_1753744500.006",
+    "processed_at": "2025-07-29T02:18:47.916099",
+    "rows": 1,
+    "symbol": "HES STOCK PRICE HISTORY.CSV"
+  },
+  "ANSS Stock Price History.csv": {
+    "hash": "136887_1753744505.985",
+    "processed_at": "2025-07-29T02:18:48.458520",
+    "rows": 1,
+    "symbol": "ANSS STOCK PRICE HISTORY.CSV"
+  }
+}

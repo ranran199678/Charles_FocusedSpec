@@ -1,201 +1,515 @@
-# Charles FocusedSpec - מערכת רב-סוכנים לחיזוי מניות פורצות
+# Charles FocusedSpec - מערכת חיזוי מניות פורצות
 
-מערכת רב-סוכנים לחיזוי מניות פורצות (טרם הפריצה החזקה שלהם כלפי מעלה), מבוססת ניתוח רב-ממדי של נתונים שוקיים, חדשותיים, סנטימנטליים וטכניים. כוללת מנוע קונסולידציה מרכזי, אוטומציית חיזוי, תצורת הרצה חיה ומודולי ניתוח מקביליים. המערכת נועדה לאתר ולחזות מניות פורצות שיכולות להניב עשרות עד מאות אחוזי תשואה בהשקעה לטווח קצר ולהניב מאות עד אלפי אחוזי תשואה לטווח בינוני קצר.
+# טבלת סטטוס מרכזית
 
-## 📊 סטטוס נוכחי (יולי 2025)
+| תיקיה         | סטטוס         | בעיות/חסרים עיקריים                | תלויות בין צוותים/מודולים         |
+|---------------|---------------|-------------------------------------|------------------------------------|
+| core          | 100% הושלם    | 4 סוכנים דורשים תיקון/אופטימיזציה  | utils (לוגים, אימות), data        |
+| utils         | 77%           | חסרים: validators, logger, file_utils | config, core, data                |
+| data          | 90%           | חסרים: backup, metadata manager, validation pipeline | scripts, core, utils              |
+| tests         | 85% כיסוי     | חסרים: בדיקות אינטגרציה, ביצועים, error handling | core, utils, data                 |
+| live          | בסיסי         | שיפור ניהול זיכרון, parallel, ניטור ביצועים | core, utils, data                 |
+| dashboard     | בסיסי         | חסרים: רכיבי גרפים, ויזואליזציה, ניטור ביצועים | data, models                      |
+| config        | בסיסי         | חסרים: config validator, manager, templates, encryption | utils, core, data                 |
+| models        | לא התחיל      | חסרים: כל המודלים (חיזוי, רגשות, דפוסים) | data, core, vectorstore           |
+| vectorstore   | לא התחיל      | חסרים: embedding generator, vector manager, search engine | models, data                      |
 
-### ✅ סוכנים פעילים (14/35 - 40.0%)
-1. **ADXScoreAgent** - ציון: 60/100 ✅
-2. **RSICompressionSniffer** - ציון: 45/100 ✅
-3. **VolumeTensionMeter** - ציון: 35/100 ✅
-4. **ParabolicAgent** - ציון: 25/100 ✅
-5. **BreakoutRetestRecognizer** - ציון: 30/100 ✅
-6. **SupportZoneStrengthDetector** - ציון: 40/100 ✅
-7. **EventScanner** - ציון: 16/100 ✅
-8. **NLPAnalyzer** - ציון: 88/100 ✅
-9. **MacroTrendScanner** - ציון: 65/100 ✅
-10. **SocialMediaHypeScanner** - ציון: 55/100 ✅
-11. **MovingAveragePressureBot** - ציון: 33/100 ✅
-12. **BollingerSqueezeAgent** - ציון: 86/100 ✅
-13. **GoldenCrossAgent** - ציון: 51/100 ✅
-14. **BullishPatternSpotter** - ציון: 100/100 ✅
+## 🎯 סקירה כללית
 
-### ❌ סוכנים טרם מומשו (21/35 - 60.0%)
-- FloatPressureEvaluator, ShortSqueezePotentialAnalyzer, EarningsSurpriseTracker, GrowthConsistencyScanner, ValuationAnomalyDetector, SentimentScorer, GeopoliticalRiskMonitor, GapDetectorUltimate, AnalystRatingAgent, NewsCatalystAgent, PatternRecognitionAgent, AnomalyDetectionAgent, LiquidityTrapAgent, VolumeSpikeAgent, VCPSuperPatternAgent, ReversalPatternAgent, FundamentalAnomalyAgent, MarketRegimeAgent, BigMoneyInflowAgent, RiskEventMonitorAgent, TrendShiftAgent
+**Charles FocusedSpec** היא מערכת רב-סוכנים מתקדמת לחיזוי מניות פורצות המבוססת על ניתוח טכני ופונדמנטלי מתקדם. המערכת כוללת 49 סוכנים פעילים המנתחים מגוון רחב של אינדיקטורים ושוקלים.
 
-## 🚀 התקנה והרצה
+### 📊 סטטוס פרויקט
+- **סוכנים קיימים:** 49/60 (82%)
+- **תשתית:** 69% הושלמה
+- **מקורות נתונים:** 4/8 פעילים
+- **בדיקות:** 16+ קבצי בדיקה
+
+## 🏗️ ארכיטקטורה
+
+```
+Charles_FocusedSpec/
+├── core/                    # 49 סוכני ניתוח
+│   ├── base/               # סוכנים בסיסיים
+│   ├── subagents/          # סוכני משנה
+│   └── *.py               # סוכנים מתמחים
+├── utils/                  # תשתית ותחזוקה
+├── config/                 # הגדרות מערכת
+├── data/                   # נתונים ומסד נתונים
+│   ├── raw_price_data/     # נתונים גולמיים
+│   ├── historical_prices/  # נתונים מעובדים
+│   └── technical_indicators/ # אינדיקטורים טכניים
+├── tests/                  # בדיקות מערכת
+├── live/                   # הרצה בזמן אמת
+├── dashboard/              # ממשק משתמש
+├── models/                 # מודלי למידת מכונה
+├── vectorstore/            # מאגר וקטורי
+└── outputs/                # תוצאות ודוחות
+```
+
+## 📁 מבנה תיקיות מפורט
+
+### 🔴 Core - סוכני הניתוח
+**📄 קובץ מלא:** [`core/README.md`](core/README.md)
+
+**סטטוס:** 49/60 סוכנים (82%)
+**תפקיד:** כל הסוכנים המנתחים מניות ואינדיקטורים
+
+**סוכנים עיקריים:**
+- **סוכנים טכניים (29):** ניתוח מחירים, נפח, מגמות
+- **סוכנים פונדמנטליים (8):** ניתוח פיננסי, חדשות, סנטימנט
+- **סוכני ארכיטקטורה (4):** ניהול וסינתזה
+- **סוכנים נוספים (8):** ניתוחים מתמחים
+
+**דוגמאות שימוש:**
+```python
+from core.alpha_score_engine import AlphaScoreEngine
+engine = AlphaScoreEngine()
+result = engine.evaluate('AAPL')
+
+from core.adx_score_agent import ADXScoreAgent
+agent = ADXScoreAgent()
+analysis = agent.analyze('TSLA')
+```
+
+---
+
+### 🔴 Utils - תשתית ותחזוקה
+**📄 קובץ מלא:** [`utils/README.md`](utils/README.md)
+
+**סטטוס:** 7/13 קבצים (54%)
+**תפקיד:** פונקציות עזר, ניהול API, לוגים
+
+**קבצים עיקריים:**
+- `data_fetcher.py` - איסוף נתונים ממקורות שונים
+- `credentials.py` - ניהול API keys
+- `constants.py` - קבועים מערכת
+- `fmp_utils.py`, `twelve_utils.py`, `finnhub_utils.py` - ממשקי API
+
+**דוגמאות שימוש:**
+```python
+from utils.credentials import get_api_key
+api_key = get_api_key('yahoo_finance')
+
+from utils.data_fetcher import DataFetcher
+fetcher = DataFetcher()
+data = fetcher.get_stock_data('AAPL')
+```
+
+---
+
+### 🔴 Data - ניהול נתונים
+**📄 קובץ מלא:** [`data/README.md`](data/README.md)
+
+**סטטוס:** מערכת בסיסית קיימת
+**תפקיד:** אחסון, עיבוד וניהול כל הנתונים
+
+**מבנה נתונים:**
+- `raw_price_data/` - נתונים גולמיים מ-Yahoo Finance
+- `historical_prices/` - נתונים מעובדים (יומי/שבועי/חודשי)
+- `technical_indicators/` - אינדיקטורים מחושבים
+- `database/` - מסד נתונים SQLite
+
+**דוגמאות שימוש:**
+```python
+# הורדת נתונים חדשים
+python scripts/yfinance_CSV.PY
+
+# עיבוד נתונים גולמיים
+python scripts/enhanced_data_processor.py
+
+# חישוב אינדיקטורים טכניים
+python scripts/advanced_indicators_processor.py
+```
+
+---
+
+### 🔴 Tests - בדיקות מערכת
+**📄 קובץ מלא:** [`tests/README.md`](tests/README.md)
+
+**סטטוס:** בדיקות בסיסיות קיימות
+**תפקיד:** בדיקות יחידה, אינטגרציה וביצועים
+
+**סוגי בדיקות:**
+- Unit tests לכל סוכן
+- Integration tests
+- Performance tests
+- Error handling tests
+
+**דוגמאות שימוש:**
+```bash
+# הרצת כל הבדיקות
+python -m pytest tests/
+
+# בדיקה ספציפית
+python -m pytest tests/test_alpha_score_engine.py
+
+# בדיקות כיסוי
+python -m pytest tests/ --cov=core
+```
+
+---
+
+### 🔴 Live - הרצה בזמן אמת
+**📄 קובץ מלא:** [`live/README.md`](live/README.md)
+
+**סטטוס:** מערכת בסיסית קיימת
+**תפקיד:** הרצת סוכנים, ניטור ותזמון
+
+**קבצים עיקריים:**
+- `agent_runner.py` - הרצת סוכן בודד
+- `multi_agent_runner.py` - הרצה מרובת סוכנים
+- `outputs/` - תוצאות הרצות
+
+**דוגמאות שימוש:**
+```python
+from live.multi_agent_runner import MultiAgentRunner
+runner = MultiAgentRunner()
+results = runner.run_analysis(['AAPL', 'MSFT', 'GOOGL'])
+```
+
+---
+
+### 🔴 Config - הגדרות מערכת
+**📄 קובץ מלא:** [`config/README.md`](config/README.md)
+
+**סטטוס:** קבצי config בסיסיים קיימים
+**תפקיד:** ניהול הגדרות, API keys ותצורות
+
+**קבצים עיקריים:**
+- `config.yaml` - הגדרות ראשיות
+- `gap_config.yaml` - הגדרות GAP analysis
+- `api_keys.yaml` - מפתחות API
+
+**דוגמאות שימוש:**
+```python
+import yaml
+with open('config/config.yaml', 'r') as f:
+    config = yaml.safe_load(f)
+
+api_key = config['api_keys']['yahoo_finance']
+```
+
+---
+
+### 🟡 Dashboard - ממשק משתמש
+**📄 קובץ מלא:** [`dashboard/README.md`](dashboard/README.md)
+
+**סטטוס:** דשבורד בסיסי קיים
+**תפקיד:** ויזואליזציה, גרפים וממשק משתמש
+
+**רכיבים עיקריים:**
+- `main_dashboard.py` - דשבורד ראשי
+- `charts/` - רכיבי גרפים
+- `data_visualizer.py` - ויזואליזציה נתונים
+
+**דוגמאות שימוש:**
+```bash
+# הרצת דשבורד ראשי
+streamlit run dashboard/main_dashboard.py
+
+# הרצת ויזואליזציה נתונים
+python dashboard/data_visualizer.py --symbol AAPL
+```
+
+---
+
+### 🟡 Models - מודלי למידת מכונה
+**📄 קובץ מלא:** [`models/README.md`](models/README.md)
+
+**סטטוס:** לא התחיל
+**תפקיד:** מודלי חיזוי, ניתוח רגשות וזיהוי דפוסים
+
+**מודלים עיקריים:**
+- `price_predictor.py` - חיזוי מחירי מניות
+- `sentiment_analyzer.py` - ניתוח רגשות חדשות
+- `pattern_detector.py` - זיהוי דפוסים טכניים
+
+**דוגמאות שימוש:**
+```python
+from models.price_predictor import PricePredictor
+predictor = PricePredictor()
+prediction = predictor.predict('AAPL', days=30)
+
+from models.sentiment_analyzer import SentimentAnalyzer
+analyzer = SentimentAnalyzer()
+sentiment = analyzer.analyze_news('AAPL news text')
+```
+
+---
+
+### 🟡 Vectorstore - מאגר וקטורי
+**📄 קובץ מלא:** [`vectorstore/README.md`](vectorstore/README.md)
+
+**סטטוס:** לא התחיל
+**תפקיד:** אחסון וחיפוש מידע טקסטואלי וקטורי
+
+**רכיבים עיקריים:**
+- `embedding_generator.py` - יצירת embeddings
+- `vector_manager.py` - ניהול וקטורים
+- `search_engine.py` - מנוע חיפוש
+
+**דוגמאות שימוש:**
+```python
+from vectorstore.embedding_generator import EmbeddingGenerator
+generator = EmbeddingGenerator()
+embeddings = generator.generate('AAPL news text')
+
+from vectorstore.search_engine import SearchEngine
+engine = SearchEngine()
+results = engine.search('AAPL earnings', top_k=10)
+```
+
+---
+
+## 🔄 זרימת נתונים
+
+```
+1. איסוף נתונים
+   ├── Yahoo Finance (מחירים היסטוריים)
+   ├── FMP (נתונים פיננסיים)
+   ├── TwelveData (אינדיקטורים טכניים)
+   └── Finnhub (חדשות וסנטימנט)
+
+2. עיבוד נתונים
+   ├── ניקוי ונרמול
+   ├── חישוב אינדיקטורים טכניים
+   ├── אגרגציה יומית/שבועית/חודשית
+   └── שמירה למסד נתונים
+
+3. ניתוח סוכנים
+   ├── 29 סוכנים טכניים
+   ├── 8 סוכנים פונדמנטליים
+   ├── 4 סוכני ארכיטקטורה
+   └── 8 סוכנים נוספים
+
+4. סינתזה ותוצאות
+   ├── Alpha Score Engine
+   ├── Meta Agent
+   ├── High Conviction Orchestrator
+   └── Multi-Agent Validator
+```
+
+## 🚀 התקנה והפעלה
 
 ### דרישות מערכת
 - Python 3.8+
 - pip
-- API keys למקורות נתונים
+- SQLite3
+- חיבור אינטרנט
 
 ### התקנה
 ```bash
-# Clone הפרויקט
+# שכפול הפרויקט
 git clone <repository-url>
 cd Charles_FocusedSpec
 
 # התקנת תלויות
 pip install -r requirements.txt
 
-# הגדרת משתני סביבה
-cp env.example.txt .env
-# ערוך את .env והוסף את מפתחות ה-API שלך
+# הגדרת API Keys
+cp config/config.yaml.example config/config.yaml
+# ערוך את config.yaml והוסף את ה-API Keys שלך
 ```
 
-### הרצה
+### API Keys נדרשים
+```yaml
+# config/config.yaml
+api_keys:
+  finnhub: "YOUR_FINNHUB_API_KEY"
+  fmp: "YOUR_FMP_API_KEY"
+  twelve_data: "YOUR_TWELVE_API_KEY"
+  # אופציונלי:
+  alpha_vantage: "YOUR_ALPHA_VANTAGE_API_KEY"
+  marketaux: "YOUR_MARKETAUX_API_KEY"
+```
+
+### הפעלה בסיסית
 ```bash
-# הרצת AlphaScoreEngine
-python example_run.py
+# הרצת בדיקה פשוטה
+python simple_test.py
 
-# הרצת סוכן ספציפי
-python test_single_stock.py
+# הרצת מנוע Alpha Score
+python -c "from core.alpha_score_engine import AlphaScoreEngine; engine = AlphaScoreEngine(); result = engine.evaluate('AAPL')"
 
-# הרצת טסטים
-python -m pytest tests/
+# הרצת סוכן בודד
+python -c "from core.adx_score_agent import ADXScoreAgent; agent = ADXScoreAgent(); result = agent.analyze('AAPL')"
+
+# הרצה מרובת סוכנים
+python live/multi_agent_runner.py
 ```
 
-## 📁 מבנה הפרויקט
+## 🎯 שימוש ב-Cursor
 
-```
-Charles_FocusedSpec/
-├── core/                    # סוכנים מרכזיים
-│   ├── alpha_score_engine.py    # מנוע קונסולידציה מרכזי
-│   ├── adx_score_agent.py       # ניתוח ADX
-│   ├── rsi_sniffer.py           # ניתוח RSI
-│   ├── volume_tension_meter.py  # מדידת מתח נפח
-│   ├── parabolic_agent.py       # זיהוי תנועות פרבוליות
-│   ├── breakout_retest_recognizer.py  # זיהוי פריצות
-│   ├── support_zone_strength_detector.py  # ניתוח אזורי תמיכה
-│   ├── moving_average_pressure_bot.py  # ניתוח לחץ ממוצעים נעים
-│   ├── bollinger_squeeze.py     # זיהוי התכווצות בולינגר
-│   ├── golden_cross_detector.py # זיהוי צלבים מוזהבים
-│   ├── bullish_pattern_spotter.py  # זיהוי תבניות בולשיות
-│   ├── event_scanner.py         # סריקת אירועים
-│   ├── nlp_analyzer.py          # ניתוח שפה טבעית
-│   ├── macro_trend_scanner.py   # סריקת מגמות מקרו
-│   ├── social_media_hype_scanner.py  # סריקת הייפ ברשתות
-│   └── base/                   # מחלקות בסיס
-├── utils/                   # כלים עזר
-│   ├── data_fetcher.py      # אחזור נתונים
-│   ├── constants.py         # קבועים
-│   └── credentials.py       # ניהול הרשאות
-├── tests/                   # טסטים
-├── live/                    # הרצה חיה
-├── outputs/                 # פלטים
-├── config/                  # הגדרות
-├── requirements.txt         # תלויות
-├── README.md               # תיעוד ראשי
-├── SYSTEM_ARCHITECTURE.md  # ארכיטקטורת מערכת
-└── TODO.md                 # רשימת משימות
-```
+### הגדרת סביבת עבודה
+1. פתח את הפרויקט ב-Cursor
+2. הגדר Python interpreter (3.8+)
+3. התקן תלויות: `pip install -r requirements.txt`
+4. הגדר API keys ב-`config/config.yaml`
 
-## 🔧 מקורות נתונים
-
-### APIs נתמכים
-- **FMP (Financial Modeling Prep)** - נתוני מחיר, פיננסיים, חדשות
-- **Finnhub** - נתוני שוק, חדשות, סנטימנט
-- **TwelveData** - נתוני מחיר היסטוריים
-- **MarketAux** - ניתוח חדשות מתקדם
-- **NewsData** - חדשות גלובליות
-- **Alpha Vantage** - נתוני שוק וחדשות
-- **Yahoo Finance RSS** - חדשות פיננסיות
-
-### סוגי נתונים
-- **נתוני מחיר**: OHLCV, ממוצעים נעים, אינדיקטורים טכניים
-- **נתונים פיננסיים**: רווחים, הכנסות, הערכות אנליסטים
-- **חדשות**: כותרות, תוכן, סנטימנט, קטגוריות
-- **נתוני מקרו**: GDP, אינפלציה, ריבית, PMI
-- **נתוני רשתות חברתיות**: Reddit, Twitter, Stocktwits, YouTube
-
-## 📈 ארכיטקטורת מערכת
-
-### רכיבים מרכזיים
-1. **AlphaScoreEngine** - מנוע קונסולידציה מרכזי
-2. **DataFetcher** - אחזור נתונים ממקורות מרובים
-3. **סוכנים מקצועיים** - ניתוח ספציפי לכל תחום
-4. **מערכת הרצה חיה** - ניטור רציף בזמן אמת
-
-### זרימת עבודה
-1. **איסוף נתונים** - אחזור נתונים ממקורות מרובים
-2. **ניתוח מקביל** - הרצת סוכנים במקביל
-3. **קונסולידציה** - שילוב תוצאות הסוכנים
-4. **המלצות** - יצירת המלצות מסחר
-
-## 🎯 שימוש
-
-### ניתוח מניה בודדת
+### דוגמאות קוד
 ```python
+# ניתוח מניה בודדת
 from core.alpha_score_engine import AlphaScoreEngine
-from utils.data_fetcher import DataFetcher
-
-# יצירת מנוע
 engine = AlphaScoreEngine()
-data_fetcher = DataFetcher()
+result = engine.evaluate('AAPL')
+print(f"Alpha Score: {result}")
 
-# קבלת נתונים
-price_df = data_fetcher.get_price_history("AAPL", period="1y")
+# ניתוח טכני מתקדם
+from core.enhanced_advanced_analyzer import EnhancedAdvancedAnalyzer
+analyzer = EnhancedAdvancedAnalyzer()
+analysis = analyzer.analyze('TSLA')
+print(analysis)
 
-# ניתוח
-result = engine.evaluate("AAPL", price_df)
-print(f"ציון: {result['score']}/100")
-print(f"המלצה: {result['recommendation']}")
+# הרצה מרובת סוכנים
+from live.multi_agent_runner import MultiAgentRunner
+runner = MultiAgentRunner()
+results = runner.run_analysis(['AAPL', 'MSFT', 'GOOGL'])
 ```
 
-### ניתוח מספר מניות
-```python
-symbols = ["AAPL", "MSFT", "GOOGL", "TSLA"]
-results = {}
+### דיבוג ובדיקות
+```bash
+# הרצת כל הבדיקות
+python -m pytest tests/
 
-for symbol in symbols:
-    price_df = data_fetcher.get_price_history(symbol, period="1y")
-    results[symbol] = engine.evaluate(symbol, price_df)
+# בדיקה ספציפית
+python tests/test_alpha_score_engine.py
 
-# מיון לפי ציון
-sorted_results = sorted(results.items(), key=lambda x: x[1]['score'], reverse=True)
+# בדיקת נתונים
+python scripts/enhanced_data_processor.py
 ```
 
-## 📊 דוגמאות תוצאות
+## 📊 אינדיקטורים טכניים נתמכים
 
-### מניה עם פוטנציאל גבוה
+### אינדיקטורי מגמה
+- SMA, EMA (20, 50, 200)
+- MACD, MACD Signal
+- ADX, DI+, DI-
+- VWAP, VWAP Trend
+
+### אינדיקטורי מומנטום
+- RSI (14)
+- Stochastic %K, %D
+- Williams %R
+- CCI (Commodity Channel Index)
+
+### אינדיקטורי נפח
+- Volume Surge Detection
+- Volume Tension Meter
+- Classic Volume Surge
+- Volume Spike Agent
+
+### אינדיקטורי תנודתיות
+- ATR (Average True Range)
+- Bollinger Bands
+- Bollinger Squeeze
+- Volatility Score
+
+### תבניות מחירים
+- Candlestick Patterns
+- Bullish Patterns
+- Breakout & Retest
+- V Reversal
+- Golden Cross
+
+## 🔧 תחזוקה ופיתוח
+
+### הוספת סוכן חדש
+1. צור קובץ ב-`core/`
+2. ירש מ-`base_agent.py`
+3. מימוש `analyze()` method
+4. הוסף בדיקות ב-`tests/`
+5. עדכן תיעוד
+
+### הוספת מקור נתונים
+1. צור קובץ ב-`utils/`
+2. מימוש ממשק API
+3. הוסף ל-`data_fetcher.py`
+4. עדכן `config.yaml`
+
+### הרצת בדיקות
+```bash
+# בדיקות יחידה
+python -m pytest tests/ -v
+
+# בדיקות כיסוי
+python -m pytest tests/ --cov=core
+
+# בדיקות ביצועים
+python tests/performance_test.py
 ```
-AAPL - ציון: 85/100
-המלצה: 🚀 BUY signal (High Conviction)
-סוכנים פעילים: 14/35
-זמן ניתוח: 2.3 שניות
-```
 
-### מניה עם סיגנל חלש
-```
-INTC - ציון: 23/100
-המלצה: No Signal
-סוכנים פעילים: 14/35
-זמן ניתוח: 1.8 שניות
-```
+## 📈 ביצועים וניטור
 
-## 🔄 עדכונים אחרונים
+### לוגים
+- `log/` - קבצי לוג מערכת
+- `outputs/` - תוצאות ודוחות
+- `forecast_log.csv` - היסטוריית תחזיות
 
-### יולי 2025
-- ✅ **BullishPatternSpotter** - זיהוי תבניות בולשיות (Hammer, Doji, Engulfing, Morning Star)
-- ✅ **GoldenCrossAgent** - זיהוי צלבים מוזהבים וצלבי מוות
-- ✅ **BollingerSqueezeAgent** - זיהוי התכווצות בולינגר
-- ✅ **MovingAveragePressureBot** - ניתוח לחץ ממוצעים נעים
-- ✅ **DataFetcher** - תיקון אחזור נתונים מעודכנים
-- ✅ **EventScanner** - הוספת קטגוריית 'financial'
-- ✅ **NLPAnalyzer** - שיפור סינון חדשות וניתוח מתקדם
+### ניטור API
+- מעקב אחר שימוש ב-API keys
+- Fallback למקורות חלופיים
+- טיפול בשגיאות 429/403
 
-## 📞 תמיכה
+### אופטימיזציה
+- Caching נתונים
+- Parallel processing
+- Database indexing
 
-לשאלות ותמיכה:
-- פתח Issue ב-GitHub
-- צור קשר עם הצוות
-- בדוק את התיעוד ב-`SYSTEM_ARCHITECTURE.md`
+## 🤝 תרומה לפיתוח
+
+### הנחיות קוד
+- PEP 8 compliance
+- Type hints
+- Docstrings בעברית
+- Error handling מקיף
+
+### תהליך פיתוח
+1. Fork repository
+2. צור branch חדש
+3. פיתוח עם בדיקות
+4. Pull request עם תיעוד
+
+## 📞 תמיכה וקשר
+
+### בעיות ידועות
+- Yahoo Finance: HTTP 429 (Too Many Requests)
+- FMP: שגיאות 403 (API key issues)
+- Alpha Vantage: לא זמין (אין API key)
+
+### פתרונות
+- Rate limiting
+- API key rotation
+- Fallback sources
+- Caching strategies
+
+## 📋 תוכנית פיתוח
+
+**📄 קובץ מלא:** [`TO-DO.md`](TO-DO.md)
+
+**סטטוס כללי:** 82% הושלמה
+**זמן משוער להשלמה:** 4-6 שבועות
+
+### עדיפויות קריטיות:
+1. **השלמת סוכנים חסרים** (11 סוכנים)
+2. **שיפור תשתית** (utils, config)
+3. **תיקון בעיות API**
+4. **הוספת בדיקות מקיפות**
+
+### תיקיות עם משימות מפורטות:
+- **Core:** [`core/TO-DO.md`](core/TO-DO.md) - סוכנים חסרים ותיקונים
+- **Utils:** [`utils/TO-DO.md`](utils/TO-DO.md) - פונקציות עזר חסרות
+- **Data:** [`data/TO-DO.md`](data/TO-DO.md) - עיבוד נתונים וגיבוי
+- **Tests:** [`tests/TO-DO.md`](tests/TO-DO.md) - בדיקות מקיפות
+- **Live:** [`live/TO-DO.md`](live/TO-DO.md) - הרצה וניטור
+- **Config:** [`config/TO-DO.md`](config/TO-DO.md) - הגדרות ואבטחה
+- **Dashboard:** [`dashboard/TO-DO.md`](dashboard/TO-DO.md) - ממשק משתמש
+- **Models:** [`models/TO-DO.md`](models/TO-DO.md) - מודלי ML
+- **Vectorstore:** [`vectorstore/TO-DO.md`](vectorstore/TO-DO.md) - מאגר וקטורי
 
 ## 📄 רישיון
 
-MIT License - ראה קובץ LICENSE לפרטים.
+MIT License - ראה `LICENSE` לפרטים.
 
 ---
 
-**הערה**: מערכת זו מיועדת למטרות מחקר ולימוד בלבד. אין להשתמש בה כעצה פיננסית או השקעתית. 
+**הערה:** מערכת זו מיועדת למטרות מחקר ולימוד בלבד. אין להשתמש בה לקבלת החלטות השקעה ללא ייעוץ מקצועי.

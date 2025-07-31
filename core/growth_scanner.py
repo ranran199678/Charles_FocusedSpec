@@ -23,6 +23,7 @@ from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from utils.data_fetcher import data_fetcher
 from utils.credentials import APICredentials
+from utils.fmp_utils import fmp_client
 
 @dataclass
 class GrowthMetrics:
@@ -55,19 +56,19 @@ class GrowthScanner:
         financial_data = []
         
         try:
-            api_key = self.credentials.get_fmp_key()
-            if api_key:
-                # Get annual financial statements
-                url = f"https://financialmodelingprep.com/api/v3/income-statement/{symbol}?limit={self.lookback_years}&apikey={api_key}"
-                response = requests.get(url, timeout=10)
+            # שימוש במודול fmp_utils המעודכן
+            income_df = fmp_client.fmp_get_income_statement(symbol, period="annual", limit=self.lookback_years, verify_ssl=False)
+            cf_df = fmp_client.fmp_get_cash_flow_statement(symbol, period="annual", limit=self.lookback_years, verify_ssl=False)
+            
+            if income_df is not None and not income_df.empty:
+                income_data = income_df.reset_index().to_dict('records')
+            else:
+                income_data = []
                 
-                if response.status_code == 200:
-                    income_data = response.json()
-                    
-                    # Get cash flow data
-                    cf_url = f"https://financialmodelingprep.com/api/v3/cash-flow-statement/{symbol}?limit={self.lookback_years}&apikey={api_key}"
-                    cf_response = requests.get(cf_url, timeout=10)
-                    cf_data = cf_response.json() if cf_response.status_code == 200 else []
+            if cf_df is not None and not cf_df.empty:
+                cf_data = cf_df.reset_index().to_dict('records')
+            else:
+                cf_data = []
                     
                     # Combine data
                     for i, income in enumerate(income_data):

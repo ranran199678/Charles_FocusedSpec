@@ -1,9 +1,11 @@
 from utils import data_fetcher
+from core.profitability_metrics import ProfitabilityMetricsAgent
 
 class FinancialStabilityAgent:
     def __init__(self, config=None):
         self.leverage_weight = config.get("leverage_weight", 0.5) if config else 0.5
         self.liquidity_weight = config.get("liquidity_weight", 0.5) if config else 0.5
+        self.profitability_agent = ProfitabilityMetricsAgent()
 
     def analyze(self, symbol, price_df=None):
         # שליפת נתוני מאזן אחרון
@@ -37,14 +39,22 @@ class FinancialStabilityAgent:
             liquidity_score = max(1, min(100, int((current_ratio - 1) * 50 + 50)))  # יחס שוטף מעל 1=ניקוד גבוה
             score = int(self.leverage_weight * leverage_score + self.liquidity_weight * liquidity_score)
             
+            # הוספת ניתוח רווחיות
+            profitability_result = self.profitability_agent.analyze(symbol, price_df)
+            profitability_score = profitability_result.get("score", 50)
+            
+            # משקלול סופי
+            final_score = int((score * 0.6) + (profitability_score * 0.4))
+            
             return {
-                "score": max(1, min(100, score)),
-                "explanation": f"יחס חוב: {leverage:.2f}, יחס שוטף: {current_ratio:.2f}",
+                "score": max(1, min(100, final_score)),
+                "explanation": f"יחס חוב: {leverage:.2f}, יחס שוטף: {current_ratio:.2f}, רווחיות: {profitability_score}",
                 "details": {
                     "leverage": leverage,
                     "current_ratio": current_ratio,
                     "leverage_score": leverage_score,
-                    "liquidity_score": liquidity_score
+                    "liquidity_score": liquidity_score,
+                    "profitability_analysis": profitability_result
                 }
             }
         except Exception as e:

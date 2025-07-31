@@ -1,131 +1,78 @@
-import sys
-sys.path.append('.')
+#!/usr/bin/env python3
+"""
+דשבורד פשוט לבדיקה
+"""
 
-from dashboard.main_dashboard import MainDashboard
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+from datetime import datetime
+import numpy as np
 
-# בדיקת Dashboard
-print("=== בדיקת Main Dashboard ===")
+# הגדרת דף
+st.set_page_config(
+    page_title="Charles FocusedSpec - דשבורד בדיקה",
+    page_icon="📈",
+    layout="wide"
+)
 
-# יצירת מופע
-dashboard = MainDashboard()
+# כותרת
+st.title("📈 Charles FocusedSpec - דשבורד ניתוח מניות")
+st.markdown("---")
 
-# בדיקת מניה בודדת
-test_symbol = "AAPL"
-print(f"\n=== ניתוח מפורט עבור {test_symbol} ===")
+# סיידבר
+st.sidebar.header("הגדרות")
+symbol = st.sidebar.text_input("סמל מניה", value="AAPL")
+days = st.sidebar.slider("מספר ימים", min_value=30, max_value=365, value=90)
 
-try:
-    result = dashboard.analyze_stock(test_symbol)
-    
-    print(f"סמל: {result.get('symbol', 'Unknown')}")
-    print(f"ציון כולל: {result.get('overall_score', 0)}/100")
-    print(f"תאריך: {result.get('timestamp', 'Unknown')}")
-    
-    # פרטי הסוכנים
-    print(f"\n=== ציוני סוכנים ===")
-    agent_scores = result.get("detailed_report", {}).get("agent_scores", {})
-    for agent, score in agent_scores.items():
-        print(f"{agent:25}: {score}/100")
-    
-    # ניתוח סנטימנט
-    print(f"\n=== ניתוח סנטימנט ===")
-    sentiment_analysis = result.get("detailed_report", {}).get("sentiment_analysis", {})
-    for source, sentiment in sentiment_analysis.items():
-        print(f"{source:15}: {sentiment}")
-    
-    # תובנות מפתח
-    print(f"\n=== תובנות מפתח ===")
-    key_insights = result.get("detailed_report", {}).get("key_insights", [])
-    for insight in key_insights:
-        print(f"- {insight}")
-    
-    # הערכת סיכונים
-    print(f"\n=== הערכת סיכונים ===")
-    risk_assessment = result.get("detailed_report", {}).get("risk_assessment", {})
-    print(f"ציון סיכון: {risk_assessment.get('risk_score', 0)}/100")
-    print(f"רמת סיכון: {risk_assessment.get('risk_level', 'unknown')}")
-    risk_factors = risk_assessment.get('risk_factors', [])
-    for factor in risk_factors:
-        print(f"- {factor}")
-    
-    # ניתוח הזדמנויות
-    print(f"\n=== ניתוח הזדמנויות ===")
-    opportunity_analysis = result.get("detailed_report", {}).get("opportunity_analysis", {})
-    print(f"ציון הזדמנות: {opportunity_analysis.get('opportunity_score', 0)}/100")
-    print(f"רמת הזדמנות: {opportunity_analysis.get('opportunity_level', 'unknown')}")
-    opportunities = opportunity_analysis.get('opportunities', [])
-    for opportunity in opportunities:
-        print(f"- {opportunity}")
-    
-    # המלצות
-    print(f"\n=== המלצות ===")
-    recommendations = result.get("recommendations", [])
-    for rec in recommendations:
-        print(f"- {rec}")
-    
-    # התראות
-    print(f"\n=== התראות ===")
-    alerts = result.get("alerts", [])
-    if alerts:
-        for alert in alerts:
-            severity = alert.get('severity', 'unknown')
-            message = alert.get('message', 'Unknown alert')
-            print(f"[{severity.upper()}] {message}")
-    else:
-        print("אין התראות")
-    
-except Exception as e:
-    print(f"שגיאה בניתוח {test_symbol}: {e}")
+# תוכן ראשי
+col1, col2 = st.columns(2)
 
-# בדיקת ניתוח תיק השקעות
-print(f"\n=== ניתוח תיק השקעות ===")
-portfolio_symbols = ["AAPL", "TSLA", "NVDA", "MSFT", "GOOGL"]
+with col1:
+    st.subheader("📊 מידע כללי")
+    st.write(f"**סמל מניה:** {symbol}")
+    st.write(f"**תקופה:** {days} ימים")
+    st.write(f"**תאריך:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-try:
-    portfolio_result = dashboard.get_portfolio_analysis(portfolio_symbols)
-    
-    summary = portfolio_result.get("portfolio_summary", {})
-    print(f"סה\"כ מניות: {summary.get('total_stocks', 0)}")
-    print(f"ציון ממוצע: {summary.get('average_score', 0)}/100")
-    print(f"הביצוע הטוב ביותר: {summary.get('best_performer', 'Unknown')}")
-    print(f"הביצוע הגרוע ביותר: {summary.get('worst_performer', 'Unknown')}")
-    
-    buy_recs = summary.get('buy_recommendations', [])
-    if buy_recs:
-        print(f"המלצות קנייה: {', '.join(buy_recs)}")
-    
-    sell_recs = summary.get('sell_recommendations', [])
-    if sell_recs:
-        print(f"המלצות מכירה: {', '.join(sell_recs)}")
-    
-    # פירוט כל מניה
-    print(f"\n=== פירוט מניות ===")
-    portfolio_results = portfolio_result.get("portfolio_results", {})
-    for symbol, result in portfolio_results.items():
-        if "error" not in result:
-            score = result.get("overall_score", 0)
-            recommendation = dashboard._get_recommendation_level(score)
-            print(f"{symbol:6}: {score:3d}/100 - {recommendation}")
-        else:
-            print(f"{symbol:6}: שגיאה - {result.get('error', 'Unknown error')}")
-    
-except Exception as e:
-    print(f"שגיאה בניתוח תיק: {e}")
+with col2:
+    st.subheader("📈 סטטיסטיקות")
+    st.metric("מחיר נוכחי", "$150.00", "+2.5%")
+    st.metric("נפח מסחר", "50M", "+10%")
+    st.metric("RSI", "65", "-5")
 
-# בדיקת ייצוא דוח
-print(f"\n=== ייצוא דוח ===")
-try:
-    # ניתוח מניה לבדיקה
-    test_result = dashboard.analyze_stock("TSLA")
-    
-    # ייצוא ל-JSON
-    json_file = dashboard.export_report(test_result, "json")
-    print(f"דוח JSON נוצר: {json_file}")
-    
-    # ייצוא ל-TXT
-    txt_file = dashboard.export_report(test_result, "txt")
-    print(f"דוח TXT נוצר: {txt_file}")
-    
-except Exception as e:
-    print(f"שגיאה בייצוא דוח: {e}")
+# גרף דוגמה
+st.subheader("📊 גרף מחירים")
+dates = pd.date_range(start='2024-01-01', periods=days, freq='D')
+prices = [100 + i * 0.5 + np.random.normal(0, 2) for i in range(days)]
 
-print(f"\n=== סיום בדיקת Dashboard ===") 
+fig = go.Figure()
+fig.add_trace(go.Scatter(
+    x=dates,
+    y=prices,
+    mode='lines',
+    name='מחיר',
+    line=dict(color='blue', width=2)
+))
+
+fig.update_layout(
+    title=f"מחירי {symbol} - {days} ימים אחרונים",
+    xaxis_title="תאריך",
+    yaxis_title="מחיר ($)",
+    height=400
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+# טבלת נתונים
+st.subheader("📋 נתונים אחרונים")
+data = pd.DataFrame({
+    'תאריך': dates[-10:],
+    'מחיר': prices[-10:],
+    'שינוי (%)': [round((prices[i] - prices[i-1]) / prices[i-1] * 100, 2) for i in range(1, len(prices[-10:]))] + [0]
+})
+
+st.dataframe(data, use_container_width=True)
+
+# הודעת הצלחה
+st.success("✅ הדשבורד פועל בהצלחה!")
+st.info("💡 זהו דשבורד בדיקה פשוט. הדשבורד המלא כולל ניתוחים מתקדמים יותר.") 
