@@ -635,7 +635,7 @@ class EarningsSurpriseTracker:
             
             calendar_data = fmp_client.fmp_get_earnings_calendar(from_date, to_date, verify_ssl=False)
             
-                        if calendar_data:
+            if calendar_data:
                 # Filter for specific symbol
                 symbol_events = [event for event in calendar_data if event.get('symbol') == symbol]
                 

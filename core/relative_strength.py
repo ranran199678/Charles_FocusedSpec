@@ -22,7 +22,7 @@ from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from utils.data_fetcher import data_fetcher
 from utils.logger import logger
-from utils.validators import validate_symbol, validate_price_data
+from utils.validators import validate_symbol, validate_stock_data
 
 @dataclass
 class RelativeStrengthMetrics:
@@ -119,7 +119,7 @@ class RelativeStrengthAgent:
             if price_df is None:
                 price_df = data_fetcher.fetch_prices(symbol, period="1y")
             
-            if not validate_price_data(price_df):
+            if not validate_stock_data(price_df):
                 return self._error_response("נתוני מחיר לא תקינים")
             
             # חישוב מדדי RS

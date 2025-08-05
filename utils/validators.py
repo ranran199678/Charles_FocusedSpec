@@ -775,3 +775,40 @@ def validate_data_consistency(price_df: pd.DataFrame, volume_df: pd.DataFrame = 
     except Exception as e:
         logger.error(f"Error validating data consistency: {str(e)}")
         return False
+
+
+def validate_text_data(text_data: list) -> bool:
+    """
+    אימות רשימת טקסטים לניתוח סנטימנט/מודלים
+    
+    Args:
+        text_data: רשימת מחרוזות טקסט
+    
+    Returns:
+        True אם כל הטקסטים תקינים, False אחרת
+    """
+    try:
+        if text_data is None or not isinstance(text_data, list):
+            logger.warning("text_data is not a list or is None")
+            return False
+        if len(text_data) == 0:
+            logger.warning("text_data is empty")
+            return False
+        for i, text in enumerate(text_data):
+            if not isinstance(text, str):
+                logger.warning(f"text_data[{i}] is not a string: {text}")
+                return False
+            if not text.strip():
+                logger.warning(f"text_data[{i}] is empty or whitespace")
+                return False
+            if len(text) > 5000:
+                logger.warning(f"text_data[{i}] is too long (>5000 chars)")
+                return False
+            # בדיקת תווים אסורים (שליטה בסיסית בלבד)
+            if any(c in text for c in ['\0', '\x00', '\ufffd']):
+                logger.warning(f"text_data[{i}] contains forbidden characters")
+                return False
+        return True
+    except Exception as e:
+        logger.error(f"Error validating text_data: {str(e)}")
+        return False

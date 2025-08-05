@@ -161,7 +161,7 @@ class TrendShiftAgent:
             
             # מדד כוח יחסי
             # relative_strength calculation moved to RelativeStrengthAgent
-        df['relative_strength'] = 1.0  # placeholder
+            df['relative_strength'] = 1.0  # placeholder
             
             return {
                 'indicators': df,

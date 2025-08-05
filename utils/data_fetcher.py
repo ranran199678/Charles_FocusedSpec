@@ -23,7 +23,7 @@ try:
     )
 except Exception as e:
     sentiment_classifier = None
-    logging.warning(f"⚠️ לא ניתן לטעון מודל sentiment (SSL?): {e}")
+    logging.warning(f"⚠️ לא ניתן לטעון מודל sentiment - משתמש בפתרון חלופי: {e}")
 
 try:
     summarizer = pipeline(
@@ -36,7 +36,25 @@ try:
     )
 except Exception as e:
     summarizer = None
-    logging.warning(f"⚠️ לא ניתן לטעון מודל summarizer (SSL?): {e}")
+    logging.warning(f"⚠️ לא ניתן לטעון מודל summarizer - משתמש בפתרון חלופי: {e}")
+
+# פונקציה חלופית לניתוח סנטימנט
+def simple_sentiment_analysis(text):
+    """ניתוח סנטימנט פשוט ללא מודל ML"""
+    if not text:
+        return 0.5
+    
+    positive_words = ['up', 'rise', 'gain', 'positive', 'growth', 'profit', 'earnings', 'beat', 'strong', 'buy']
+    negative_words = ['down', 'fall', 'loss', 'negative', 'decline', 'miss', 'weak', 'sell', 'drop', 'crash']
+    
+    text_lower = text.lower()
+    positive_count = sum(1 for word in positive_words if word in text_lower)
+    negative_count = sum(1 for word in negative_words if word in text_lower)
+    
+    if positive_count == 0 and negative_count == 0:
+        return 0.5
+    
+    return positive_count / (positive_count + negative_count)
 
 
 class DataFetcher:
@@ -70,13 +88,20 @@ class DataFetcher:
                 result[symbol] = self.price_cache[symbol]
                 continue
 
-            df = self._fetch_fmp_prices(symbol, interval=interval)
+            # 1. Yahoo Finance
+            df = self._fallback_yahoo_prices(symbol, interval)
 
-            if df is None:
-                df = self._fallback_twelve_prices(symbol, interval)
-
+            # 2. Finnhub
             if df is None:
                 df = self._fallback_finnhub_prices(symbol, interval)
+
+            # 3. FMP
+            if df is None:
+                df = self._fetch_fmp_prices(symbol, interval=interval)
+
+            # 4. TwelveData
+            if df is None:
+                df = self._fallback_twelve_prices(symbol, interval)
 
             result[symbol] = df
             if df is not None and interval == "1day":
@@ -102,11 +127,27 @@ class DataFetcher:
                 "15m": ("15m", 5)
             }
             fmp_interval, days = interval_map.get(interval, ("1d", 90))
-            df = smart_data_manager.get_stock_data(symbol, days=days, interval=fmp_interval, include_live=True)
+            df = smart_data_manager.get_stock_data(symbol, days=days, include_live=True)
             if df is not None and not df.empty:
-                df.index.name = 'timestamp'
-                df = df.reset_index()
-                df = df.set_index('timestamp')
+                # הוספת עמודת תאריך אם חסרה
+                if 'timestamp' not in df.columns and 'date' not in df.columns:
+                    # יצירת עמודת תאריך מהאינדקס או מהיום הנוכחי
+                    if df.index.name == 'timestamp':
+                        df = df.reset_index()
+                    elif df.index.name == 'date':
+                        df = df.reset_index().rename(columns={'date': 'timestamp'})
+                    else:
+                        # יצירת עמודת תאריך מהיום הנוכחי אחורה
+                        from datetime import datetime, timedelta
+                        dates = [datetime.now() - timedelta(days=i) for i in range(len(df))]
+                        df['timestamp'] = dates
+                
+                # וידוא שיש עמודת timestamp
+                if 'timestamp' in df.columns:
+                    df = df.set_index('timestamp')
+                elif 'date' in df.columns:
+                    df = df.set_index('date')
+                
                 required_columns = ['open', 'close', 'volume', 'high', 'low']
                 available_columns = [col for col in required_columns if col in df.columns]
                 if available_columns:
@@ -221,7 +262,18 @@ class DataFetcher:
 
     def summarize_text(self, text, max_length=60, min_length=20):
         if summarizer is None:
-            return text[:max_length]
+            # פתרון חלופי - חיתוך טקסט פשוט
+            if len(text) <= max_length:
+                return text
+            # חיתוך חכם - מנסה לחתוך במשפט שלם
+            words = text.split()
+            summary = ""
+            for word in words:
+                if len(summary + " " + word) <= max_length:
+                    summary += " " + word if summary else word
+                else:
+                    break
+            return summary.strip() if summary else text[:max_length]
         try:
             summary = summarizer(text, max_length=max_length, min_length=min_length, do_sample=False)
             return summary[0]['summary_text']

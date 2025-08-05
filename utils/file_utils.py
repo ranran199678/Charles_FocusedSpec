@@ -717,5 +717,176 @@ def archive_data(file_pattern: str, base_dir: str = "data",
     file_manager = FileManager(base_dir)
     return file_manager.archive_files(file_pattern, subdir, archive_name)
 
+class DataFileHandler:
+    """
+    מנהל קבצי נתונים מותאם למערכת
+    """
+    
+    def __init__(self, base_dir: str = "data"):
+        """
+        אתחול מנהל קבצי נתונים
+        
+        Args:
+            base_dir: תיקייה בסיסית
+        """
+        self.file_manager = FileManager(base_dir)
+        self.logger = get_system_logger("data_file_handler")
+    
+    def save_stock_data(self, symbol: str, data: pd.DataFrame, data_type: str = "price") -> bool:
+        """
+        שמירת נתוני מניה
+        
+        Args:
+            symbol: סמל המניה
+            data: נתונים לשמירה
+            data_type: סוג הנתונים ('price', 'volume', 'technical')
+            
+        Returns:
+            True אם השמירה הצליחה, False אחרת
+        """
+        try:
+            filename = f"{symbol}_{data_type}.csv"
+            subdir = f"{data_type}_data"
+            
+            success = self.file_manager.save_csv(data, filename, subdir)
+            
+            if success:
+                self.logger.info(f"Stock data saved: {symbol} - {data_type}")
+            
+            return success
+            
+        except Exception as e:
+            self.logger.error(f"Error saving stock data: {str(e)}")
+            return False
+    
+    def load_stock_data(self, symbol: str, data_type: str = "price") -> Optional[pd.DataFrame]:
+        """
+        טעינת נתוני מניה
+        
+        Args:
+            symbol: סמל המניה
+            data_type: סוג הנתונים ('price', 'volume', 'technical')
+            
+        Returns:
+            DataFrame או None אם נכשל
+        """
+        try:
+            filename = f"{symbol}_{data_type}.csv"
+            subdir = f"{data_type}_data"
+            
+            data = self.file_manager.load_csv(filename, subdir)
+            
+            if data is not None:
+                self.logger.info(f"Stock data loaded: {symbol} - {data_type}")
+            
+            return data
+            
+        except Exception as e:
+            self.logger.error(f"Error loading stock data: {str(e)}")
+            return None
+    
+    def save_analysis_result(self, symbol: str, result: Dict[str, Any]) -> bool:
+        """
+        שמירת תוצאת ניתוח
+        
+        Args:
+            symbol: סמל המניה
+            result: תוצאת הניתוח
+            
+        Returns:
+            True אם השמירה הצליחה, False אחרת
+        """
+        try:
+            filename = f"{symbol}_analysis.json"
+            subdir = "analysis_results"
+            
+            success = self.file_manager.save_json(result, filename, subdir)
+            
+            if success:
+                self.logger.info(f"Analysis result saved: {symbol}")
+            
+            return success
+            
+        except Exception as e:
+            self.logger.error(f"Error saving analysis result: {str(e)}")
+            return False
+    
+    def load_analysis_result(self, symbol: str) -> Optional[Dict[str, Any]]:
+        """
+        טעינת תוצאת ניתוח
+        
+        Args:
+            symbol: סמל המניה
+            
+        Returns:
+            תוצאת הניתוח או None אם נכשל
+        """
+        try:
+            filename = f"{symbol}_analysis.json"
+            subdir = "analysis_results"
+            
+            result = self.file_manager.load_json(filename, subdir)
+            
+            if result is not None:
+                self.logger.info(f"Analysis result loaded: {symbol}")
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Error loading analysis result: {str(e)}")
+            return None
+    
+    def save_agent_config(self, agent_name: str, config: Dict[str, Any]) -> bool:
+        """
+        שמירת תצורת סוכן
+        
+        Args:
+            agent_name: שם הסוכן
+            config: תצורת הסוכן
+            
+        Returns:
+            True אם השמירה הצליחה, False אחרת
+        """
+        try:
+            filename = f"{agent_name}_config.json"
+            subdir = "agent_configs"
+            
+            success = self.file_manager.save_json(config, filename, subdir)
+            
+            if success:
+                self.logger.info(f"Agent config saved: {agent_name}")
+            
+            return success
+            
+        except Exception as e:
+            self.logger.error(f"Error saving agent config: {str(e)}")
+            return False
+    
+    def load_agent_config(self, agent_name: str) -> Optional[Dict[str, Any]]:
+        """
+        טעינת תצורת סוכן
+        
+        Args:
+            agent_name: שם הסוכן
+            
+        Returns:
+            תצורת הסוכן או None אם נכשל
+        """
+        try:
+            filename = f"{agent_name}_config.json"
+            subdir = "agent_configs"
+            
+            config = self.file_manager.load_json(filename, subdir)
+            
+            if config is not None:
+                self.logger.info(f"Agent config loaded: {agent_name}")
+            
+            return config
+            
+        except Exception as e:
+            self.logger.error(f"Error loading agent config: {str(e)}")
+            return None
+
 # יצירת מופע ברירת מחדל
 file_manager = FileManager()
+data_file_handler = DataFileHandler()

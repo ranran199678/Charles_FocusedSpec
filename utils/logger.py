@@ -504,3 +504,29 @@ def log_data_operation(operation: str, symbol: str, data_type: str,
 
 # לוגרים מוגדרים מראש
 logger = get_system_logger("default")
+
+# פונקציות תאימות לאחור
+def setup_logger(name: str = "default", log_level: int = DEFAULT_LOG_LEVEL) -> SystemLogger:
+    """
+    פונקציה תאימה לאחור להגדרת לוגר
+    
+    Args:
+        name: שם הלוגר
+        log_level: רמת לוג
+        
+    Returns:
+        SystemLogger: לוגר מערכת
+    """
+    return get_system_logger(name)
+
+def get_logger(name: str = "default") -> SystemLogger:
+    """
+    פונקציה תאימה לאחור לקבלת לוגר
+    
+    Args:
+        name: שם הלוגר
+        
+    Returns:
+        SystemLogger: לוגר מערכת
+    """
+    return get_system_logger(name)

@@ -2,22 +2,23 @@
   "api_calls": {},
   "data_requests": {
     "AAPL": {
-      "total_requests": 12,
-      "days_requested": 15610,
+      "total_requests": 21,
+      "days_requested": 16217,
       "sources_used": {
         "api": 10,
-        "local": 1,
+        "local": 10,
         "local+api": 1
       },
-      "avg_duration": 0.7817575534184774
+      "avg_duration": 0.47388445763360887
     },
     "MSFT": {
-      "total_requests": 2,
-      "days_requested": 4015,
+      "total_requests": 3,
+      "days_requested": 4105,
       "sources_used": {
-        "api": 2
+        "api": 2,
+        "local": 1
       },
-      "avg_duration": 0.5500243902206421
+      "avg_duration": 0.38324666023254395
     },
     "TSLA": {
       "total_requests": 4,
@@ -203,13 +204,14 @@
       "avg_duration": 0.4143104553222656
     },
     "GOOGL": {
-      "total_requests": 16,
-      "days_requested": 15955,
+      "total_requests": 17,
+      "days_requested": 16045,
       "sources_used": {
         "api": 15,
-        "local+api": 1
+        "local+api": 1,
+        "local": 1
       },
-      "avg_duration": 0.48790597915649414
+      "avg_duration": 0.46178563903359804
     },
     "JPM": {
       "total_requests": 8,
@@ -560,11 +562,21 @@
         "api": 1
       },
       "avg_duration": 1.2512221336364746
+    },
+    "QBTS": {
+      "total_requests": 8,
+      "days_requested": 351,
+      "sources_used": {
+        "api": 2,
+        "local+api": 5,
+        "local": 1
+      },
+      "avg_duration": 0.3936690092086792
     }
   },
   "cache_stats": {
     "hits": 0,
-    "misses": 241
+    "misses": 260
   },
   "performance": {},
   "errors": []

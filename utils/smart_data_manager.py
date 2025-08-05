@@ -182,8 +182,15 @@ class SmartDataManager:
         self._ensure_directories()
         
         # ייבוא מודולים
-        self.fmp_client = fmp_client
-        self.data_fetcher = DataFetcher()
+        try:
+            self.fmp_client = fmp_client
+            self.data_fetcher = DataFetcher()
+            self._smart_data_available = True
+        except Exception as e:
+            logger.warning(f"SmartDataManager לא זמין - יוחזרו נתונים ישירות מ-API: {e}")
+            self.fmp_client = None
+            self.data_fetcher = None
+            self._smart_data_available = False
         
         # מטא-דאטה לניהול קבצים
         self.metadata_file = self.metadata_dir / "data_status.json"
@@ -353,7 +360,7 @@ class SmartDataManager:
                     api_data = self._get_api_data(symbol, missing_days)
                     if api_data is not None and not api_data.empty:
                         combined_data = self._combine_data(local_data, api_data)
-                        self._save_data(symbol, api_data)  # שמירת נתונים חדשים
+                        self._save_data(symbol, combined_data)  # ✅ שמירה של כלל הנתונים המאוחדים
                         result = combined_data.head(days)
                         self._set_cached_data(symbol, days, result)
                         self.usage_tracker.log_data_request(symbol, days, 'local+api', time.time() - start_time)
@@ -403,8 +410,13 @@ class SmartDataManager:
                         df = df.set_index('date')
                         df = df.sort_index(ascending=False)
                     else:
-                        # אם אין עמודת תאריך, נחזיר את הנתונים כמו שהם
-                        logger.warning(f"לא נמצאה עמודת תאריך בנתונים עבור {symbol}")
+                        # אם אין עמודת תאריך, ניצור אחת מהיום הנוכחי אחורה
+                        logger.warning(f"לא נמצאה עמודת תאריך בנתונים עבור {symbol} - יוצרת עמודת תאריך")
+                        from datetime import datetime, timedelta
+                        dates = [datetime.now() - timedelta(days=i) for i in range(len(df))]
+                        df['date'] = dates
+                        df = df.set_index('date')
+                        df = df.sort_index(ascending=False)
                     
                     return df
             return None
@@ -422,23 +434,31 @@ class SmartDataManager:
                 logger.info(f"הצלחה עם yfinance עבור {symbol}")
                 return df
             
-            # ניסיון שני: FMP
-            logger.info(f"ניסיון שליפה מ-FMP עבור {symbol}")
-            df = self.fmp_client.fmp_get_price_ohlcv_df(
-                symbol, 
-                verify_ssl=False, 
-                limit_days=days
-            )
-            if df is not None and not df.empty:
-                logger.info(f"הצלחה עם FMP עבור {symbol}")
-                return df
+            # ניסיון שני: FMP (רק אם זמין)
+            if self._smart_data_available and self.fmp_client:
+                logger.info(f"ניסיון שליפה מ-FMP עבור {symbol}")
+                try:
+                    df = self.fmp_client.fmp_get_price_ohlcv_df(
+                        symbol, 
+                        verify_ssl=False, 
+                        limit_days=days
+                    )
+                    if df is not None and not df.empty:
+                        logger.info(f"הצלחה עם FMP עבור {symbol}")
+                        return df
+                except Exception as e:
+                    logger.warning(f"שגיאה עם FMP עבור {symbol}: {e}")
             
-            # ניסיון שלישי: DataFetcher
-            logger.info(f"ניסיון שליפה מ-DataFetcher עבור {symbol}")
-            df = self.data_fetcher.get_price_history(symbol, f"{days}d")
-            if df is not None and not df.empty:
-                logger.info(f"הצלחה עם DataFetcher עבור {symbol}")
-                return df
+            # ניסיון שלישי: DataFetcher (רק אם זמין)
+            if self._smart_data_available and self.data_fetcher:
+                logger.info(f"ניסיון שליפה מ-DataFetcher עבור {symbol}")
+                try:
+                    df = self.data_fetcher.get_price_history(symbol, f"{days}d")
+                    if df is not None and not df.empty:
+                        logger.info(f"הצלחה עם DataFetcher עבור {symbol}")
+                        return df
+                except Exception as e:
+                    logger.warning(f"שגיאה עם DataFetcher עבור {symbol}: {e}")
             
             logger.warning(f"לא הצלחנו לקבל נתונים עבור {symbol}")
             return None

@@ -620,6 +620,22 @@ class DashboardApp:
             if st.button("🔄 רענן נתונים"):
                 st.success("הנתונים עודכנו בהצלחה!")
 
+class StreamlitDashboard:
+    """
+    מחלקת תאימות לייבוא - עוטפת את DashboardApp
+    """
+    
+    def __init__(self):
+        self.app = DashboardApp()
+    
+    def run(self):
+        """הרצת הדשבורד"""
+        return self.app.run_dashboard()
+    
+    def analyze_stock(self, symbol: str):
+        """ניתוח מניה בודדת"""
+        return self.app.analyze_single_stock(symbol)
+
 def main():
     """פונקציה ראשית"""
     app = DashboardApp()

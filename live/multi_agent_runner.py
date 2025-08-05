@@ -115,5 +115,53 @@ def main():
     input()
     print("✅ כל הסוכנים נעצרו. להתראות!")
 
+class MultiAgentRunner:
+    """
+    מחלקת הרצת סוכנים מרובים - ממשק תאימות לייבוא
+    """
+    
+    def __init__(self, symbols: list = None, interval: str = "1day", delay: int = 60):
+        """
+        אתחול הרצת סוכנים מרובים
+        
+        Args:
+            symbols: רשימת סמלי מניות
+            interval: מרווח זמן
+            delay: השהייה בין הרצות (שניות)
+        """
+        self.symbols = symbols or ['AAPL', 'MSFT', 'GOOGL']
+        self.interval = interval
+        self.delay = delay
+        self.agent_classes = agent_classes
+        self.running = False
+    
+    def start(self):
+        """התחלת הרצת הסוכנים"""
+        self.running = True
+        print(f"🎯 התחלת הרצת סוכנים עבור: {', '.join(self.symbols)}")
+        
+        threads = []
+        for symbol in self.symbols:
+            for agent_name, agent_class in self.agent_classes.items():
+                thread = threading.Thread(
+                    target=run_agent_live,
+                    args=(agent_name, agent_class, symbol, self.interval, self.delay)
+                )
+                thread.daemon = True
+                thread.start()
+                threads.append(thread)
+        
+        try:
+            while self.running:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print("\n🛑 עצירת הרצת הסוכנים...")
+            self.running = False
+    
+    def stop(self):
+        """עצירת הרצת הסוכנים"""
+        self.running = False
+        print("🛑 הסוכנים נעצרו")
+
 if __name__ == "__main__":
     main()

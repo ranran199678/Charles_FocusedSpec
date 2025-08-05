@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from utils.logger import get_agent_logger
 from utils.validators import validate_symbol, validate_stock_data
 
-logger = get_agent_logger()
+logger = get_agent_logger("ETFFlowTracker")
 
 class ETFFlowTracker:
     """

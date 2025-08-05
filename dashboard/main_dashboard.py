@@ -496,3 +496,40 @@ class MainDashboard:
             report += f"- {alert['message']} ({alert['severity']})\n"
         
         return report 
+
+def run_dashboard(symbols: List[str] = None, config: Dict = None) -> Dict:
+    """
+    הרצת הדשבורד הראשי
+    
+    Args:
+        symbols: רשימת סמלי מניות לניתוח
+        config: הגדרות נוספות
+        
+    Returns:
+        Dict עם תוצאות הניתוח
+    """
+    try:
+        dashboard = MainDashboard(config)
+        
+        if symbols is None:
+            symbols = ['AAPL', 'MSFT', 'GOOGL']  # ברירת מחדל
+        
+        results = {}
+        for symbol in symbols:
+            results[symbol] = dashboard.analyze_stock(symbol)
+        
+        # ניתוח תיק השקעות אם יש יותר ממניה אחת
+        if len(symbols) > 1:
+            portfolio_analysis = dashboard.get_portfolio_analysis(symbols)
+            results['portfolio'] = portfolio_analysis
+        
+        return results
+        
+    except Exception as e:
+        print(f"Error running dashboard: {e}")
+        return {"error": str(e)}
+
+if __name__ == "__main__":
+    # הרצה לדוגמה
+    results = run_dashboard(['AAPL', 'MSFT'])
+    print(json.dumps(results, indent=2, default=str)) 
