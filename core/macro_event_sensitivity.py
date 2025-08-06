@@ -12,20 +12,22 @@ from typing import Dict, List, Optional, Tuple, Any
 import logging
 from datetime import datetime, timedelta
 
+from core.base.base_agent import BaseAgent
 from utils.logger import get_agent_logger
 from utils.validators import validate_symbol, validate_stock_data
 
 logger = get_agent_logger("MacroEventSensitivity")
 
-class MacroEventSensitivity:
+class MacroEventSensitivity(BaseAgent):
     """
     סוכן לניתוח רגישות מאקרו
     """
     
-    def __init__(self):
+    def __init__(self, config=None):
         """
         אתחול הסוכן
         """
+        super().__init__(config)
         self.name = "Macro Event Sensitivity"
         self.version = "1.0.0"
         self.description = "מזהה רגישות מניות לאירועים מאקרו"
@@ -47,34 +49,39 @@ class MacroEventSensitivity:
         
         logger.info(f"Initialized {self.name} v{self.version}")
     
-    def analyze(self, symbol: str, price_df: pd.DataFrame,
-                market_data: pd.DataFrame = None,
-                sector_data: pd.DataFrame = None,
-                macro_events_data: List[Dict] = None,
-                economic_indicators: Dict = None) -> Dict[str, Any]:
+    def analyze(self, symbol: str, price_df: pd.DataFrame = None, **kwargs) -> Dict[str, Any]:
         """
         ניתוח רגישות מאקרו
         
         Args:
             symbol: סמל המניה
             price_df: נתוני מחיר
-            market_data: נתוני שוק (S&P 500, NASDAQ וכו')
-            sector_data: נתוני סקטור
-            macro_events_data: נתוני אירועים מאקרו
-            economic_indicators: אינדיקטורים כלכליים
+            **kwargs: פרמטרים נוספים
             
         Returns:
             תוצאות הניתוח
         """
         try:
-            logger.info(f"Starting macro event sensitivity analysis for {symbol}")
+            self.log(f"Starting macro event sensitivity analysis for {symbol}")
+            
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             # אימות נתונים
             if not validate_symbol(symbol):
-                return self._create_error_result("Invalid symbol format")
+                return self.fallback()
             
             if not validate_stock_data(price_df):
-                return self._create_error_result("Invalid price data")
+                return self.fallback()
+            
+            # קבלת נתונים נוספים מ-kwargs
+            market_data = kwargs.get('market_data')
+            sector_data = kwargs.get('sector_data')
+            macro_events_data = kwargs.get('macro_events_data')
+            economic_indicators = kwargs.get('economic_indicators')
             
             # ניתוח קורלציה עם שוק
             market_correlation_analysis = self._analyze_market_correlation(
@@ -156,13 +163,12 @@ class MacroEventSensitivity:
                 }
             }
             
-            logger.info(f"Macro sensitivity analysis completed for {symbol} - Score: {score:.2f}, Confidence: {confidence}")
+            self.log(f"Macro sensitivity analysis completed for {symbol} - Score: {score:.2f}, Confidence: {confidence}")
             return result
             
         except Exception as e:
-            error_msg = f"Error analyzing macro sensitivity for {symbol}: {str(e)}"
-            logger.error(error_msg)
-            return self._create_error_result(error_msg)
+            self.handle_error(e)
+            return self.fallback()
     
     def _analyze_market_correlation(self, price_df: pd.DataFrame,
                                   market_data: pd.DataFrame = None) -> Dict[str, Any]:

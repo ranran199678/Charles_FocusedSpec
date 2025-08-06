@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
+from core.base.base_agent import BaseAgent
 
 ETF_MAPPING = {
     'AAPL': 'XLK',
@@ -17,15 +18,17 @@ ETF_MAPPING = {
     # יש להרחיב לפי הצורך
 }
 
-class ReturnForecaster:
-    def __init__(self, symbol, model_type='linear', window_size=60, forecast_days=5, model_dir="models"):
-        self.symbol = symbol
-        self.model_type = model_type
-        self.window_size = window_size
-        self.forecast_days = forecast_days
+class ReturnForecaster(BaseAgent):
+    def __init__(self, config=None):
+        super().__init__(config)
+        self.symbol = self.config.get("symbol", "")
+        self.model_type = self.config.get("model_type", "linear")
+        self.window_size = self.config.get("window_size", 60)
+        self.forecast_days = self.config.get("forecast_days", 5)
+        self.model_dir = self.config.get("model_dir", "models")
         self.model = None
-        self.model_path = os.path.join(model_dir, f"{symbol}_{model_type}_model.pkl")
-        os.makedirs(model_dir, exist_ok=True)
+        self.model_path = os.path.join(self.model_dir, f"{self.symbol}_{self.model_type}_model.pkl")
+        os.makedirs(self.model_dir, exist_ok=True)
 
     def _prepare_features(self, price_df, etf_df=None):
         df = price_df.copy().dropna().sort_index()
@@ -71,30 +74,45 @@ class ReturnForecaster:
         else:
             raise FileNotFoundError(f"Model file not found at {self.model_path}")
 
+    def analyze(self, symbol, price_df=None, etf_df=None):
+        """ניתוח תחזית תשואה"""
+        try:
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=365)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
+            if self.model is None:
+                self.load_model()
+
+            df = self._prepare_features(price_df, etf_df)
+            X = df[['volatility', 'momentum', 'avg_volume', 'etf_return']]
+            latest_data = X.iloc[[-1]]
+            forecast = self.model.predict(latest_data)[0]
+
+            std_estimate = df['future_return'].std()
+            conf_interval = 1.96 * std_estimate
+
+            result = {
+                'expected_return': round(forecast, 4),
+                'std_dev': round(std_estimate, 4),
+                'confidence_interval': [round(forecast - conf_interval, 4), round(forecast + conf_interval, 4)],
+                'model_used': self.model_type
+            }
+
+            # ניתוח Feature Importance אם GBM
+            if hasattr(self.model, "feature_importances_"):
+                result['feature_importance'] = dict(zip(
+                    ['volatility', 'momentum', 'avg_volume', 'etf_return'],
+                    self.model.feature_importances_.round(4)
+                ))
+
+            return result
+        except Exception as e:
+            self.handle_error(e)
+            return self.fallback()
+
     def predict(self, price_df, etf_df=None):
-        if self.model is None:
-            self.load_model()
-
-        df = self._prepare_features(price_df, etf_df)
-        X = df[['volatility', 'momentum', 'avg_volume', 'etf_return']]
-        latest_data = X.iloc[[-1]]
-        forecast = self.model.predict(latest_data)[0]
-
-        std_estimate = df['future_return'].std()
-        conf_interval = 1.96 * std_estimate
-
-        result = {
-            'expected_return': round(forecast, 4),
-            'std_dev': round(std_estimate, 4),
-            'confidence_interval': [round(forecast - conf_interval, 4), round(forecast + conf_interval, 4)],
-            'model_used': self.model_type
-        }
-
-        # ניתוח Feature Importance אם GBM
-        if hasattr(self.model, "feature_importances_"):
-            result['feature_importance'] = dict(zip(
-                ['volatility', 'momentum', 'avg_volume', 'etf_return'],
-                self.model.feature_importances_.round(4)
-            ))
-
-        return result
+        """תחזית תשואה (מתודה ישנה לתאימות)"""
+        return self.analyze(self.symbol, price_df, etf_df)

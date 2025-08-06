@@ -12,12 +12,13 @@ from typing import Dict, List, Optional, Tuple, Any
 import logging
 from datetime import datetime, timedelta
 
+from core.base.base_agent import BaseAgent
 from utils.logger import get_agent_logger
 from utils.validators import validate_symbol, validate_stock_data
 
 logger = get_agent_logger("SectorMomentumAgent")
 
-class SectorMomentumAgent:
+class SectorMomentumAgent(BaseAgent):
     """
     סוכן לניתוח מגמות סקטוריאליות
     
@@ -28,8 +29,9 @@ class SectorMomentumAgent:
     - מגמות ארוכות טווח
     """
     
-    def __init__(self):
+    def __init__(self, config=None):
         """אתחול הסוכן"""
+        super().__init__(config)
         self.name = "SectorMomentumAgent"
         self.description = "ניתוח מגמות סקטוריאליות"
         self.version = "1.0.0"
@@ -129,8 +131,8 @@ class SectorMomentumAgent:
             return result
             
         except Exception as e:
-            logger.error(f"שגיאה בניתוח מגמות סקטוריאליות: {str(e)}")
-            return self._create_error_result(f"שגיאה בניתוח: {str(e)}")
+            self.handle_error(e)
+            return self.fallback()
     
     def _analyze_relative_performance(self, sector_data: Dict[str, pd.DataFrame], 
                                      market_data: pd.DataFrame = None) -> Dict[str, Any]:

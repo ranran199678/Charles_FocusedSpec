@@ -382,19 +382,14 @@ class TrendDetector(BaseAgent):
             Dict עם score, explanation, details
         """
         try:
-            if price_df is None or price_df.empty:
-                return {
-                    "score": 50,
-                    "explanation": "אין נתוני מחיר זמינים לניתוח מגמות",
-                    "details": {}
-                }
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=90)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             if len(price_df) < self.long_window:
-                return {
-                    "score": 50,
-                    "explanation": "אין מספיק נתונים לניתוח מגמות מתקדם",
-                    "details": {}
-                }
+                return self.fallback()
             
             # חישוב אינדיקטורים
             df = self._calculate_moving_averages(price_df)
@@ -455,9 +450,5 @@ class TrendDetector(BaseAgent):
             }
             
         except Exception as e:
-            self.log(f"שגיאה בניתוח מגמות עבור {symbol}: {e}")
-            return {
-                "score": 50,
-                "explanation": f"שגיאה בניתוח מגמות: {str(e)}",
-                "details": {}
-            }
+            self.handle_error(e)
+            return self.fallback()

@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from ta.trend import ADXIndicator
 from datetime import datetime, timezone
+from core.base.base_agent import BaseAgent
 
 # קבועים ברירת מחדל (אם לא יועברו ב-config)
 DEFAULTS = {
@@ -17,9 +18,9 @@ DEFAULTS = {
     "AGENT_NAME": "ADXScoreAgent"
 }
 
-class ADXScoreAgent:
+class ADXScoreAgent(BaseAgent):
     def __init__(self, config=None):
-        self.config = config or {}
+        super().__init__(config)
         # קונפיגורציה דינמית
         self.ADX_COL = self.config.get("ADX_COL", DEFAULTS["ADX_COL"])
         self.HIGH_COL = self.config.get("HIGH_COL", DEFAULTS["HIGH_COL"])
@@ -30,38 +31,41 @@ class ADXScoreAgent:
         self.ADX_MEDIUM_THRESHOLD = self.config.get("ADX_MEDIUM_THRESHOLD", DEFAULTS["ADX_MEDIUM_THRESHOLD"])
         self.AGENT_NAME = self.config.get("AGENT_NAME", DEFAULTS["AGENT_NAME"])
 
-    def analyze(self, symbol, price_df, price_df_weekly=None):
-        results = {}
+    def analyze(self, symbol, price_df=None, price_df_weekly=None):
         try:
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=90)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
+            results = {}
             # ניתוח טיימפריים עיקרי (יומי)
             results["daily"] = self._analyze_single(symbol, price_df, timeframe="daily")
-        except Exception as e:
-            results["daily"] = {
-                "score": 1,
-                "explanation": f"שגיאה בחישוב ADX (daily): {str(e)}",
-                "details": {}
-            }
-        if price_df_weekly is not None:
-            try:
+            
+            if price_df_weekly is not None:
                 results["weekly"] = self._analyze_single(symbol, price_df_weekly, timeframe="weekly")
-            except Exception as e:
-                results["weekly"] = {
-                    "score": 1,
-                    "explanation": f"שגיאה בחישוב ADX (weekly): {str(e)}",
-                    "details": {}
-                }
-        # בחר את הציון הגבוה ביותר (או עשה שקלול בעתיד)
-        main_result = results.get("daily")
-        # פלט אחיד
-        return {
-            "symbol": symbol,
-            "agent_name": self.AGENT_NAME,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "score": main_result["score"],
-            "explanation": main_result["explanation"],
-            "details": main_result["details"],
-            "all_timeframes": results
-        }
+            else:
+                # נסה לקבל נתונים שבועיים
+                weekly_data = self.get_stock_data(symbol, days=365, interval="1wk")
+                if weekly_data is not None and not weekly_data.empty:
+                    results["weekly"] = self._analyze_single(symbol, weekly_data, timeframe="weekly")
+            
+            # בחר את הציון הגבוה ביותר (או עשה שקלול בעתיד)
+            main_result = results.get("daily")
+            # פלט אחיד
+            return {
+                "symbol": symbol,
+                "agent_name": self.AGENT_NAME,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "score": main_result["score"],
+                "explanation": main_result["explanation"],
+                "details": main_result["details"],
+                "all_timeframes": results
+            }
+        except Exception as e:
+            self.handle_error(e)
+            return self.fallback()
 
     def _analyze_single(self, symbol, df, timeframe="daily"):
         # בדיקת עמודות

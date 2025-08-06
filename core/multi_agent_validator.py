@@ -6,11 +6,12 @@ Multi Agent Validator - ולידטור חוצה-סוכנים
 ומזהה סתירות או סיכונים שעלולים להשפיע על איכות ההחלטות.
 """
 
+from core.base.base_agent import BaseAgent
 from utils.logger import get_agent_logger
 from typing import Dict, List, Any, Optional
 import logging
 
-class MultiAgentValidator:
+class MultiAgentValidator(BaseAgent):
     """
     ולידטור חוצה-סוכנים לזיהוי סתירות וסיכונים
     """
@@ -22,7 +23,7 @@ class MultiAgentValidator:
         Args:
             config: מילון הגדרות (אופציונלי)
         """
-        self.config = config or {}
+        super().__init__(config)
         self.logger = get_agent_logger("multi_agent_validator")
         
         # הגדרת קבוצות אותות
@@ -50,6 +51,65 @@ class MultiAgentValidator:
         self.risk_tolerance = self.config.get("risk_tolerance", 0.3)
         
         self.logger.info("Multi Agent Validator initialized successfully")
+
+    def analyze(self, symbol: str, signals: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        ניתוח ולידציה של אותות הסוכנים
+        
+        Args:
+            symbol: סמל המניה
+            signals: מילון אותות {שם_סוכן: Boolean}
+            
+        Returns:
+            מילון עם תוצאות הולידציה
+        """
+        try:
+            if signals is None:
+                return self.fallback()
+            
+            # זיהוי סתירות
+            conflicts = self.detect_conflicts(signals)
+            
+            # חישוב עקביות
+            consistency = self.calculate_signal_consistency(signals)
+            
+            # הערכת סיכון
+            risk_level = self.assess_overall_risk(signals)
+            
+            # חישוב ציון
+            score = self._calculate_validation_score(conflicts, consistency, risk_level)
+            
+            return {
+                "score": score,
+                "explanation": f"ולידציה: {len(conflicts)} סתירות, עקביות {consistency:.2f}, סיכון {risk_level}",
+                "details": {
+                    "conflicts": conflicts,
+                    "consistency": consistency,
+                    "risk_level": risk_level,
+                    "signal_count": len(signals)
+                }
+            }
+        except Exception as e:
+            self.handle_error(e)
+            return self.fallback()
+
+    def _calculate_validation_score(self, conflicts: List[str], consistency: float, risk_level: str) -> int:
+        """חישוב ציון ולידציה"""
+        base_score = 50
+        
+        # הפחתה לפי סתירות
+        conflict_penalty = len(conflicts) * 10
+        base_score -= conflict_penalty
+        
+        # תוספת לפי עקביות
+        consistency_bonus = consistency * 30
+        base_score += consistency_bonus
+        
+        # הפחתה לפי סיכון
+        risk_penalties = {"Low": 0, "Medium": 10, "High": 25, "Critical": 40}
+        base_score -= risk_penalties.get(risk_level, 0)
+        
+        return max(1, min(100, int(base_score)))
 
     def detect_conflicts(self, signals: Dict[str, Any]) -> List[str]:
         """
@@ -152,7 +212,7 @@ class MultiAgentValidator:
             # ספירת אותות סנטימנט חיוביים
             positive_sentiment = sum(1 for sig in self.sentiment_signals if signals.get(sig))
             
-            # סתירה 1: הייפ חברתי גבוה ללא יסודות תומכים
+            # סתירה 1: הייפ חברתי גבוה ללא יציבות תומכים
             if (signals.get("Social_hype") and 
                 not signals.get("Consistent_growth") and 
                 not signals.get("Valuation_anomaly")):

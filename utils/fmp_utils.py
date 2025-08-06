@@ -741,28 +741,80 @@ class FMPClient:
     
     def fmp_get_earnings_surprises(self, ticker: str, verify_ssl: bool = True) -> Optional[List[Dict]]:
         """
-        שליפת הפתעות רווחים
+        שליפת הפתעות רווחים עבור מניה
         
         Args:
-            ticker: סימבול המניה
+            ticker: סימול המניה
             verify_ssl: האם לוודא SSL
             
         Returns:
-            רשימת הפתעות רווחים או None במקרה של שגיאה
+            רשימת הפתעות רווחים או None
         """
         try:
             endpoint = f"earnings-surprises/{ticker}"
             data = self.fmp_get(endpoint, verify_ssl=verify_ssl)
             
-            if not data or not isinstance(data, list):
-                logger.warning(f"No earnings surprises data found for {ticker}")
+            if data and isinstance(data, list):
+                logger.info(f"Retrieved {len(data)} earnings surprises for {ticker}")
+                return data
+            else:
+                logger.warning(f"No earnings surprises data for {ticker}")
                 return None
-            
-            logger.info(f"Successfully fetched {len(data)} earnings surprises for {ticker}")
-            return data
-            
+                
         except Exception as e:
-            logger.error(f"Error fetching earnings surprises for {ticker}: {str(e)}")
+            logger.error(f"Error fetching earnings surprises for {ticker}: {e}")
+            return None
+
+    def get_analyst_estimates(self, ticker: str, verify_ssl: bool = True) -> Optional[List[Dict]]:
+        """
+        שליפת הערכות אנליסטים עבור מניה
+        
+        Args:
+            ticker: סימול המניה
+            verify_ssl: האם לוודא SSL
+            
+        Returns:
+            רשימת הערכות אנליסטים או None
+        """
+        try:
+            endpoint = f"analyst-estimates/{ticker}"
+            data = self.fmp_get(endpoint, verify_ssl=verify_ssl)
+            
+            if data and isinstance(data, list):
+                logger.info(f"Retrieved {len(data)} analyst estimates for {ticker}")
+                return data
+            else:
+                logger.warning(f"No analyst estimates data for {ticker}")
+                return None
+                
+        except Exception as e:
+            logger.error(f"Error fetching analyst estimates for {ticker}: {e}")
+            return None
+
+    def get_analyst_recommendations(self, ticker: str, verify_ssl: bool = True) -> Optional[List[Dict]]:
+        """
+        שליפת המלצות אנליסטים עבור מניה
+        
+        Args:
+            ticker: סימול המניה
+            verify_ssl: האם לוודא SSL
+            
+        Returns:
+            רשימת המלצות אנליסטים או None
+        """
+        try:
+            endpoint = f"analyst-recommendations/{ticker}"
+            data = self.fmp_get(endpoint, verify_ssl=verify_ssl)
+            
+            if data and isinstance(data, list):
+                logger.info(f"Retrieved {len(data)} analyst recommendations for {ticker}")
+                return data
+            else:
+                logger.warning(f"No analyst recommendations data for {ticker}")
+                return None
+                
+        except Exception as e:
+            logger.error(f"Error fetching analyst recommendations for {ticker}: {e}")
             return None
 
 # יצירת instance גלובלי

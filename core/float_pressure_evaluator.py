@@ -21,6 +21,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
+from core.base.base_agent import BaseAgent
 from utils.data_fetcher import data_fetcher
 from utils.constants import FLOAT_PRESSURE_THRESHOLDS, TIME_PERIODS
 import logging
@@ -54,7 +55,7 @@ class FloatPressureAnalysis:
     time_analysis: Dict
     breakout_potential: float
 
-class FloatPressureEvaluator:
+class FloatPressureEvaluator(BaseAgent):
     """
     סוכן מתקדם להערכת לחץ צף
     
@@ -71,7 +72,8 @@ class FloatPressureEvaluator:
     
     def __init__(self, config=None):
         """אתחול הסוכן עם הגדרות מתקדמות"""
-        self.config = config or {}
+        super().__init__(config)
+        cfg = config or {}
         
         # הגדרות מתקדמות
         self.float_pressure_thresholds = {
@@ -576,31 +578,11 @@ class FloatPressureEvaluator:
         ניתוח מתקדם של לחץ צף
         """
         try:
-            # אחזור נתונים
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
             if price_df is None:
-                price_df = data_fetcher.get_price_history(symbol, period='6mo')
-            
-            if price_df is None or price_df.empty:
-                return {
-                    "score": 50,
-                    "explanation": "לא ניתן לאחזר נתוני מחיר",
-                    "signal": {
-                        "type": "float_pressure",
-                        "score": 50,
-                        "reason": "לא ניתן לאחזר נתוני מחיר",
-                        "confidence": 0.5,
-                        "details": {
-                            "pressures_count": 0,
-                            "avg_pressure_strength": 0.5,
-                            "float_trend": "unknown"
-                        }
-                    },
-                    "details": {
-                        "pressures": [],
-                        "analysis": {},
-                        "recommendations": []
-                    }
-                }
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             # זיהוי לחץ צף
             pressures = self._detect_float_pressures(price_df)
@@ -677,27 +659,8 @@ class FloatPressureEvaluator:
             }
             
         except Exception as e:
-            logger.error(f"Error in FloatPressureEvaluator.analyze: {e}")
-            return {
-                "score": 50,
-                "explanation": f"שגיאה בניתוח: {str(e)}",
-                "signal": {
-                    "type": "float_pressure",
-                    "score": 50,
-                    "reason": f"שגיאה בניתוח: {str(e)}",
-                    "confidence": 0.5,
-                    "details": {
-                        "pressures_count": 0,
-                        "avg_pressure_strength": 0.5,
-                        "float_trend": "error"
-                    }
-                },
-                "details": {
-                    "pressures": [],
-                    "analysis": {},
-                    "recommendations": []
-                }
-            }
+            self.handle_error(e)
+            return self.fallback()
 
     def _generate_recommendations(self, pressures: List[FloatPressure], analysis: FloatPressureAnalysis) -> List[str]:
         """

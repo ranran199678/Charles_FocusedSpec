@@ -21,7 +21,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
-from utils.data_fetcher import data_fetcher
+from core.base.base_agent import BaseAgent
 from utils.constants import RETAIL_SENTIMENT_THRESHOLDS, TIME_PERIODS
 import logging
 
@@ -54,7 +54,7 @@ class RetailSentimentAnalysis:
     time_analysis: Dict
     breakout_potential: float
 
-class RetailSentimentAgent:
+class RetailSentimentAgent(BaseAgent):
     """
     סוכן מתקדם לניתוח רגשות קמעונאיים
     
@@ -71,7 +71,7 @@ class RetailSentimentAgent:
     
     def __init__(self, config=None):
         """אתחול הסוכן עם הגדרות מתקדמות"""
-        self.config = config or {}
+        super().__init__(config)
         
         # הגדרות מתקדמות
         self.retail_sentiment_thresholds = {
@@ -576,31 +576,11 @@ class RetailSentimentAgent:
         ניתוח מתקדם של רגשות קמעונאיים
         """
         try:
-            # אחזור נתונים
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
             if price_df is None:
-                price_df = data_fetcher.get_price_history(symbol, period='6mo')
-            
-            if price_df is None or price_df.empty:
-                return {
-                    "score": 50,
-                    "explanation": "לא ניתן לאחזר נתוני מחיר",
-                    "signal": {
-                        "type": "retail_sentiment",
-                        "score": 50,
-                        "reason": "לא ניתן לאחזר נתוני מחיר",
-                        "confidence": 0.5,
-                        "details": {
-                            "sentiments_count": 0,
-                            "avg_sentiment_strength": 0.5,
-                            "sentiment_trend": "unknown"
-                        }
-                    },
-                    "details": {
-                        "sentiments": [],
-                        "analysis": {},
-                        "recommendations": []
-                    }
-                }
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             # זיהוי רגשות קמעונאיים
             sentiments = self._detect_retail_sentiments(price_df)

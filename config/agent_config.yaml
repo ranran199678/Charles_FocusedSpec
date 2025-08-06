@@ -1,0 +1,410 @@
+# קונפיגורציה מרכזית לסוכנים - Charles FocusedSpec
+# =================================================
+
+# הגדרות כלליות
+general:
+  default_interval: "1day"
+  live_mode: false
+  frequency_sec: 60
+  max_agents_per_run: 20
+
+# רשימת סוכנים פעילים
+active_agents:
+  # סוכני ניתוח טכני מתקדמים
+  technical_analysis:
+    alpha_score_engine:
+      enabled: true
+      weight: 0.15
+      priority: "high"
+      config:
+        min_score: 50
+        max_score: 100
+    
+    anomaly_detector:
+      enabled: true
+      weight: 0.12
+      priority: "high"
+      config:
+        threshold: 0.7
+        window_size: 20
+    
+    atr_score_agent:
+      enabled: true
+      weight: 0.08
+      priority: "medium"
+      config:
+        period: 14
+        multiplier: 2.0
+    
+    bollinger_squeeze:
+      enabled: true
+      weight: 0.10
+      priority: "medium"
+      config:
+        period: 20
+        std_dev: 2.0
+    
+    breakout_screener:
+      enabled: true
+      weight: 0.12
+      priority: "high"
+      config:
+        min_breakout_strength: 0.6
+        volume_threshold: 1.5
+    
+    golden_cross_detector:
+      enabled: true
+      weight: 0.09
+      priority: "medium"
+      config:
+        short_period: 50
+        long_period: 200
+    
+    macd_momentum_detector:
+      enabled: true
+      weight: 0.10
+      priority: "medium"
+      config:
+        fast_period: 12
+        slow_period: 26
+        signal_period: 9
+    
+    moving_average_pressure_bot:
+      enabled: true
+      weight: 0.08
+      priority: "medium"
+      config:
+        short_ma: 20
+        long_ma: 50
+    
+    support_zone_strength_detector:
+      enabled: true
+      weight: 0.08
+      priority: "medium"
+      config:
+        zone_threshold: 0.02
+        strength_threshold: 0.6
+    
+    volatility_score_agent:
+      enabled: true
+      weight: 0.08
+      priority: "medium"
+      config:
+        period: 20
+        threshold: 0.3
+
+  # סוכני ניתוח נפח
+  volume_analysis:
+    big_money_inflow_agent:
+      enabled: true
+      weight: 0.12
+      priority: "high"
+      config:
+        min_volume_spike: 2.0
+        money_flow_threshold: 0.7
+    
+    dark_pool_agent:
+      enabled: true
+      weight: 0.10
+      priority: "high"
+      config:
+        dark_pool_threshold: 0.6
+        unusual_activity_threshold: 1.5
+    
+    float_pressure_evaluator:
+      enabled: true
+      weight: 0.09
+      priority: "medium"
+      config:
+        float_threshold: 0.3
+        pressure_threshold: 0.7
+    
+    liquidity_trap_agent:
+      enabled: true
+      weight: 0.09
+      priority: "medium"
+      config:
+        liquidity_threshold: 0.5
+        trap_detection_period: 10
+    
+    options_unusual_volume_agent:
+      enabled: true
+      weight: 0.10
+      priority: "high"
+      config:
+        unusual_volume_threshold: 2.0
+        put_call_ratio_threshold: 1.5
+    
+    volume_spike_agent:
+      enabled: true
+      weight: 0.11
+      priority: "high"
+      config:
+        spike_threshold: 2.0
+        confirmation_period: 3
+
+  # סוכני ניתוח פונדמנטלי
+  fundamental_analysis:
+    financials_parser:
+      enabled: true
+      weight: 0.15
+      priority: "high"
+      config:
+        min_data_points: 4
+        quality_threshold: 0.8
+    
+    profitability_metrics:
+      enabled: true
+      weight: 0.12
+      priority: "high"
+      config:
+        min_roa: 0.05
+        min_roe: 0.10
+        debt_threshold: 0.5
+    
+    valuation_detector:
+      enabled: true
+      weight: 0.10
+      priority: "medium"
+      config:
+        pe_threshold: 25
+        pb_threshold: 3.0
+        peg_threshold: 1.5
+
+  # סוכני ניתוח סנטימנט
+  sentiment_analysis:
+    gpt_sentiment_model:
+      enabled: true
+      weight: 0.12
+      priority: "high"
+      config:
+        model_name: "gpt-3.5-turbo"
+        max_tokens: 1000
+        temperature: 0.3
+    
+    news_catalyst_agent:
+      enabled: true
+      weight: 0.11
+      priority: "high"
+      config:
+        news_impact_threshold: 0.6
+        catalyst_strength_threshold: 0.7
+    
+    retail_sentiment_agent:
+      enabled: true
+      weight: 0.10
+      priority: "medium"
+      config:
+        social_media_threshold: 0.5
+        retail_flow_threshold: 0.6
+    
+    sentiment_scorer:
+      enabled: true
+      weight: 0.09
+      priority: "medium"
+      config:
+        sentiment_threshold: 0.6
+        confidence_threshold: 0.7
+
+  # סוכני ניתוח מגמות
+  trend_analysis:
+    trend_detector:
+      enabled: true
+      weight: 0.11
+      priority: "high"
+      config:
+        trend_strength_threshold: 0.6
+        confirmation_period: 5
+    
+    v_reversal_agent:
+      enabled: true
+      weight: 0.09
+      priority: "medium"
+      config:
+        reversal_threshold: 0.7
+        pattern_confidence: 0.6
+    
+    vcp_super_pattern_agent:
+      enabled: true
+      weight: 0.10
+      priority: "high"
+      config:
+        vcp_threshold: 0.7
+        pattern_completion_threshold: 0.8
+
+  # סוכני ניתוח אירועים
+  event_analysis:
+    ai_event_spotter:
+      enabled: true
+      weight: 0.10
+      priority: "high"
+      config:
+        ai_event_threshold: 0.6
+        impact_assessment_period: 7
+    
+    earnings_surprise_tracker:
+      enabled: true
+      weight: 0.11
+      priority: "high"
+      config:
+        surprise_threshold: 0.1
+        tracking_period: 30
+    
+    event_scanner:
+      enabled: true
+      weight: 0.08
+      priority: "medium"
+      config:
+        event_impact_threshold: 0.5
+        scanning_frequency: 3600
+    
+    forum_monitor:
+      enabled: true
+      weight: 0.08
+      priority: "medium"
+      config:
+        forum_activity_threshold: 0.6
+        sentiment_threshold: 0.5
+    
+    geopolitical_risk_monitor:
+      enabled: true
+      weight: 0.09
+      priority: "medium"
+      config:
+        risk_threshold: 0.7
+        impact_assessment_period: 14
+    
+    insider_activity_monitor:
+      enabled: true
+      weight: 0.10
+      priority: "high"
+      config:
+        insider_threshold: 0.6
+        activity_window: 30
+    
+    ipo_volume_spike_detector:
+      enabled: true
+      weight: 0.08
+      priority: "medium"
+      config:
+        ipo_volume_threshold: 3.0
+        spike_duration: 5
+    
+    media_buzz_tracker:
+      enabled: true
+      weight: 0.08
+      priority: "medium"
+      config:
+        buzz_threshold: 0.6
+        media_coverage_threshold: 0.5
+    
+    pump_and_dump_detector:
+      enabled: true
+      weight: 0.09
+      priority: "high"
+      config:
+        pump_threshold: 0.7
+        dump_detection_period: 7
+    
+    social_media_hype_scanner:
+      enabled: true
+      weight: 0.08
+      priority: "medium"
+      config:
+        hype_threshold: 0.6
+        social_media_threshold: 0.5
+
+  # סוכני ניתוח סקטוריאלי
+  sector_analysis:
+    sector_momentum_agent:
+      enabled: true
+      weight: 0.10
+      priority: "medium"
+      config:
+        sector_momentum_threshold: 0.6
+        comparison_period: 20
+    
+    sector_rotation_analyzer:
+      enabled: true
+      weight: 0.09
+      priority: "medium"
+      config:
+        rotation_threshold: 0.5
+        analysis_period: 30
+
+  # סוכני ניתוח מתקדמים
+  advanced_analysis:
+    enhanced_advanced_analyzer:
+      enabled: true
+      weight: 0.12
+      priority: "high"
+      config:
+        analysis_depth: "comprehensive"
+        confidence_threshold: 0.7
+    
+    high_conviction_orchestrator:
+      enabled: true
+      weight: 0.08
+      priority: "medium"
+      config:
+        conviction_threshold: 0.8
+        orchestration_period: 5
+    
+    ml_breakout_model:
+      enabled: true
+      weight: 0.11
+      priority: "high"
+      config:
+        model_confidence_threshold: 0.7
+        prediction_horizon: 5
+    
+    multi_agent_validator:
+      enabled: true
+      weight: 0.10
+      priority: "high"
+      config:
+        validation_threshold: 0.6
+        consensus_required: 0.7
+
+# סוכנים לא פעילים (למחיקה או הרחבה)
+inactive_agents:
+  # סוכנים חופפים - לאיחוד
+  duplicate_agents:
+    trend_shift_detector: "לאיחוד עם trend_shift_agent"
+    vwap_trend_agent: "לאיחוד עם vwap_agent"
+    advanced_pattern_analyzer: "לאיחוד עם pattern_detector"
+    enhanced_advanced_analyzer: "לאיחוד עם pattern_detector"
+  
+  # סוכנים לא מפותחים - להרחבה או מחיקה
+  underdeveloped_agents:
+    financial_stability_agent: "להרחבה - ניתוח פיננסי בסיסי"
+    meta_agent: "להרחבה - קונסולידציה בסיסית"
+    return_forecaster: "להרחבה - מודל בסיסי"
+    analyst_rating_agent: "להרחבה - ניתוח בסיסי"
+    candlestick_agent: "להרחבה - זיהוי תבניות נרות"
+    rsi_sniffer: "למחיקה - כפילות עם RSI agents אחרים"
+    parabolic_agent: "להרחבה או מחיקה"
+    volume_tension_meter: "להרחבה או מחיקה"
+
+# הגדרות ביצועים
+performance:
+  max_concurrent_agents: 10
+  timeout_seconds: 300
+  memory_limit_mb: 1024
+  cache_enabled: true
+  cache_ttl_seconds: 3600
+
+# הגדרות לוגים
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/agents.log"
+  max_file_size_mb: 100
+  backup_count: 5
+
+# הגדרות בדיקות
+testing:
+  enabled: true
+  test_timeout_seconds: 60
+  mock_data_enabled: true
+  performance_testing: true 

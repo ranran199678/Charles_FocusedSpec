@@ -12,7 +12,6 @@ import logging
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.base.base_agent import BaseAgent
-from utils.data_fetcher import DataFetcher
 
 class MacroTrendScanner(BaseAgent):
     """
@@ -27,7 +26,6 @@ class MacroTrendScanner(BaseAgent):
     
     def __init__(self, config=None):
         super().__init__(config)
-        self.data_fetcher = DataFetcher()
         
         # API Keys למקורות נתונים מאקרו
         self.fred_api_key = os.getenv("FRED_API_KEY", "")

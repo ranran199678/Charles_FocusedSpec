@@ -20,6 +20,7 @@ import json
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
+from core.base.base_agent import BaseAgent
 from utils.credentials import APICredentials
 from utils.fmp_utils import fmp_client
 
@@ -43,12 +44,12 @@ class CatalystTrigger:
     category: str
     impact_multiplier: float
 
-class NewsCatalystAgent:
+class NewsCatalystAgent(BaseAgent):
     def __init__(self, config=None):
         """
         אתחול הסוכן עם מערכת ניקוד משוקללת מתקדמת
         """
-        self.config = config or {}
+        super().__init__(config)
         
         # הוספת credentials
         from utils.credentials import APICredentials
@@ -493,6 +494,12 @@ class NewsCatalystAgent:
         ניתוח מתקדם של חדשות וקטליזטורים
         """
         try:
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=30)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
             # Fetch news from multiple sources
             news_items = self._fetch_news_multi_source(symbol)
             
@@ -615,14 +622,8 @@ class NewsCatalystAgent:
             }
             
         except Exception as e:
-            return {
-                "score": 50,
-                "explanation": f"שגיאה בניתוח חדשות: {str(e)}",
-                "details": {
-                    "error": str(e),
-                    "news_count": 0
-                }
-            }
+            self.handle_error(e)
+            return self.fallback()
 
     def get_catalyst_summary(self) -> Dict:
         """

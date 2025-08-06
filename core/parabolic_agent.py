@@ -2,13 +2,15 @@
 
 import numpy as np
 import pandas as pd
+from core.base.base_agent import BaseAgent
 
-class ParabolicAgent:
+class ParabolicAgent(BaseAgent):
     """
     Parabolic Move Detector – גרסת על (מחקר/עסקי)
     מזהה תנועות פראבוליות חדות (run up, climax), בדגש על זוית, רצף, Convexity, נפח.
     """
     def __init__(self, config=None):
+        super().__init__(config)
         cfg = config or {}
         self.min_days = cfg.get("min_days", 5)  # מינימום ימים לפריצה
         self.max_window = cfg.get("max_window", 30)
@@ -110,15 +112,18 @@ class ParabolicAgent:
 
     def analyze(self, symbol, price_df=None):
         try:
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=90)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
             score, explanation, details = self.detect_parabolic_run(price_df)
-        except Exception as e:
             return {
-                "score": 1,
-                "explanation": f"Error: {e}",
-                "details": {}
+                "score": int(score),
+                "explanation": explanation,
+                "details": details
             }
-        return {
-            "score": int(score),
-            "explanation": explanation,
-            "details": details
-        }
+        except Exception as e:
+            self.handle_error(e)
+            return self.fallback()

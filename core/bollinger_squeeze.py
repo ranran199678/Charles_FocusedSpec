@@ -9,8 +9,6 @@ import logging
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.base.base_agent import BaseAgent
-from utils.data_fetcher import DataFetcher
-
 try:
     from ta.volatility import BollingerBands
     TA_AVAILABLE = True
@@ -46,11 +44,14 @@ class BollingerSqueeze(BaseAgent):
             Dict עם תוצאות הניתוח
         """
         try:
-            if price_df is None or price_df.empty:
-                return self._get_dummy_result("אין נתוני מחיר זמינים")
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=90)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             if len(price_df) < self.window:
-                return self._get_dummy_result(f"לא מספיק נתונים (נדרש {self.window}, יש {len(price_df)})")
+                return self.fallback()
             
             # חישוב בולינגר באנדס
             bb_data = self._calculate_bollinger_bands(price_df)
@@ -83,8 +84,8 @@ class BollingerSqueeze(BaseAgent):
             }
             
         except Exception as e:
-            self.log(f"שגיאה בניתוח התכווצות בולינגר: {str(e)}")
-            return self._get_dummy_result(f"שגיאה: {str(e)}")
+            self.handle_error(e)
+            return self.fallback()
 
     def _calculate_bollinger_bands(self, price_df: pd.DataFrame) -> Dict:
         """חישוב בולינגר באנדס"""
@@ -298,11 +299,4 @@ class BollingerSqueeze(BaseAgent):
         
         return recommendations
 
-    def _get_dummy_result(self, message: str) -> Dict:
-        """תוצאה ברירת מחדל"""
-        return {
-            "score": 1,
-            "explanation": f"לא ניתן לנתח התכווצות בולינגר: {message}",
-            "details": {},
-            "timestamp": datetime.now().isoformat()
-        }
+

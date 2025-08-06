@@ -12,20 +12,22 @@ from typing import Dict, List, Optional, Tuple, Any
 import logging
 from datetime import datetime, timedelta
 
+from core.base.base_agent import BaseAgent
 from utils.logger import get_agent_logger
 from utils.validators import validate_symbol, validate_stock_data
 
 logger = get_agent_logger("ShortInterestSpikeAgent")
 
-class ShortInterestSpikeAgent:
+class ShortInterestSpikeAgent(BaseAgent):
     """
     סוכן לזיהוי קפיצות בשורט אינטרסט
     """
     
-    def __init__(self):
+    def __init__(self, config=None):
         """
         אתחול הסוכן
         """
+        super().__init__(config)
         self.name = "Short Interest Spike Agent"
         self.version = "1.0.0"
         self.description = "מזהה קפיצות בשורט אינטרסט וזיהוי הזדמנויות Short Squeeze"
@@ -55,6 +57,12 @@ class ShortInterestSpikeAgent:
             תוצאות הניתוח
         """
         try:
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=90)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
             logger.info(f"Starting analysis for {symbol}")
             
             # אימות נתונים
@@ -140,9 +148,8 @@ class ShortInterestSpikeAgent:
             return result
             
         except Exception as e:
-            error_msg = f"Error analyzing {symbol}: {str(e)}"
-            logger.error(error_msg)
-            return self._create_error_result(error_msg)
+            self.handle_error(e)
+            return self.fallback()
     
     def _analyze_short_interest_spikes(self, short_interest_data: pd.DataFrame = None) -> Dict[str, Any]:
         """ניתוח קפיצות בשורט אינטרסט"""

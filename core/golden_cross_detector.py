@@ -27,11 +27,14 @@ class GoldenCrossDetector(BaseAgent):
         מנתח צלבים מוזהבים וצלבי מוות במניה
         """
         try:
-            if price_df is None or price_df.empty:
-                return self._get_dummy_result("אין נתוני מחיר זמינים")
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=365)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             if len(price_df) < self.long_window:
-                return self._get_dummy_result(f"לא מספיק נתונים (נדרש {self.long_window}, יש {len(price_df)})")
+                return self.fallback()
             
             # חישוב ממוצעים נעים
             ma_data = self._calculate_moving_averages(price_df)
@@ -64,8 +67,8 @@ class GoldenCrossDetector(BaseAgent):
             }
             
         except Exception as e:
-            self.log(f"שגיאה בניתוח צלבים מוזהבים: {str(e)}")
-            return self._get_dummy_result(f"שגיאה: {str(e)}")
+            self.handle_error(e)
+            return self.fallback()
 
     def _calculate_moving_averages(self, price_df: pd.DataFrame) -> Dict:
         """חישוב ממוצעים נעים קצרים וארוכים"""

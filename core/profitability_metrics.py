@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from utils.data_fetcher import data_fetcher
 from utils.logger import logger
 from utils.validators import validate_symbol
+from core.base.base_agent import BaseAgent
 
 @dataclass
 class ProfitabilityMetrics:
@@ -57,7 +58,7 @@ class ProfitabilityTrend:
     improvement_rate: float
     sustainability_score: float
 
-class ProfitabilityMetricsAgent:
+class ProfitabilityMetricsAgent(BaseAgent):
     """
     סוכן מתקדם לחישוב יחסי רווחיות מקיפים
     
@@ -72,6 +73,7 @@ class ProfitabilityMetricsAgent:
     """
     
     def __init__(self, config=None):
+        super().__init__(config)
         """אתחול הסוכן עם הגדרות מתקדמות"""
         self.config = config or {}
         
@@ -136,6 +138,10 @@ class ProfitabilityMetricsAgent:
             Dict עם תוצאות הניתוח
         """
         try:
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=365)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             # ולידציה
             if not validate_symbol(symbol):
                 return self._error_response("סימבול לא תקין")
@@ -181,8 +187,8 @@ class ProfitabilityMetricsAgent:
             return result
             
         except Exception as e:
-            logger.error(f"Error in profitability analysis for {symbol}: {str(e)}")
-            return self._error_response(f"שגיאה בניתוח: {str(e)}")
+            self.handle_error(e)
+            return self.fallback()
     
     def _fetch_financial_data(self, symbol: str) -> Optional[Dict]:
         """שליפת נתונים פיננסיים"""

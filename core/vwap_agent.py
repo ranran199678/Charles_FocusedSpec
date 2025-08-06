@@ -56,6 +56,12 @@ class VWAPAgent(BaseAgent):
         self.volume_threshold = cfg.get("volume_threshold", 1.2)  # סף נפח
         self.trend_period = cfg.get("trend_period", 10)  # תקופה לניתוח מגמה
         
+        # פרמטרים למצב לייב ומגמות מתקדמות
+        self.anchor_idx = cfg.get("anchored_event_index", None)
+        self.weight_sync = cfg.get("weight_sync", 0.7)
+        self.weight_avwap = cfg.get("weight_avwap", 0.3)
+        self.quality_threshold = cfg.get("quality_threshold", 0.02)
+        
         # משקלים לניתוח
         self.weights = {
             'price_vs_vwap': 0.30,
@@ -93,6 +99,141 @@ class VWAPAgent(BaseAgent):
         vwap = (typical_price * volume).cumsum() / volume.cumsum()
         
         return vwap
+
+    def _calc_vwap_multi_timeframe(self, price_df: pd.DataFrame) -> Dict[str, pd.Series]:
+        """חישוב VWAP במספר טווחי זמן"""
+        try:
+            vwap_daily = self._calc_vwap(price_df, window=1)
+            vwap_weekly = self._calc_vwap(price_df, window=5)
+            vwap_monthly = self._calc_vwap(price_df, window=21)
+            
+            return {
+                'daily': vwap_daily,
+                'weekly': vwap_weekly,
+                'monthly': vwap_monthly
+            }
+        except Exception as e:
+            self.log(f"שגיאה בחישוב VWAP רב-טווחי: {e}")
+            return {}
+
+    def _calc_anchored_vwap(self, price_df: pd.DataFrame, anchor_idx: int) -> pd.Series:
+        """חישוב Anchored VWAP"""
+        try:
+            if anchor_idx >= len(price_df):
+                return pd.Series([None] * len(price_df), index=price_df.index)
+            
+            # חישוב VWAP מהנקודה המסוימת
+            anchor_price = price_df.iloc[anchor_idx]
+            anchor_volume = price_df.iloc[anchor_idx]['volume'] if 'volume' in price_df.columns else 1
+            
+            # חישוב Typical Price מהנקודה המסוימת
+            if 'high' in price_df.columns and 'low' in price_df.columns:
+                typical_price = (price_df['high'] + price_df['low'] + price_df['close']) / 3
+            else:
+                typical_price = price_df['close']
+            
+            # חישוב VWAP מצטבר מהנקודה המסוימת
+            volume = price_df['volume'] if 'volume' in price_df.columns else pd.Series([1] * len(price_df))
+            
+            # חישוב מצטבר רק מהנקודה המסוימת
+            cumulative_tp_vol = (typical_price * volume).iloc[anchor_idx:].cumsum()
+            cumulative_vol = volume.iloc[anchor_idx:].cumsum()
+            
+            anchored_vwap = cumulative_tp_vol / cumulative_vol
+            
+            # מילוי ערכים לפני הנקודה המסוימת
+            result = pd.Series([None] * len(price_df), index=price_df.index)
+            result.iloc[anchor_idx:] = anchored_vwap
+            
+            return result
+            
+        except Exception as e:
+            self.log(f"שגיאה בחישוב Anchored VWAP: {e}")
+            return pd.Series([None] * len(price_df), index=price_df.index)
+
+    def _analyze_vwap_breakouts(self, price_df: pd.DataFrame) -> Dict:
+        """ניתוח פריצות VWAP מתקדם"""
+        try:
+            n = len(price_df)
+            if n < 21:
+                return {
+                    'sync_breakout': False,
+                    'anchored_signal': False,
+                    'breakout_type': 'none',
+                    'breakout_quality': 0.0,
+                    'vwap_levels': {}
+                }
+            
+            # חישוב VWAP בכמה טווחים
+            vwap_levels = self._calc_vwap_multi_timeframe(price_df)
+            
+            # Anchored VWAP
+            avwap = None
+            if self.anchor_idx is not None and self.anchor_idx < n:
+                avwap = self._calc_anchored_vwap(price_df, self.anchor_idx)
+            
+            current_price = price_df["close"].iloc[-1]
+            
+            # בדיקת פריצה מסונכרנת
+            vwap_sync_break = (
+                current_price > vwap_levels.get('daily', pd.Series()).iloc[-1] and 
+                current_price > vwap_levels.get('weekly', pd.Series()).iloc[-1] and 
+                current_price > vwap_levels.get('monthly', pd.Series()).iloc[-1]
+            )
+            
+            # בדיקת סיגנל Anchored
+            avwap_signal = False
+            if avwap is not None and avwap.iloc[-1] is not None:
+                avwap_signal = current_price > avwap.iloc[-1]
+            
+            # חישוב איכות פריצה
+            vwap_values = {
+                'daily': vwap_levels.get('daily', pd.Series()).iloc[-1],
+                'weekly': vwap_levels.get('weekly', pd.Series()).iloc[-1],
+                'monthly': vwap_levels.get('monthly', pd.Series()).iloc[-1],
+                'anchored': avwap.iloc[-1] if avwap is not None else None
+            }
+            
+            # חישוב מרחקים מ-VWAP
+            distances = {}
+            for name, level in vwap_values.items():
+                if level is not None:
+                    distances[name] = (current_price - level) / level
+            
+            # איכות פריצה - ממוצע המרחקים
+            valid_distances = [d for d in distances.values() if d > 0]
+            breakout_quality = np.mean(valid_distances) if valid_distances else 0.0
+            
+            # זיהוי סוג פריצה
+            if vwap_sync_break and avwap_signal:
+                breakout_type = 'strong_sync'
+            elif vwap_sync_break:
+                breakout_type = 'sync'
+            elif avwap_signal:
+                breakout_type = 'anchored'
+            elif any(d > 0 for d in distances.values()):
+                breakout_type = 'partial'
+            else:
+                breakout_type = 'none'
+            
+            return {
+                'sync_breakout': vwap_sync_break,
+                'anchored_signal': avwap_signal,
+                'breakout_type': breakout_type,
+                'breakout_quality': breakout_quality,
+                'vwap_levels': vwap_values,
+                'distances': distances
+            }
+            
+        except Exception as e:
+            self.log(f"שגיאה בניתוח פריצות VWAP: {e}")
+            return {
+                'sync_breakout': False,
+                'anchored_signal': False,
+                'breakout_type': 'none',
+                'breakout_quality': 0.0,
+                'vwap_levels': {}
+            }
 
     def _analyze_price_vs_vwap(self, price_df: pd.DataFrame, vwap: pd.Series) -> Dict:
         """ניתוח מחיר יחסית ל-VWAP"""
@@ -386,22 +527,20 @@ class VWAPAgent(BaseAgent):
             Dict עם score, explanation, details
         """
         try:
-            if price_df is None or price_df.empty:
-                return {
-                    "score": 50,
-                    "explanation": "אין נתוני מחיר זמינים לניתוח VWAP",
-                    "details": {}
-                }
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=90)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             if len(price_df) < 20:
-                return {
-                    "score": 50,
-                    "explanation": "אין מספיק נתונים לניתוח VWAP מתקדם",
-                    "details": {}
-                }
+                return self.fallback()
             
             # חישוב VWAP
             vwap = self._calculate_vwap(price_df)
+            
+            # ניתוח פריצות VWAP מתקדם
+            breakout_analysis = self._analyze_vwap_breakouts(price_df)
             
             # ניתוח מחיר vs VWAP
             price_analysis = self._analyze_price_vs_vwap(price_df, vwap)
@@ -432,6 +571,10 @@ class VWAPAgent(BaseAgent):
             explanation_parts.append(f"מחיר: {price_analysis['position']}")
             explanation_parts.append(f"מגמה: {trend_analysis['trend']}")
             
+            # הוספת מידע על פריצות
+            if breakout_analysis.get('breakout_type') != 'none':
+                explanation_parts.append(f"פריצה: {breakout_analysis['breakout_type']}")
+            
             if volume_analysis.get('volume_pattern'):
                 explanation_parts.append(f"נפח: {volume_analysis['volume_pattern']}")
             
@@ -449,6 +592,7 @@ class VWAPAgent(BaseAgent):
                 'support_resistance': support_resistance,
                 'trading_patterns': patterns,
                 'momentum_indicators': momentum,
+                'breakout_analysis': breakout_analysis,
                 'vwap_value': vwap.iloc[-1],
                 'analysis_date': datetime.now().isoformat(),
                 'data_points': len(price_df)
@@ -461,9 +605,6 @@ class VWAPAgent(BaseAgent):
             }
             
         except Exception as e:
-            self.log(f"שגיאה בניתוח VWAP עבור {symbol}: {e}")
-            return {
-                "score": 50,
-                "explanation": f"שגיאה בניתוח VWAP: {str(e)}",
-                "details": {}
+            self.handle_error(e)
+            return self.fallback()
             }

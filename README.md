@@ -1489,3 +1489,7 @@ logger.error("שגיאה בשליפת נתונים")
 ---
 
 **מסמך זה מהווה מפת פיתוח מלאה ומעודכנת למערכת חיזוי מניות פורצות. המערכת בנויה להתרחב ולהשתפר עם הזמן, תוך שמירה על העקרונות המקוריים של ניתוח רב-תחומי ומניעת התרעות שווא. המערכת הנוכחית כבר חורגת משמעותית מהאפיון המקורי ומציעה יכולות מתקדמות בתחומי ML/AI, ניתוח נתונים וניטור בזמן אמת.** 
+
+## 🟢 אחידות נתונים מלאה
+
+כל הסוכנים במערכת (core/) כעת יורשים מ‑BaseAgent ומשתמשים אך ורק ב‑SmartDataManager/DataFetcher/מקורות אחידים דרך BaseAgent. אין קריאות ישירות ל‑API או data_fetcher בקוד הסוכנים עצמם. כל שינוי במקור נתונים/מבנה נתונים משפיע מיידית על כל הסוכנים.

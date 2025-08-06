@@ -441,19 +441,14 @@ class VReversalAgent(BaseAgent):
             Dict עם score, explanation, details
         """
         try:
-            if price_df is None or price_df.empty:
-                return {
-                    "score": 50,
-                    "explanation": "אין נתוני מחיר זמינים לניתוח תבניות V",
-                    "details": {}
-                }
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=90)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             if len(price_df) < self.window:
-                return {
-                    "score": 50,
-                    "explanation": "אין מספיק נתונים לניתוח תבניות V מתקדם",
-                    "details": {}
-                }
+                return self.fallback()
             
             # ניתוח תבנית V
             pattern_analysis = self._analyze_v_pattern(price_df)
@@ -503,9 +498,5 @@ class VReversalAgent(BaseAgent):
             }
             
         except Exception as e:
-            self.logger.error(f"Error analyzing V reversal for {symbol}: {str(e)}")
-            return {
-                "score": 50,
-                "explanation": f"שגיאה בניתוח תבניות V: {str(e)}",
-                "details": {}
-            }
+            self.handle_error(e)
+            return self.fallback()

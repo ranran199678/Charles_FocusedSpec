@@ -9,7 +9,6 @@ import logging
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.base.base_agent import BaseAgent
-from utils.data_fetcher import DataFetcher
 
 class MovingAveragePressureBot(BaseAgent):
     """
@@ -40,8 +39,11 @@ class MovingAveragePressureBot(BaseAgent):
             Dict עם תוצאות הניתוח
         """
         try:
-            if price_df is None or price_df.empty:
-                return self._get_dummy_result("אין נתוני מחיר זמינים")
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=90)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             # חישוב ממוצעים נעים
             ma_data = self._calculate_moving_averages(price_df)
@@ -74,8 +76,8 @@ class MovingAveragePressureBot(BaseAgent):
             }
             
         except Exception as e:
-            self.log(f"שגיאה בניתוח לחץ ממוצעים נעים: {str(e)}")
-            return self._get_dummy_result(f"שגיאה: {str(e)}")
+            self.handle_error(e)
+            return self.fallback()
 
     def _calculate_moving_averages(self, price_df: pd.DataFrame) -> Dict:
         """חישוב ממוצעים נעים שונים"""
@@ -306,11 +308,4 @@ class MovingAveragePressureBot(BaseAgent):
         
         return recommendations
 
-    def _get_dummy_result(self, message: str) -> Dict:
-        """תוצאה ברירת מחדל"""
-        return {
-            "score": 1,
-            "explanation": f"לא ניתן לנתח לחץ ממוצעים נעים: {message}",
-            "details": {},
-            "timestamp": datetime.now().isoformat()
-        }
+

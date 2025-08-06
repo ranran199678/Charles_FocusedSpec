@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from core.base.base_agent import BaseAgent
 
 @dataclass
 class GapEvent:
@@ -41,8 +42,9 @@ class GapEvent:
     sector_performance: float
     historical_success_rate: float
 
-class GapDetectorUltimate:
+class GapDetectorUltimate(BaseAgent):
     def __init__(self, config=None):
+        super().__init__(config)
         cfg = config or {}
         
         # Basic gap parameters
@@ -606,17 +608,15 @@ class GapDetectorUltimate:
         """
         Enhanced gap detection analysis with comprehensive scoring
         """
-        if price_df is None or price_df.empty or len(price_df) < 30:
-            return {
-                "score": 1,
-                "explanation": "נתונים לא מספקים לניתוח",
-                "details": {
-                    "gap_events": [],
-                    "total_gaps": 0,
-                    "gap_and_run_count": 0,
-                    "avg_quality": 0
-                }
-            }
+        try:
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
+            if len(price_df) < 30:
+                return self.fallback()
 
         gap_events = self._calculate_gap_scores(price_df, verbose=self.verbose)
         
@@ -681,6 +681,10 @@ class GapDetectorUltimate:
                 }
             }
         }
+        
+        except Exception as e:
+            self.handle_error(e)
+            return self.fallback()
 
     def get_gap_statistics(self, price_df) -> Dict:
         """

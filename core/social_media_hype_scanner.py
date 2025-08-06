@@ -14,7 +14,6 @@ from collections import Counter
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.base.base_agent import BaseAgent
-from utils.data_fetcher import DataFetcher
 
 class SocialMediaHypeScanner(BaseAgent):
     """
@@ -31,7 +30,6 @@ class SocialMediaHypeScanner(BaseAgent):
     
     def __init__(self, config=None):
         super().__init__(config)
-        self.data_fetcher = DataFetcher()
         
         # API Keys למקורות רשתות חברתיות
         self.reddit_api_key = os.getenv("REDDIT_API_KEY", "")

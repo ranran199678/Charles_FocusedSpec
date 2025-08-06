@@ -21,7 +21,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
-from utils.data_fetcher import data_fetcher
+from core.base.base_agent import BaseAgent
 from utils.constants import TREND_THRESHOLDS, TIME_PERIODS
 import logging
 
@@ -53,7 +53,7 @@ class TrendAnalysis:
     fundamental_score: float
     sentiment_score: float
 
-class TrendShiftAgent:
+class TrendShiftAgent(BaseAgent):
     """
     סוכן מתקדם לזיהוי שינויי מגמה משמעותיים
     
@@ -66,11 +66,18 @@ class TrendShiftAgent:
     - ניתוח מגמות לפי אירועים
     - זיהוי מגמות לפי טכני ופונדמנטלי
     - ניתוח מגמות לפי רגשות השוק
+    - מצב לייב לניטור בזמן אמת
     """
     
     def __init__(self, config=None):
         """אתחול הסוכן עם הגדרות מתקדמות"""
-        self.config = config or {}
+        super().__init__(config)
+        
+        # פרמטרים למצב לייב
+        self.symbol = self.config.get("symbol", "")
+        self.interval = self.config.get("interval", "1day")
+        self.live_mode = self.config.get("live_mode", False)
+        self.frequency_sec = self.config.get("frequency_sec", 60)
         
         # הגדרות מתקדמות
         self.trend_thresholds = {
@@ -113,7 +120,7 @@ class TrendShiftAgent:
             'stochastic', 'williams_r'
         ]
         
-        logger.info("TrendShiftAgent initialized with advanced configuration")
+        self.logger.info("TrendShiftAgent initialized with advanced configuration")
 
     def _calculate_technical_indicators(self, df: pd.DataFrame) -> Dict:
         """
@@ -656,14 +663,87 @@ class TrendShiftAgent:
             logger.error(f"Error calculating trend analysis: {e}")
             return TrendAnalysis('unknown', 0.5, 0, 1.0, 'unknown', 'unknown', 0.5, 0.5, 0.5)
 
+    def run(self) -> Dict:
+        """הרצת הסוכן על נתונים היסטוריים"""
+        try:
+            # קבלת נתונים דרך מנהל הנתונים החכם
+            price_df = self.get_stock_data(self.symbol, days=self.default_days)
+            if price_df is None or price_df.empty:
+                return {
+                    "trend_shift_score": 0.0,
+                    "shift_category": "no_data",
+                    "explanations": ["לא נמצאו נתונים זמינים"],
+                    "confidence": 0.0,
+                    "timestamp": datetime.now().isoformat()
+                }
+            
+            return self.analyze(self.symbol, price_df)
+            
+        except Exception as e:
+            logger.error(f"שגיאה בהרצת TrendShiftAgent: {e}")
+            return {
+                "trend_shift_score": 0.0,
+                "shift_category": "error",
+                "explanations": [f"שגיאה בניתוח: {str(e)}"],
+                "confidence": 0.0,
+                "timestamp": datetime.now().isoformat()
+            }
+    
+    def run_live(self, cycles: int = None) -> None:
+        """הרצת הסוכן במצב לייב"""
+        import time
+        
+        print(f"🚀 מתחיל הרצת TrendShiftAgent במצב לייב עבור {self.symbol}")
+        print(f"⏱️ אינטרוול: {self.interval} | תדירות: כל {self.frequency_sec} שניות")
+        
+        cycle_count = 0
+        
+        while cycles is None or cycle_count < cycles:
+            try:
+                print(f"\n🔄 מחזור {cycle_count + 1} - {datetime.now().strftime('%H:%M:%S')}")
+                
+                # קבלת נתונים עדכניים דרך מנהל הנתונים החכם
+                price_df = self.get_stock_data(self.symbol, days=self.default_days)
+                if price_df is None or price_df.empty:
+                    print("⚠️ לא נמצאו נתונים זמינים")
+                    time.sleep(self.frequency_sec)
+                    cycle_count += 1
+                    continue
+                
+                # ניתוח
+                result = self.analyze(self.symbol, price_df)
+                
+                # הצגת תוצאות
+                print(f"📊 תוצאות ניתוח:")
+                print(f"   ציון מגמה: {result.get('score', 0):.2f}")
+                print(f"   הסבר: {result.get('explanation', 'N/A')}")
+                print(f"   ביטחון: {result.get('signal', {}).get('confidence', 0):.2f}")
+                
+                # בדיקה אם יש שינוי משמעותי
+                if result.get('score', 0) > 70:
+                    print("🚨 זוהה שינוי מגמה משמעותי!")
+                
+                time.sleep(self.frequency_sec)
+                cycle_count += 1
+                
+            except KeyboardInterrupt:
+                print("\n⏹️ הופסק על ידי המשתמש")
+                break
+            except Exception as e:
+                print(f"❌ שגיאה במחזור {cycle_count + 1}: {e}")
+                time.sleep(self.frequency_sec)
+                cycle_count += 1
+        
+        print("✅ סיום הרצת TrendShiftAgent")
+
     def analyze(self, symbol: str, price_df=None, **kwargs) -> Dict:
         """
         ניתוח מתקדם של שינויי מגמה
         """
         try:
-            # אחזור נתונים
+            # אחזור נתונים דרך מנהל הנתונים החכם
             if price_df is None:
-                price_df = data_fetcher.get_price_history(symbol, period='6mo')
+                price_df = self.get_stock_data(symbol, days=180)  # 6 חודשים
             
             if price_df is None or price_df.empty:
                 return {

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import requests
 import logging
 from typing import Dict, List, Optional
+from core.base.base_agent import BaseAgent
 
 # ייבוא DataFetcher במקום yfinance
 try:
@@ -13,14 +14,15 @@ except ImportError:
     DATA_FETCHER_AVAILABLE = False
     logging.warning("DataFetcher לא זמין, יוחזרו נתונים ריקים")
 
-class MarketDataConnector:
+class MarketDataConnector(BaseAgent):
     """
     מחבר נתוני שוק מתקדם
     מתחבר למקורות נתונים שונים לניתוח מקיף
     """
     
     def __init__(self, config=None):
-        self.config = config or {}
+        super().__init__(config)
+        cfg = config or {}
         self.logger = logging.getLogger(__name__)
         
         # יצירת DataFetcher
@@ -648,4 +650,55 @@ class MarketDataConnector:
             
         except Exception as e:
             self.logger.error(f"שגיאה בקבלת נתוני שוק משופרים: {str(e)}")
-            return {"error": f"שגיאה: {str(e)}"} 
+            return {"error": f"שגיאה: {str(e)}"}
+    
+    def analyze(self, symbol: str, price_df: pd.DataFrame = None, **kwargs) -> Dict[str, Any]:
+        """
+        ניתוח נתוני שוק מקיפים
+        
+        Args:
+            symbol: סימול המניה
+            price_df: DataFrame עם נתוני מחיר
+            **kwargs: פרמטרים נוספים
+            
+        Returns:
+            Dict[str, Any]: תוצאות הניתוח
+        """
+        try:
+            self.log("התחלת ניתוח נתוני שוק מקיפים")
+            
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
+            # קבלת נתוני שוק מקיפים
+            market_data = self.get_comprehensive_market_data(symbol)
+            
+            # חישוב ציון בסיסי
+            score = 50  # ציון בסיסי
+            
+            # התאמת ציון לפי איכות הנתונים
+            if market_data.get("stock_data") and not market_data.get("stock_data", {}).get("error"):
+                score += 20
+            
+            if market_data.get("market_data") and not market_data.get("market_data", {}).get("error"):
+                score += 15
+            
+            if market_data.get("sector_data") and not market_data.get("sector_data", {}).get("error"):
+                score += 15
+            
+            score = min(score, 100)
+            
+            explanation = f"נתוני שוק מקיפים עבור {symbol}"
+            
+            return {
+                "score": score,
+                "explanation": explanation,
+                "details": market_data
+            }
+            
+        except Exception as e:
+            self.handle_error(e)
+            return self.fallback()

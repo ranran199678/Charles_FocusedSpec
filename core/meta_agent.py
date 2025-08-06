@@ -3,14 +3,17 @@
 import yaml
 import os
 from typing import Dict
+from core.base.base_agent import BaseAgent
 
-class MetaAgent:
+class MetaAgent(BaseAgent):
     """
     סוכן קונסולידציה שמחשב ציון כולל על בסיס תתי סוכנים,
     לפי משקלים מתוך קובץ config.yaml, עם המלצה השקעתית.
     """
 
-    def __init__(self, config_path: str = "config/config.yaml"):
+    def __init__(self, config=None):
+        super().__init__(config)
+        config_path = self.config.get("config_path", "config/config.yaml")
         self.config_path = config_path
         self.weights = self.load_weights()
 
@@ -53,13 +56,24 @@ class MetaAgent:
             return "ניטרלי"
         return "הימנעות"
 
+    def analyze(self, symbol: str, agent_scores: Dict[str, float] = None) -> Dict[str, object]:
+        """הרצת הסוכן: החזרת ציון כולל + המלצה"""
+        try:
+            if agent_scores is None:
+                return self.fallback()
+            
+            print("\n--- הפעלת MetaAgent ---")
+            total_score = self.consolidate_scores(agent_scores)
+            recommendation = self.investment_decision(total_score)
+            print(f"[=] ציון כולל: {round(total_score, 2)} | המלצה: {recommendation}")
+            return {
+                "score": round(total_score, 2),
+                "recommendation": recommendation
+            }
+        except Exception as e:
+            self.handle_error(e)
+            return self.fallback()
+
     def run(self, agent_scores: Dict[str, float]) -> Dict[str, object]:
         """הרצת הסוכן: החזרת ציון כולל + המלצה"""
-        print("\n--- הפעלת MetaAgent ---")
-        total_score = self.consolidate_scores(agent_scores)
-        recommendation = self.investment_decision(total_score)
-        print(f"[=] ציון כולל: {round(total_score, 2)} | המלצה: {recommendation}")
-        return {
-            "score": round(total_score, 2),
-            "recommendation": recommendation
-        }
+        return self.analyze("", agent_scores)

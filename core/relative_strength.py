@@ -20,7 +20,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
-from utils.data_fetcher import data_fetcher
+from core.base.base_agent import BaseAgent
 from utils.logger import logger
 from utils.validators import validate_symbol, validate_stock_data
 
@@ -45,7 +45,7 @@ class RSComparison:
     vs_peers: float
     overall_rank: float
 
-class RelativeStrengthAgent:
+class RelativeStrengthAgent(BaseAgent):
     """
     סוכן מתקדם לחישוב חוזק יחסי (RS) של מניה
     
@@ -61,7 +61,7 @@ class RelativeStrengthAgent:
     
     def __init__(self, config=None):
         """אתחול הסוכן עם הגדרות מתקדמות"""
-        self.config = config or {}
+        super().__init__(config)
         
         # הגדרות מתקדמות
         self.lookback_periods = {
@@ -115,9 +115,11 @@ class RelativeStrengthAgent:
             if not validate_symbol(symbol):
                 return self._error_response("סימבול לא תקין")
             
-            # שליפת נתונים
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
             if price_df is None:
-                price_df = data_fetcher.fetch_prices(symbol, period="1y")
+                price_df = self.get_stock_data(symbol, days=365)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             if not validate_stock_data(price_df):
                 return self._error_response("נתוני מחיר לא תקינים")
@@ -158,8 +160,8 @@ class RelativeStrengthAgent:
             return result
             
         except Exception as e:
-            logger.error(f"Error in Relative Strength analysis for {symbol}: {str(e)}")
-            return self._error_response(f"שגיאה בניתוח: {str(e)}")
+            self.handle_error(e)
+            return self.fallback()
     
     def _calculate_rs_metrics(self, symbol: str, price_df: pd.DataFrame) -> RelativeStrengthMetrics:
         """חישוב מדדי RS בסיסיים"""

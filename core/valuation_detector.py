@@ -21,6 +21,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
+from core.base.base_agent import BaseAgent
 from utils.data_fetcher import data_fetcher
 from utils.credentials import APICredentials
 from utils.fmp_utils import fmp_client
@@ -47,11 +48,12 @@ class SectorComparison:
     percentile_rank: float
     relative_discount: float
 
-class ValuationDetector:
+class ValuationDetector(BaseAgent):
     def __init__(self, config=None):
         """
         אתחול הסוכן המתקדם לניתוח הערכה
         """
+        super().__init__(config)
         cfg = config or {}
         self.undervaluation_threshold = cfg.get("undervaluation_threshold", 20.0)  # 20% discount
         self.overvaluation_threshold = cfg.get("overvaluation_threshold", 50.0)   # 50% premium
@@ -322,14 +324,16 @@ class ValuationDetector:
         ניתוח מתקדם של אנומליות הערכה
         """
         try:
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=365)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
             # Fetch valuation metrics
             valuation_metrics = self._fetch_valuation_metrics(symbol)
             if not valuation_metrics:
-                return {
-                    "score": 50,
-                    "explanation": "לא ניתן לקבל נתוני הערכה",
-                    "details": {"error": "no_valuation_data"}
-                }
+                return self.fallback()
             
             # Get sector comparison
             sector_comparison = self._get_sector_benchmarks(symbol)
@@ -394,7 +398,7 @@ class ValuationDetector:
                     "type": "valuation_anomaly",
                     "score": final_score,
                     "reason": explanation,
-                    "confidence": round(valuation_metrics.get("pe_ratio", 0) / 50, 3),  # Normalized confidence
+                    "confidence": round(valuation_metrics.pe_ratio / 50, 3),  # Normalized confidence
                     "details": {
                         "relative_discount": round(sector_comparison.relative_discount, 2),
                         "anomaly_count": len(anomalies),
@@ -418,14 +422,8 @@ class ValuationDetector:
             }
             
         except Exception as e:
-            return {
-                "score": 50,
-                "explanation": f"שגיאה בניתוח הערכה: {str(e)}",
-                "details": {
-                    "error": str(e),
-                    "symbol": symbol
-                }
-            }
+            self.handle_error(e)
+            return self.fallback()
 
     def get_valuation_summary(self, symbol: str) -> Dict:
         """

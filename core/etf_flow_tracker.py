@@ -12,12 +12,13 @@ from typing import Dict, List, Optional, Tuple, Any
 import logging
 from datetime import datetime, timedelta
 
+from core.base.base_agent import BaseAgent
 from utils.logger import get_agent_logger
 from utils.validators import validate_symbol, validate_stock_data
 
 logger = get_agent_logger("ETFFlowTracker")
 
-class ETFFlowTracker:
+class ETFFlowTracker(BaseAgent):
     """
     סוכן למעקב אחר זרימות ETF
     
@@ -28,8 +29,9 @@ class ETFFlowTracker:
     - הזדמנויות השקעה
     """
     
-    def __init__(self):
+    def __init__(self, config=None):
         """אתחול הסוכן"""
+        super().__init__(config)
         self.name = "ETFFlowTracker"
         self.description = "מעקב אחר זרימות ETF"
         self.version = "1.0.0"
@@ -86,24 +88,34 @@ class ETFFlowTracker:
         
         logger.info(f"אתחול {self.name} v{self.version}")
     
-    def analyze(self, etf_data: Dict[str, pd.DataFrame], 
-                aum_data: Dict[str, pd.DataFrame] = None) -> Dict[str, Any]:
+    def analyze(self, symbol: str, price_df: pd.DataFrame = None, **kwargs) -> Dict[str, Any]:
         """
         ניתוח זרימות ETF
         
         Args:
-            etf_data: מילון עם נתוני ETFs (ETF -> DataFrame)
-            aum_data: נתוני שווי נכסים (אופציונלי)
+            symbol: סימול המניה
+            price_df: DataFrame עם נתוני מחיר
+            **kwargs: פרמטרים נוספים
             
         Returns:
             Dict[str, Any]: תוצאות הניתוח
         """
         try:
-            logger.info("התחלת ניתוח זרימות ETF")
+            self.log("התחלת ניתוח זרימות ETF")
+            
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
+            # יצירת מילון נתוני ETF (לצורך תאימות)
+            etf_data = {symbol: price_df}
+            aum_data = kwargs.get('aum_data')
             
             # אימות נתונים
             if not etf_data:
-                return self._create_error_result("אין נתוני ETF")
+                return self.fallback()
             
             # ניתוח זרימות נפח
             volume_flow_analysis = self._analyze_volume_flows(etf_data)
@@ -151,12 +163,12 @@ class ETFFlowTracker:
                 'status': 'success'
             }
             
-            logger.info("ניתוח זרימות ETF הושלם")
+            self.log("ניתוח זרימות ETF הושלם")
             return result
             
         except Exception as e:
-            logger.error(f"שגיאה בניתוח זרימות ETF: {str(e)}")
-            return self._create_error_result(f"שגיאה בניתוח: {str(e)}")
+            self.handle_error(e)
+            return self.fallback()
     
     def _analyze_volume_flows(self, etf_data: Dict[str, pd.DataFrame]) -> Dict[str, Any]:
         """ניתוח זרימות נפח"""

@@ -21,7 +21,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
-from utils.data_fetcher import data_fetcher
+from core.base.base_agent import BaseAgent
 from utils.constants import VCP_THRESHOLDS, TIME_PERIODS
 import logging
 
@@ -54,7 +54,7 @@ class VCPAnalysis:
     time_analysis: Dict
     breakout_potential: float
 
-class VCPSuperPatternAgent:
+class VCPSuperPatternAgent(BaseAgent):
     """
     סוכן מתקדם לזיהוי תבניות VCP מתקדמות
     
@@ -71,7 +71,7 @@ class VCPSuperPatternAgent:
     
     def __init__(self, config=None):
         """אתחול הסוכן עם הגדרות מתקדמות"""
-        self.config = config or {}
+        super().__init__(config)
         
         # הגדרות מתקדמות
         self.vcp_thresholds = {
@@ -567,31 +567,11 @@ class VCPSuperPatternAgent:
         ניתוח מתקדם של תבניות VCP
         """
         try:
-            # אחזור נתונים
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
             if price_df is None:
-                price_df = data_fetcher.get_price_history(symbol, period='6mo')
-            
-            if price_df is None or price_df.empty:
-                return {
-                    "score": 50,
-                    "explanation": "לא ניתן לאחזר נתוני מחיר",
-                    "signal": {
-                        "type": "vcp_pattern",
-                        "score": 50,
-                        "reason": "לא ניתן לאחזר נתוני מחיר",
-                        "confidence": 0.5,
-                        "details": {
-                            "patterns_count": 0,
-                            "avg_contraction_ratio": 1.0,
-                            "volume_trend": "unknown"
-                        }
-                    },
-                    "details": {
-                        "patterns": [],
-                        "analysis": {},
-                        "recommendations": []
-                    }
-                }
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             # זיהוי תבניות VCP
             patterns = self._detect_vcp_patterns(price_df)
@@ -668,27 +648,8 @@ class VCPSuperPatternAgent:
             }
             
         except Exception as e:
-            logger.error(f"Error in VCPSuperPatternAgent.analyze: {e}")
-            return {
-                "score": 50,
-                "explanation": f"שגיאה בניתוח: {str(e)}",
-                "signal": {
-                    "type": "vcp_pattern",
-                    "score": 50,
-                    "reason": f"שגיאה בניתוח: {str(e)}",
-                    "confidence": 0.5,
-                    "details": {
-                        "patterns_count": 0,
-                        "avg_contraction_ratio": 1.0,
-                        "volume_trend": "error"
-                    }
-                },
-                "details": {
-                    "patterns": [],
-                    "analysis": {},
-                    "recommendations": []
-                }
-            }
+            self.handle_error(e)
+            return self.fallback()
 
     def _generate_recommendations(self, patterns: List[VCPPattern], analysis: VCPAnalysis) -> List[str]:
         """

@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
+from core.base.base_agent import BaseAgent
 
-class BreakoutRetestRecognizer:
+class BreakoutRetestRecognizer(BaseAgent):
     def __init__(self, symbol=None, config=None):
+        super().__init__(config)
         self.symbol = symbol
         cfg = config or {}
         self.lookback = cfg.get("lookback", 120)
@@ -102,14 +104,19 @@ class BreakoutRetestRecognizer:
 
     def analyze(self, symbol, price_df=None):
         """Standard analyze method for AlphaScoreEngine compatibility"""
-        if price_df is None or price_df.empty:
-            return {
-                "score": 1,
-                "explanation": "אין נתוני מחיר זמינים",
-                "details": {}
-            }
-        self.symbol = symbol
-        return self._analyze_internal(price_df)
+        try:
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
+            self.symbol = symbol
+            return self._analyze_internal(price_df)
+            
+        except Exception as e:
+            self.handle_error(e)
+            return self.fallback()
 
     def _analyze_internal(self, df):
         df = df[-self.lookback:].reset_index(drop=True).copy()

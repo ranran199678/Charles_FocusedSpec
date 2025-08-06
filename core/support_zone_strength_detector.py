@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from core.base.base_agent import BaseAgent
 
 def compute_volume_profile(price_df, price_step=0.005):
     lows = price_df['low']
@@ -67,8 +68,9 @@ def find_double_top(highs, threshold=0.01):
         return True, idxs
     return False, []
 
-class SupportZoneStrengthDetector:
+class SupportZoneStrengthDetector(BaseAgent):
     def __init__(self, config=None):
+        super().__init__(config)
         cfg = config or {}
         self.window = cfg.get("window", 50)
         self.sensitivity = cfg.get("sensitivity", 0.012)
@@ -102,13 +104,14 @@ class SupportZoneStrengthDetector:
 
     def analyze(self, symbol, price_df=None):
         """Standard analyze method for AlphaScoreEngine compatibility"""
-        if price_df is None or price_df.empty:
-            return {
-                "score": 1,
-                "explanation": "אין נתוני מחיר זמינים",
-                "details": {}
-            }
-        result = self._analyze_internal(symbol, price_df)
+        try:
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
+            result = self._analyze_internal(symbol, price_df)
         # Convert the result to the expected format
         if isinstance(result, dict) and "support_zones" in result:
             # Calculate a score based on the zones found
@@ -139,6 +142,10 @@ class SupportZoneStrengthDetector:
                 "explanation": "Error analyzing support/resistance zones",
                 "details": result
             }
+            
+        except Exception as e:
+            self.handle_error(e)
+            return self.fallback()
 
     def _analyze_internal(self, symbol, price_df):
         if price_df.shape[0] < self.window + 10:

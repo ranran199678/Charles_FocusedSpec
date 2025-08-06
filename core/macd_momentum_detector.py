@@ -355,19 +355,14 @@ class MACDMomentumDetector(BaseAgent):
             Dict עם score, explanation, details
         """
         try:
-            if price_df is None or price_df.empty:
-                return {
-                    "score": 50,
-                    "explanation": "אין נתוני מחיר זמינים לניתוח MACD",
-                    "details": {}
-                }
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=90)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             if len(price_df) < 30:
-                return {
-                    "score": 50,
-                    "explanation": "אין מספיק נתונים לניתוח MACD מתקדם",
-                    "details": {}
-                }
+                return self.fallback()
             
             # חישוב אינדיקטורי MACD
             df = self._calculate_macd_indicators(price_df)
@@ -422,9 +417,5 @@ class MACDMomentumDetector(BaseAgent):
             }
             
         except Exception as e:
-            self.log(f"שגיאה בניתוח MACD עבור {symbol}: {e}")
-            return {
-                "score": 50,
-                "explanation": f"שגיאה בניתוח MACD: {str(e)}",
-                "details": {}
-            }
+            self.handle_error(e)
+            return self.fallback()

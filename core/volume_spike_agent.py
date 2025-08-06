@@ -21,7 +21,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
-from utils.data_fetcher import data_fetcher
+from core.base.base_agent import BaseAgent
 from utils.constants import VOLUME_THRESHOLDS, TIME_PERIODS
 import logging
 
@@ -54,7 +54,7 @@ class VolumeAnalysis:
     time_analysis: Dict
     price_volume_correlation: float
 
-class VolumeSpikeAgent:
+class VolumeSpikeAgent(BaseAgent):
     """
     סוכן מתקדם לזיהוי קפיצות נפח משמעותיות
     
@@ -71,7 +71,7 @@ class VolumeSpikeAgent:
     
     def __init__(self, config=None):
         """אתחול הסוכן עם הגדרות מתקדמות"""
-        self.config = config or {}
+        super().__init__(config)
         
         # הגדרות מתקדמות
         self.volume_thresholds = {
@@ -498,31 +498,11 @@ class VolumeSpikeAgent:
         ניתוח מתקדם של קפיצות נפח
         """
         try:
-            # אחזור נתונים
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
             if price_df is None:
-                price_df = data_fetcher.get_price_history(symbol, period='6mo')
-            
-            if price_df is None or price_df.empty:
-                return {
-                    "score": 50,
-                    "explanation": "לא ניתן לאחזר נתוני מחיר",
-                    "signal": {
-                        "type": "volume_spike",
-                        "score": 50,
-                        "reason": "לא ניתן לאחזר נתוני מחיר",
-                        "confidence": 0.5,
-                        "details": {
-                            "spikes_count": 0,
-                            "avg_volume_ratio": 1.0,
-                            "volume_trend": "unknown"
-                        }
-                    },
-                    "details": {
-                        "spikes": [],
-                        "analysis": {},
-                        "recommendations": []
-                    }
-                }
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             # חישוב מדדי נפח
             volume_metrics = self._calculate_volume_metrics(price_df)
@@ -601,27 +581,8 @@ class VolumeSpikeAgent:
             }
             
         except Exception as e:
-            logger.error(f"Error in VolumeSpikeAgent.analyze: {e}")
-            return {
-                "score": 50,
-                "explanation": f"שגיאה בניתוח: {str(e)}",
-                "signal": {
-                    "type": "volume_spike",
-                    "score": 50,
-                    "reason": f"שגיאה בניתוח: {str(e)}",
-                    "confidence": 0.5,
-                    "details": {
-                        "spikes_count": 0,
-                        "avg_volume_ratio": 1.0,
-                        "volume_trend": "error"
-                    }
-                },
-                "details": {
-                    "spikes": [],
-                    "analysis": {},
-                    "recommendations": []
-                }
-            }
+            self.handle_error(e)
+            return self.fallback()
 
     def _generate_recommendations(self, spikes: List[VolumeSpike], analysis: VolumeAnalysis) -> List[str]:
         """

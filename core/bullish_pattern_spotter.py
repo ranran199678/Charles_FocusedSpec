@@ -28,11 +28,14 @@ class BullishPatternSpotter(BaseAgent):
         מנתח תבניות בולשיות מתקדמות במניה
         """
         try:
-            if price_df is None or price_df.empty:
-                return self._get_dummy_result("אין נתוני מחיר זמינים")
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             if len(price_df) < 30:
-                return self._get_dummy_result("לא מספיק נתונים לניתוח תבניות מתקדמות")
+                return self.fallback()
             
             # זיהוי תבניות קנדלסטיק בסיסיות
             candlestick_patterns = self._identify_candlestick_patterns(price_df)
@@ -69,8 +72,8 @@ class BullishPatternSpotter(BaseAgent):
             }
             
         except Exception as e:
-            self.log(f"שגיאה בזיהוי תבניות בולשיות מתקדמות: {str(e)}")
-            return self._get_dummy_result(f"שגיאה: {str(e)}")
+            self.handle_error(e)
+            return self.fallback()
 
     def _identify_candlestick_patterns(self, price_df: pd.DataFrame) -> Dict:
         """זיהוי תבניות קנדלסטיק בסיסיות"""

@@ -29,11 +29,14 @@ class EnhancedAdvancedAnalyzer(BaseAgent):
         ניתוח מתקדם עם נתוני שוק מקיפים
         """
         try:
-            if price_df is None or price_df.empty:
-                return self._get_dummy_result("אין נתוני מחיר זמינים")
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
             
             if len(price_df) < 50:
-                return self._get_dummy_result("לא מספיק נתונים לניתוח מתקדם")
+                return self.fallback()
             
             # קבלת נתוני שוק מקיפים
             market_data = self.market_connector.get_comprehensive_market_data(symbol)
@@ -91,8 +94,8 @@ class EnhancedAdvancedAnalyzer(BaseAgent):
             }
             
         except Exception as e:
-            self.log(f"שגיאה בניתוח מתקדם משופר: {str(e)}")
-            return self._get_dummy_result(f"שגיאה: {str(e)}")
+            self.handle_error(e)
+            return self.fallback()
 
     def _analyze_market_relative_enhanced(self, symbol: str, price_df: pd.DataFrame, market_data: Dict) -> Dict:
         """ניתוח יחסי לשוק משופר עם נתונים אמיתיים"""
@@ -829,19 +832,3 @@ class EnhancedAdvancedAnalyzer(BaseAgent):
         
         return recommendations
 
-    def _get_dummy_result(self, message: str) -> Dict:
-        """תוצאה ריקה במקרה של שגיאה"""
-        return {
-            "score": 50,
-            "explanation": message,
-            "details": {
-                "complex_patterns": {"detected_count": 0, "total_strength": 0},
-                "market_analysis": {"overall_score": 50},
-                "volume_analysis": {"overall_score": 50},
-                "trend_analysis": {"strength": 50},
-                "support_resistance": {"position": "middle"},
-                "market_sentiment": {"vix_sentiment": "לא ידוע", "market_trend": "לא ידוע"},
-                "recommendations": ["אין מספיק נתונים לניתוח"]
-            },
-            "timestamp": datetime.now().isoformat()
-        } 

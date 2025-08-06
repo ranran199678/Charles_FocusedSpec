@@ -2,8 +2,9 @@
 
 import numpy as np
 import pandas as pd
+from core.base.base_agent import BaseAgent
 
-class VolumeTensionMeter:
+class VolumeTensionMeter(BaseAgent):
     """
     Ultimate Volume Tension Meter – גרסת מחקר/תוכנית עסקית:
     - זיהוי Volume Contraction Pattern (VCP), Squeeze, Spike.
@@ -13,6 +14,7 @@ class VolumeTensionMeter:
     """
 
     def __init__(self, config=None):
+        super().__init__(config)
         cfg = config or {}
         self.window = cfg.get("window", 20)
         self.squeeze_threshold = cfg.get("squeeze_threshold", 0.25)
@@ -68,85 +70,95 @@ class VolumeTensionMeter:
         band_width = (upper - lower) / (rolling_mean + 1e-8)
         return band_width
 
-    def analyze(self, symbol, price_df):
-        volume = price_df['volume']
-        # 1. בדיקת Squeeze ו-Expansion (Bollinger)
-        band_width = self.rolling_bandwidth(volume)
-        last_band = band_width.iloc[-1]
-        rolling_mean = volume.rolling(self.window).mean()
-        last_volume = volume.iloc[-1]
-
-        # 2. בדיקת VCP (שלושה גלי התכווצות)
-        vcp_score = self.detect_vcp(volume, cycles=self.vcp_cycles, drop=self.vcp_drop)
-
-        # 3. Spike במחזור (Z-score)
-        spike, spike_z = self.detect_spike(volume)
-
-        # 4. בדיקת Price Action – האם דשדוש/טווח צר
-        tight_range = self.analyze_price_action(price_df, window=self.window)
-
-        # 5. multi-timeframe (בדיקה שבועית בסיסית)
-        weekly_squeeze = False
+    def analyze(self, symbol, price_df=None):
         try:
-            price_df_week = price_df.copy()
-            price_df_week['week'] = pd.to_datetime(price_df_week['date']).dt.to_period('W')
-            weekly_volume = price_df_week.groupby('week')['volume'].sum()
-            weekly_band = self.rolling_bandwidth(weekly_volume)
-            weekly_squeeze = (weekly_band.iloc[-1] < self.squeeze_threshold)
-        except Exception:
-            pass
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=90)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
+            
+            volume = price_df['volume']
+            # 1. בדיקת Squeeze ו-Expansion (Bollinger)
+            band_width = self.rolling_bandwidth(volume)
+            last_band = band_width.iloc[-1]
+            rolling_mean = volume.rolling(self.window).mean()
+            last_volume = volume.iloc[-1]
 
-        details = {
-            "last_band_width": float(last_band) if not np.isnan(last_band) else None,
-            "last_volume": int(last_volume) if not np.isnan(last_volume) else None,
-            "vcp_score": vcp_score,
-            "spike": spike,
-            "spike_zscore": float(spike_z),
-            "tight_range": tight_range,
-            "weekly_squeeze": weekly_squeeze,
-            "window": self.window,
-        }
+            # 2. בדיקת VCP (שלושה גלי התכווצות)
+            vcp_score = self.detect_vcp(volume, cycles=self.vcp_cycles, drop=self.vcp_drop)
 
-        # *** דירוג חכם 1-100 ***
-        triggers = 0
-        reasons = []
+            # 3. Spike במחזור (Z-score)
+            spike, spike_z = self.detect_spike(volume)
 
-        if last_band < self.squeeze_threshold:
-            triggers += 1
-            reasons.append("Daily volume squeeze")
-        if weekly_squeeze:
-            triggers += 1
-            reasons.append("Weekly volume squeeze")
-        if vcp_score >= self.vcp_cycles:
-            triggers += 1
-            reasons.append(f"VCP: {vcp_score} contraction cycles")
-        if spike:
-            triggers += 1
-            reasons.append(f"Recent volume spike (z={spike_z:.2f})")
-        if tight_range:
-            triggers += 1
-            reasons.append("Tight price range")
+            # 4. בדיקת Price Action – האם דשדוש/טווח צר
+            tight_range = self.analyze_price_action(price_df, window=self.window)
 
-        # חישוב ניקוד מדורג
-        score = 20  # בסיס
-        if triggers >= 4:
-            score = 100
-        elif triggers == 3:
-            score = 85
-        elif triggers == 2:
-            score = 65
-        elif triggers == 1:
-            score = 40
-        else:
-            score = 10
+            # 5. multi-timeframe (בדיקה שבועית בסיסית)
+            weekly_squeeze = False
+            try:
+                price_df_week = price_df.copy()
+                price_df_week['week'] = pd.to_datetime(price_df_week['date']).dt.to_period('W')
+                weekly_volume = price_df_week.groupby('week')['volume'].sum()
+                weekly_band = self.rolling_bandwidth(weekly_volume)
+                weekly_squeeze = (weekly_band.iloc[-1] < self.squeeze_threshold)
+            except Exception:
+                pass
 
-        explanation = ", ".join(reasons) if reasons else "No significant volume contraction or spike detected."
+            details = {
+                "last_band_width": float(last_band) if not np.isnan(last_band) else None,
+                "last_volume": int(last_volume) if not np.isnan(last_volume) else None,
+                "vcp_score": vcp_score,
+                "spike": spike,
+                "spike_zscore": float(spike_z),
+                "tight_range": tight_range,
+                "weekly_squeeze": weekly_squeeze,
+                "window": self.window,
+            }
 
-        if self.debug:
-            print(f"[VolumeTensionMeter-ULTIMATE] {symbol=} score={score} triggers={triggers} reasons={reasons} details={details}")
+            # *** דירוג חכם 1-100 ***
+            triggers = 0
+            reasons = []
 
-        return {
-            "score": int(score),
-            "explanation": explanation,
-            "details": details
-        }
+            if last_band < self.squeeze_threshold:
+                triggers += 1
+                reasons.append("Daily volume squeeze")
+            if weekly_squeeze:
+                triggers += 1
+                reasons.append("Weekly volume squeeze")
+            if vcp_score >= self.vcp_cycles:
+                triggers += 1
+                reasons.append(f"VCP: {vcp_score} contraction cycles")
+            if spike:
+                triggers += 1
+                reasons.append(f"Recent volume spike (z={spike_z:.2f})")
+            if tight_range:
+                triggers += 1
+                reasons.append("Tight price range")
+
+            # חישוב ניקוד מדורג
+            score = 20  # בסיס
+            if triggers >= 4:
+                score = 100
+            elif triggers == 3:
+                score = 85
+            elif triggers == 2:
+                score = 65
+            elif triggers == 1:
+                score = 40
+            else:
+                score = 10
+
+            explanation = ", ".join(reasons) if reasons else "No significant volume contraction or spike detected."
+
+            if self.debug:
+                print(f"[VolumeTensionMeter-ULTIMATE] {symbol=} score={score} triggers={triggers} reasons={reasons} details={details}")
+
+            return {
+                "score": int(score),
+                "explanation": explanation,
+                "details": details
+            }
+        except Exception as e:
+            self.logger.error(f"Error analyzing volume tension for {symbol}: {e}")
+            return self.fallback()

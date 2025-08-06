@@ -15,6 +15,7 @@ from dataclasses import dataclass
 import warnings
 warnings.filterwarnings('ignore')
 
+from core.base.base_agent import BaseAgent
 from utils.logger import get_agent_logger
 from utils.validators import validate_symbol, validate_stock_data
 
@@ -33,7 +34,7 @@ class Pattern:
     breakout_direction: str
     strength: float
 
-class PatternDetector:
+class PatternDetector(BaseAgent):
     """
     סוכן זיהוי תבניות גרפיות
     """
@@ -42,16 +43,18 @@ class PatternDetector:
         """
         אתחול הסוכן
         """
+        super().__init__(config)
+        
         self.name = "Pattern Detector"
         self.version = "1.0.0"
         self.description = "מזהה תבניות גרפיות טכניות במניות"
 
         # הגדרות זיהוי
-        self.config = config or {}
-        self.min_pattern_bars = self.config.get("min_pattern_bars", 5)
-        self.max_pattern_bars = self.config.get("max_pattern_bars", 50)
-        self.confidence_threshold = self.config.get("confidence_threshold", 0.6)
-        self.volume_confirmation_threshold = self.config.get("volume_confirmation_threshold", 1.5)
+        cfg = config or {}
+        self.min_pattern_bars = cfg.get("min_pattern_bars", 5)
+        self.max_pattern_bars = cfg.get("max_pattern_bars", 50)
+        self.confidence_threshold = cfg.get("confidence_threshold", 0.6)
+        self.volume_confirmation_threshold = cfg.get("volume_confirmation_threshold", 1.5)
 
         # פרמטרים לניתוח
         self.lookback_period = 100  # תקופה לניתוח
@@ -61,7 +64,7 @@ class PatternDetector:
             'harmonic': ['gartley', 'butterfly', 'bat', 'crab', 'cypher']
         }
 
-        logger.info(f"Initialized {self.name} v{self.version}")
+        self.log(f"Initialized {self.name} v{self.version}")
 
     def analyze(self, symbol: str, price_df: pd.DataFrame = None,
                 volume_df: pd.DataFrame = None) -> Dict[str, Any]:
@@ -77,14 +80,17 @@ class PatternDetector:
             תוצאות הניתוח
         """
         try:
-            logger.info(f"Starting pattern analysis for {symbol}")
+            self.log(f"Starting pattern analysis for {symbol}")
 
             # אימות נתונים
             if not validate_symbol(symbol):
-                return self._create_error_result("Invalid symbol format")
+                return self.fallback()
 
-            if price_df is None or price_df.empty:
-                return self._create_error_result("No price data available")
+            # קבלת נתונים דרך מנהל הנתונים החכם אם לא הועברו
+            if price_df is None:
+                price_df = self.get_stock_data(symbol, days=180)
+                if price_df is None or price_df.empty:
+                    return self.fallback()
 
             # הכנת נתונים
             df = self._prepare_data(price_df, volume_df)
@@ -159,13 +165,12 @@ class PatternDetector:
                 }
             }
 
-            logger.info(f"Pattern analysis completed for {symbol} - Score: {score:.2f}, Confidence: {confidence}")
+            self.log(f"Pattern analysis completed for {symbol} - Score: {score:.2f}, Confidence: {confidence}")
             return result
 
         except Exception as e:
-            error_msg = f"Error analyzing patterns for {symbol}: {str(e)}"
-            logger.error(error_msg)
-            return self._create_error_result(error_msg)
+            self.handle_error(e)
+            return self.fallback()
 
     def _prepare_data(self, price_df: pd.DataFrame, volume_df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -1082,19 +1087,3 @@ class PatternDetector:
         except:
             return None
 
-    def _create_error_result(self, error_message: str) -> Dict[str, Any]:
-        """
-        יצירת תוצאת שגיאה
-        """
-        return {
-            "symbol": "UNKNOWN",
-            "timestamp": datetime.now().isoformat(),
-            "agent": self.name,
-            "version": self.version,
-            "score": 0,
-            "confidence": "Very Low",
-            "recommendation": f"Error: {error_message}",
-            "key_signals": [],
-            "analysis": {},
-            "error": error_message
-        } 
