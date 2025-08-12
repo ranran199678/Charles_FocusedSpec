@@ -3,7 +3,7 @@ import numpy as np
 from datetime import datetime, timedelta
 import requests
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from core.base.base_agent import BaseAgent
 
 # ייבוא DataFetcher במקום yfinance

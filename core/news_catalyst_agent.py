@@ -21,6 +21,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from core.base.base_agent import BaseAgent
+from utils.data_fetcher import compute_sentiment_label_score
 from utils.credentials import APICredentials
 from utils.fmp_utils import fmp_client
 
@@ -225,10 +226,23 @@ class NewsCatalystAgent(BaseAgent):
         }
 
     def _extract_sentiment_score(self, text: str) -> float:
-        """
-        Advanced sentiment analysis using keyword-based approach
-        (In production, this would use BERT or similar NLP model)
-        """
+        """Advanced sentiment analysis. Tries OpenAI/Vader via compute_sentiment_label_score, then falls back to keywords."""
+        # First try model-backed sentiment (OpenAI/Vader/fallback via utils)
+        try:
+            result = compute_sentiment_label_score(text)
+            label = str(result.get("label", "neutral")).lower()
+            score = float(result.get("score", 0.0))
+            # Map to signed score in [-1, 1]
+            if label == "negative" and score > 0:
+                score = -abs(score)
+            elif label == "neutral":
+                score = 0.0
+            # clip
+            return max(-1.0, min(1.0, score))
+        except Exception:
+            pass
+
+        # Fallback: keyword-based approach
         positive_words = [
             "strong", "growth", "beat", "exceed", "positive", "bullish", "optimistic",
             "success", "breakthrough", "innovative", "profitable", "revenue growth",

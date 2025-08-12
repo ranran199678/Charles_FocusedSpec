@@ -112,36 +112,36 @@ class SupportZoneStrengthDetector(BaseAgent):
                     return self.fallback()
             
             result = self._analyze_internal(symbol, price_df)
-        # Convert the result to the expected format
-        if isinstance(result, dict) and "support_zones" in result:
-            # Calculate a score based on the zones found
-            support_zones = result.get("support_zones", [])
-            resistance_zones = result.get("resistance_zones", [])
-            
-            # Calculate score based on number and strength of zones
-            score = 10  # Base score
-            if support_zones:
-                avg_support_score = sum(zone.get("score", 0) for zone in support_zones) / len(support_zones)
-                score += min(avg_support_score * 0.3, 40)
-            if resistance_zones:
-                avg_resistance_score = sum(zone.get("score", 0) for zone in resistance_zones) / len(resistance_zones)
-                score += min(avg_resistance_score * 0.3, 40)
-            
-            score = min(int(score), 100)
-            
-            explanation = f"Found {len(support_zones)} support zones and {len(resistance_zones)} resistance zones"
-            
-            return {
-                "score": score,
-                "explanation": explanation,
-                "details": result
-            }
-        else:
-            return {
-                "score": 1,
-                "explanation": "Error analyzing support/resistance zones",
-                "details": result
-            }
+            # Convert the result to the expected format
+            if isinstance(result, dict) and "support_zones" in result:
+                # Calculate a score based on the zones found
+                support_zones = result.get("support_zones", [])
+                resistance_zones = result.get("resistance_zones", [])
+                
+                # Calculate score based on number and strength of zones
+                score = 10  # Base score
+                if support_zones:
+                    avg_support_score = sum(zone.get("score", 0) for zone in support_zones) / len(support_zones)
+                    score += min(avg_support_score * 0.3, 40)
+                if resistance_zones:
+                    avg_resistance_score = sum(zone.get("score", 0) for zone in resistance_zones) / len(resistance_zones)
+                    score += min(avg_resistance_score * 0.3, 40)
+                
+                score = min(int(score), 100)
+                
+                explanation = f"Found {len(support_zones)} support zones and {len(resistance_zones)} resistance zones"
+                
+                return {
+                    "score": score,
+                    "explanation": explanation,
+                    "details": result
+                }
+            else:
+                return {
+                    "score": 1,
+                    "explanation": "Error analyzing support/resistance zones",
+                    "details": result
+                }
             
         except Exception as e:
             self.handle_error(e)

@@ -17,6 +17,7 @@ from collections import defaultdict
 
 from utils.logger import get_agent_logger
 from utils.validators import validate_symbol, validate_stock_data
+from utils.data_fetcher import compute_sentiment_label_score
 
 logger = get_agent_logger("media_buzz_tracker")
 
@@ -93,7 +94,7 @@ class MediaBuzzTracker:
                 symbol, news_analysis, social_analysis, historical_buzz
             )
 
-            # ניתוח סנטימנט
+            # ניתוח סנטימנט (משודרג דרך OpenAI/Vader כשזמין)
             sentiment_analysis = self._analyze_sentiment(
                 symbol, news_data, social_data
             )
@@ -315,7 +316,7 @@ class MediaBuzzTracker:
             return {"overall_trend": 1.0, "trend_direction": "neutral"}
 
     def _analyze_sentiment(self, symbol: str, news_data: List[Dict],
-                         social_data: List[Dict]) -> Dict[str, Any]:
+                          social_data: List[Dict]) -> Dict[str, Any]:
         """
         ניתוח סנטימנט
         """
@@ -334,29 +335,22 @@ class MediaBuzzTracker:
             if not all_texts:
                 return {"overall_sentiment": 0.5, "sentiment_score": 0.5}
 
-            # ניתוח סנטימנט בסיסי
-            positive_words = ['bullish', 'buy', 'strong', 'growth', 'positive', 'up', 'gain']
-            negative_words = ['bearish', 'sell', 'weak', 'decline', 'negative', 'down', 'loss']
-            
-            positive_count = sum(1 for text in all_texts 
-                               for word in positive_words 
-                               if word.lower() in text.lower())
-            negative_count = sum(1 for text in all_texts 
-                               for word in negative_words 
-                               if word.lower() in text.lower())
-            
-            total_count = positive_count + negative_count
-            if total_count == 0:
-                sentiment_score = 0.5
-            else:
-                sentiment_score = positive_count / total_count
+            # חישוב סנטימנט עם מודל (OpenAI/Vader) על טקסטים
+            scores_01 = []
+            for txt in all_texts[:100]:  # תקרה למניעת עלויות
+                try:
+                    res = compute_sentiment_label_score(txt)
+                    s = float(res.get('score', 0.0))  # תחום משוער: [-1, 1]
+                    scores_01.append((s + 1.0) / 2.0)  # מיפוי ל-[0,1]
+                except Exception:
+                    continue
+
+            sentiment_score = sum(scores_01) / len(scores_01) if scores_01 else 0.5
 
             return {
-                "overall_sentiment": sentiment_score,
-                "sentiment_score": sentiment_score,
-                "positive_mentions": positive_count,
-                "negative_mentions": negative_count,
-                "total_mentions": total_count,
+                "overall_sentiment": round(sentiment_score, 3),
+                "sentiment_score": round(sentiment_score, 3),
+                "samples": min(len(all_texts), 100),
                 "sentiment_trend": "positive" if sentiment_score > 0.6 else "negative" if sentiment_score < 0.4 else "neutral"
             }
 

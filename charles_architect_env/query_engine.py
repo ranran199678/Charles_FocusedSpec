@@ -2,16 +2,7 @@
 import ssl
 import httpx
 import os
-import openai  # ⬅️ הוספה חשובה!
-
-# ביטול בדיקות SSL בכל הרכיבים
-os.environ["CURL_CA_BUNDLE"] = ""
-os.environ["REQUESTS_CA_BUNDLE"] = ""
-ssl._create_default_https_context = ssl._create_unverified_context
-httpx._config.DEFAULT_CA_BUNDLE_PATH = None
-openai.verify_ssl = False  # ⬅️ הוספה קריטית!
-
-# ✅ המשך הקוד הרגיל
+import openai
 from datetime import datetime
 from dotenv import load_dotenv
 from langchain_core.documents import Document
@@ -21,10 +12,19 @@ from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda
+from openpyxl import Workbook
+import pandas as pd
+
+# ביטול בדיקות SSL
+os.environ["CURL_CA_BUNDLE"] = ""
+os.environ["REQUESTS_CA_BUNDLE"] = ""
+ssl._create_default_https_context = ssl._create_unverified_context
+httpx._config.DEFAULT_CA_BUNDLE_PATH = None
+openai.verify_ssl = False
 
 load_dotenv()
 
-VECTORSTORE_DIR = r"C:\Users\rani\Desktop\Charles_FocusedSpec\vectorstore"
+VECTORSTORE_DIR = r"G:\האחסון שלי\Charles_FocusedSpec\vectorstore"
 
 embeddings = OpenAIEmbeddings()
 db = Chroma(persist_directory=VECTORSTORE_DIR, embedding_function=embeddings)
@@ -57,13 +57,11 @@ def filter_documents(docs, filters, mode="strict"):
     for doc in docs:
         meta = doc.metadata
         score = 0
-
         if filters.get("categories"):
             if meta.get("category") in filters["categories"]:
                 score += 1
             elif mode == "strict":
                 continue
-
         if filters.get("min_date"):
             created_str = meta.get("created_at")
             if created_str:
@@ -72,34 +70,29 @@ def filter_documents(docs, filters, mode="strict"):
                     score += 1
                 elif mode == "strict":
                     continue
-
         if filters.get("folder_keywords"):
             source = meta.get("source", "")
             if any(folder in source for folder in filters["folder_keywords"]):
                 score += 1
             elif mode == "strict":
                 continue
-
         if filters.get("filename_keywords"):
             filename = meta.get("filename", "").lower()
             if any(kw in filename for kw in filters["filename_keywords"]):
                 score += 1
             elif mode == "strict":
                 continue
-
         if mode == "soft" and score > 0:
             result.append(doc)
         elif mode == "strict" and score == len(filters):
             result.append(doc)
         elif not filters:
             result.append(doc)
-
     return result
 
 def print_docs(input, filters=None, mode="strict"):
     docs = retriever.invoke(input)
     docs = filter_documents(docs, filters, mode)
-
     print("\n📄 מסמכים שנשלפו:")
     for doc in docs:
         meta = doc.metadata
@@ -116,10 +109,35 @@ def format_docs(docs):
         formatted.append(f"[📄 {meta.get('filename')} | 𞲂️ {meta.get('category')} | 📅 {meta.get('created_at')}\n{snippet}]")
     return "\n\n".join(formatted)
 
+def export_todo(response_text):
+    today = datetime.today().strftime("%Y-%m-%d")
+    md_file = f"TODO_{today}.md"
+    with open(md_file, "w", encoding="utf-8") as f:
+        f.write(f"# 📝 TO-DO Report – {today}\n\n{response_text}")
+
+    # שמירה לפי שורות עם קטגוריות לקובץ Excel
+    lines = response_text.splitlines()
+    rows = []
+    for line in lines:
+        if "–" in line:
+            parts = line.split("–")
+            filename = parts[0].replace("📄", "").strip(" -*")
+            task = parts[1].strip()
+            category = "other"
+            if "core/" in filename: category = "core"
+            elif "utils/" in filename: category = "utils"
+            elif "agents/" in filename: category = "agents"
+            rows.append({"category": category, "filename": filename, "task": task})
+
+    df = pd.DataFrame(rows)
+    df.to_excel(f"TODO_{today}.xlsx", index=False)
+
 def build_chain(question, filters=None, mode="strict"):
     docs = print_docs(question, filters, mode)
     context = format_docs(docs)
-    return chain.invoke({"question": question, "context": context}, config=RunnableConfig())
+    result = chain.invoke({"question": question, "context": context}, config=RunnableConfig())
+    export_todo(result)
+    return result
 
 chain = (
     RunnableLambda(lambda x: {"question": x["question"], "context": x["context"]}) |

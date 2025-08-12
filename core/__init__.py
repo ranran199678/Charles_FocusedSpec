@@ -31,14 +31,12 @@ from .moving_average_pressure_bot import MovingAveragePressureBot
 from .gap_detector_ultimate import GapDetectorUltimate
 from .breakout_retest_recognizer import BreakoutRetestRecognizer
 from .support_zone_strength_detector import SupportZoneStrengthDetector
-from .rsi_sniffer import RSISniffer
 from .parabolic_agent import ParabolicAgent
 from .volume_tension_meter import VolumeTensionMeter
 
 # Advanced Analysis Agents
 from .advanced_pattern_analyzer import AdvancedPatternAnalyzer
 from .trend_shift_agent import TrendShiftAgent
-from .trend_shift_detector import TrendShiftDetector
 from .profitability_metrics import ProfitabilityMetrics
 from .financials_parser import FinancialsParserAgent
 from .pattern_detector import PatternDetector
@@ -71,7 +69,6 @@ from .volume_spike_agent import VolumeSpikeAgent
 
 # Trend Analysis
 from .trend_detector import TrendDetector
-from .vwap_trend_agent import VWAPTrendAgent
 from .vwap_agent import VWAPAgent
 
 # Volatility & Risk

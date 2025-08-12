@@ -607,4 +607,3 @@ class VWAPAgent(BaseAgent):
         except Exception as e:
             self.handle_error(e)
             return self.fallback()
-            }

@@ -820,13 +820,16 @@ class FMPClient:
 # יצירת instance גלובלי
 fmp_client = FMPClient()
 
-# ייבוא SmartDataManager
-try:
-    from utils.smart_data_manager import smart_data_manager
-    SMART_DATA_AVAILABLE = True
-except ImportError:
-    SMART_DATA_AVAILABLE = False
-    logger.warning("SmartDataManager לא זמין - יוחזרו נתונים ישירות מ-API")
+# ייבוא דינמי של SmartDataManager כדי למנוע מעגלי ייבוא
+def _get_smart_data_manager():
+    try:
+        from utils.smart_data_manager import smart_data_manager  # type: ignore
+        return smart_data_manager
+    except Exception:
+        return None
+
+def _smart_data_available() -> bool:
+    return _get_smart_data_manager() is not None
 
 # פונקציות גלובליות לתאימות לאחור
 def fmp_get(endpoint: str, params: Optional[Dict] = None, verify_ssl: bool = True) -> Optional[Dict]:
@@ -888,8 +891,9 @@ def smart_get_price_data(symbol: str, days: int = 90, include_live: bool = True)
     Returns:
         DataFrame עם נתונים או None
     """
-    if SMART_DATA_AVAILABLE:
-        return smart_data_manager.get_stock_data(symbol, days, include_live)
+    sdm = _get_smart_data_manager()
+    if sdm is not None:
+        return sdm.get_stock_data(symbol, days, include_live)
     else:
         # fallback לפונקציה הרגילה
         return fmp_get_price_ohlcv_df(symbol, verify_ssl=False, limit_days=days)
@@ -905,8 +909,9 @@ def smart_get_multiple_stocks(symbols: List[str], days: int = 90) -> Dict[str, p
     Returns:
         מילון של DataFrames
     """
-    if SMART_DATA_AVAILABLE:
-        return smart_data_manager.get_multiple_stocks(symbols, days)
+    sdm = _get_smart_data_manager()
+    if sdm is not None:
+        return sdm.get_multiple_stocks(symbols, days)
     else:
         # fallback לפונקציות הרגילות
         results = {}

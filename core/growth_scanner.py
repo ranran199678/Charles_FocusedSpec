@@ -69,20 +69,20 @@ class GrowthScanner:
                 cf_data = cf_df.reset_index().to_dict('records')
             else:
                 cf_data = []
-                    
-                    # Combine data
-                    for i, income in enumerate(income_data):
-                        cf_item = cf_data[i] if i < len(cf_data) else {}
-                        
-                        financial_data.append({
-                            "date": income.get("date", ""),
-                            "revenue": income.get("revenue", 0) or 0,
-                            "netIncome": income.get("netIncome", 0) or 0,
-                            "operatingIncome": income.get("operatingIncome", 0) or 0,
-                            "freeCashFlow": cf_item.get("freeCashFlow", 0) or 0,
-                            "totalDebt": income.get("totalDebt", 0) or 0,
-                            "totalAssets": income.get("totalAssets", 0) or 0
-                        })
+
+            # Combine data
+            for i, income in enumerate(income_data):
+                cf_item = cf_data[i] if i < len(cf_data) else {}
+
+                financial_data.append({
+                    "date": income.get("date", ""),
+                    "revenue": income.get("revenue", 0) or 0,
+                    "netIncome": income.get("netIncome", 0) or 0,
+                    "operatingIncome": income.get("operatingIncome", 0) or 0,
+                    "freeCashFlow": cf_item.get("freeCashFlow", 0) or 0,
+                    "totalDebt": income.get("totalDebt", 0) or 0,
+                    "totalAssets": income.get("totalAssets", 0) or 0
+                })
                         
         except Exception as e:
             print(f"Error fetching financial data for {symbol}: {e}")

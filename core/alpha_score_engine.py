@@ -19,12 +19,11 @@ class AlphaScoreEngine:
     מנוע ציון אלפא - מחשב ציון כולל מכל הסוכנים
     """
     
-    # משקלים של הסוכנים
+    # משקלים של הסוכנים (רק סוכנים קיימים בפועל)
     AGENT_WEIGHTS = {
         "EnhancedAdvancedAnalyzer": 4,  # סוכן ניתוח טכני מתקדם - משקל גבוה
         "BullishPatternSpotter": 2,     # זיהוי תבניות בולשיות
         "ADXScoreAgent": 2,             # ניתוח מגמות
-        "RSISniffer": 2,                # ניתוח RSI
         "MACDMomentumDetector": 2,      # ניתוח מומנטום
         "ValuationDetector": 3,         # ניתוח הערכה
         "FinancialStabilityAgent": 3,   # יציבות פיננסית
@@ -35,14 +34,15 @@ class AlphaScoreEngine:
         "EarningsSurpriseTracker": 2,   # הפתעות רווחים
         "AnalystRatingAgent": 2,        # דירוג אנליסטים
         "GeopoliticalRiskMonitor": 1,   # סיכונים גיאופוליטיים
+        "EventScanner": 1,              # סורק אירועים
         "GapDetectorUltimate": 1,       # זיהוי פערים
         "CandlestickAgent": 1,          # ניתוח נרות
-        "VolumeSurgeDetector": 1,       # זיהוי גלי נפח
+        "VolumeSpikeAgent": 1,          # זיהוי גל נפח
         "GoldenCrossDetector": 1,       # זיהוי צלב זהב
         "BollingerSqueeze": 1,          # ניתוח Bollinger
         "SupportZoneStrengthDetector": 1, # ניתוח אזורי תמיכה
         "TrendDetector": 1,             # זיהוי מגמות
-        "TrendShiftDetector": 1,        # זיהוי שינויי מגמה
+        "TrendShiftAgent": 1,           # זיהוי שינויי מגמה
         "VReversalAgent": 1,            # זיהוי היפוכי V
         "ParabolicAgent": 1,            # זיהוי תנועות פרבוליות
         "ReturnForecaster": 1,          # חיזוי תשואות
@@ -50,11 +50,9 @@ class AlphaScoreEngine:
         "MidtermMomentumAgent": 1,      # מומנטום בינוני
         "MovingAveragePressureBot": 1,  # לחץ ממוצעים נעים
         "ATRScoreAgent": 1,             # ניתוח ATR
-        "ATRVolatilityAgent": 1,        # ניתוח תנודתיות ATR
         "MultiAgentValidator": 1,       # אימות רב-סוכן
         "HighConvictionOrchestrator": 1, # אורכיסטרטור ביטחון גבוה
         "BreakoutRetestRecognizer": 1,  # זיהוי פריצות
-        "BullishPatternSpotter": 1,     # זיהוי תבניות בולשיות
     }
 
     def __init__(self, config=None):
@@ -65,12 +63,11 @@ class AlphaScoreEngine:
         # טעינת קונפיגורציה
         self.cfg = self._load_config()
         
-        # אתחול הסוכנים
+        # אתחול הסוכנים (מסונכרן לקבצים הקיימים)
         self.agents = {
             "EnhancedAdvancedAnalyzer": try_import('core.enhanced_advanced_analyzer', 'EnhancedAdvancedAnalyzer')(self.cfg.get("EnhancedAdvancedAnalyzer")),
             "BullishPatternSpotter": try_import('core.bullish_pattern_spotter', 'BullishPatternSpotter')(self.cfg.get("BullishPatternSpotter")),
             "ADXScoreAgent": try_import('core.adx_score_agent', 'ADXScoreAgent')(self.cfg.get("ADXScoreAgent")),
-            "RSISniffer": try_import('core.rsi_sniffer', 'RSISniffer')(self.cfg.get("RSISniffer")),
             "MACDMomentumDetector": try_import('core.macd_momentum_detector', 'MACDMomentumDetector')(self.cfg.get("MACDMomentumDetector")),
             "ValuationDetector": try_import('core.valuation_detector', 'ValuationDetector')(self.cfg.get("ValuationDetector")),
             "FinancialStabilityAgent": try_import('core.financial_stability_agent', 'FinancialStabilityAgent')(self.cfg.get("FinancialStabilityAgent")),
@@ -81,14 +78,15 @@ class AlphaScoreEngine:
             "EarningsSurpriseTracker": try_import('core.earnings_surprise_tracker', 'EarningsSurpriseTracker')(self.cfg.get("EarningsSurpriseTracker")),
             "AnalystRatingAgent": try_import('core.analyst_rating_agent', 'AnalystRatingAgent')(self.cfg.get("AnalystRatingAgent")),
             "GeopoliticalRiskMonitor": try_import('core.geopolitical_risk_monitor', 'GeopoliticalRiskMonitor')(self.cfg.get("GeopoliticalRiskMonitor")),
+            "EventScanner": try_import('core.event_scanner', 'EventScanner')(self.cfg.get("EventScanner")),
             "GapDetectorUltimate": try_import('core.gap_detector_ultimate', 'GapDetectorUltimate')(self.cfg.get("GapDetectorUltimate")),
             "CandlestickAgent": try_import('core.candlestick_agent', 'CandlestickAgent')(self.cfg.get("CandlestickAgent")),
-            "ClassicVolumeSurgeDetector": try_import('core.classic_volume_surge_detector', 'ClassicVolumeSurgeDetector')(self.cfg.get("ClassicVolumeSurgeDetector")),
+            "VolumeSpikeAgent": try_import('core.volume_spike_agent', 'VolumeSpikeAgent')(self.cfg.get("VolumeSpikeAgent")),
             "GoldenCrossDetector": try_import('core.golden_cross_detector', 'GoldenCrossDetector')(self.cfg.get("GoldenCrossDetector")),
             "BollingerSqueeze": try_import('core.bollinger_squeeze', 'BollingerSqueeze')(self.cfg.get("BollingerSqueeze")),
             "SupportZoneStrengthDetector": try_import('core.support_zone_strength_detector', 'SupportZoneStrengthDetector')(self.cfg.get("SupportZoneStrengthDetector")),
             "TrendDetector": try_import('core.trend_detector', 'TrendDetector')(self.cfg.get("TrendDetector")),
-            "TrendShiftDetector": try_import('core.trend_shift_detector', 'TrendShiftDetector')(self.cfg.get("TrendShiftDetector")),
+            "TrendShiftAgent": try_import('core.trend_shift_agent', 'TrendShiftAgent')(self.cfg.get("TrendShiftAgent")),
             "VReversalAgent": try_import('core.v_reversal_agent', 'VReversalAgent')(self.cfg.get("VReversalAgent")),
             "ParabolicAgent": try_import('core.parabolic_agent', 'ParabolicAgent')(self.cfg.get("ParabolicAgent")),
             "ReturnForecaster": try_import('core.return_forecaster', 'ReturnForecaster')(self.cfg.get("ReturnForecaster")),
@@ -96,7 +94,6 @@ class AlphaScoreEngine:
             "MidtermMomentumAgent": try_import('core.midterm_momentum_agent', 'MidtermMomentumAgent')(self.cfg.get("MidtermMomentumAgent")),
             "MovingAveragePressureBot": try_import('core.moving_average_pressure_bot', 'MovingAveragePressureBot')(self.cfg.get("MovingAveragePressureBot")),
             "ATRScoreAgent": try_import('core.atr_score_agent', 'ATRScoreAgent')(self.cfg.get("ATRScoreAgent")),
-            "ATRVolatilityAgent": try_import('core.atr_volatility_agent', 'ATRVolatilityAgent')(self.cfg.get("ATRVolatilityAgent")),
             "MultiAgentValidator": try_import('core.multi_agent_validator', 'MultiAgentValidator')(self.cfg.get("MultiAgentValidator")),
             "HighConvictionOrchestrator": try_import('core.high_conviction_orchestrator', 'HighConvictionOrchestrator')(self.cfg.get("HighConvictionOrchestrator")),
             "BreakoutRetestRecognizer": try_import('core.breakout_retest_recognizer', 'BreakoutRetestRecognizer')(self.cfg.get("BreakoutRetestRecognizer")),
@@ -150,8 +147,8 @@ class AlphaScoreEngine:
                                 result = agent.analyze(symbol)
                             elif len(sig.parameters) == 3:
                                 # התאמה לסוכנים ספציפיים
-                                if agent_name == "TrendShiftDetector":
-                                    # TrendShiftDetector צריך symbol ב-__init__
+                                if agent_name == "TrendShiftAgent":
+                                    # TrendShiftAgent ייתכן ודורש symbol ב-__init__
                                     try:
                                         agent = type(agent)('TEST')  # יצירת instance חדש
                                         result = agent.analyze(symbol, price_data)

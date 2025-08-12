@@ -23,7 +23,7 @@ from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from collections import defaultdict
 import numpy as np
-from utils.data_fetcher import data_fetcher
+from utils.data_fetcher import data_fetcher, compute_sentiment_label_score
 from utils.credentials import APICredentials
 from utils.fmp_utils import fmp_client
 
@@ -98,9 +98,20 @@ class SentimentScorer:
         }
 
     def _extract_advanced_sentiment(self, text: str, source_type: str) -> Tuple[float, float]:
-        """
-        ניתוח סנטימנט מתקדם עם התחשבות בהקשר
-        """
+        """ניתוח סנטימנט מתקדם: מנסה OpenAI/Vader דרך compute_sentiment_label_score, ואז נופל למפתחי־מילים."""
+        # Try model-backed sentiment first
+        try:
+            res = compute_sentiment_label_score(text)
+            label = str(res.get('label', 'neutral')).lower()
+            raw = float(res.get('score', 0.0))
+            score = raw
+            if label == 'negative' and score > 0:
+                score = -abs(score)
+            if label == 'neutral':
+                score = 0.0
+            return max(-1.0, min(1.0, score)), 0.8  # assign medium-high confidence
+        except Exception:
+            pass
         text_lower = text.lower()
         
         # Clean text

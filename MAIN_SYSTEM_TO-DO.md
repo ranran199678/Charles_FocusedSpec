@@ -19,77 +19,61 @@
 - **סוכני ניתוח**: 73/35 (208% - מעבר לאפיון)
 - **מערכת נתונים**: 100% מורחבת מעבר לאפיון
 - **Dashboard**: 100% מורחב מעבר לאפיון
-- **Live Monitoring**: 100% מורחב מעבר לאפיון
+- **Live Monitoring**: קיים ודורש השלמות (Scheduler, Alerter, Cooldown)
 
 ---
 
 ## 🔴 HIGHEST PRIORITY - בעיות קריטיות
 
-### 1. **קובץ TO-DO ריק ב-core** (דחוף)
-- **קובץ**: `core/TO-DO.md`
-- **בעיה**: קובץ ריק לחלוטין
-- **פעולה נדרשת**: מילוי מפורט של משימות core
-- **תלות**: כל הסוכנים
-- **זמן משוער**: 2-3 שעות
+1) מתזמן מערכת (Scheduler)
+- קובץ חדש: `scheduler.py`
+- דרישות: Batch יומי 18:00 (סריקה+דוחות+אימייל), Live 09:30–16:00 (N-דקות, טריגרים), לוגים ברורים, קונפיג ניתן לשינוי
+- Acceptance: משימות מתוזמנות עובדות; `log/scheduler.log` מתעדכן; עצירה נקייה
 
-### 2. **חסר קובץ requirements.txt ראשי** (דחוף)
-- **קובץ**: `requirements.txt` (בשורש)
-- **בעיה**: לא קיים
-- **פעולה נדרשת**: יצירת קובץ requirements.txt מלא
-- **תלות**: כל המערכת
-- **זמן משוער**: 1-2 שעות
+2) מודול התראות (Alerter)
+- קובץ חדש: `utils/alerter.py`
+- דרישות: Email (SMTP/yagmail), אופציונלי Telegram/Twilio; Rate limiting+Aggregation; שילוב ב-Live/Batch/UI
+- Acceptance: שליחת התראות תקינה; ריסון הצפה; הפעלה/כיבוי דרך config
 
-### 3. **חסר קובץ .env.example** (דחוף)
-- **קובץ**: `.env.example` (בשורש)
-- **בעיה**: לא קיים
-- **פעולה נדרשת**: יצירת קובץ .env.example עם כל מפתחות API
-- **תלות**: כל המערכת
-- **זמן משוער**: 30 דקות
+3) מחולל דוחות (Report Generator)
+- קובץ חדש: `utils/report_generator.py`
+- דרישות: Excel (Sheet ראשי+פירוט), PDF תקצירי; שילוב ב-Dashboard (כפתור הורדה) וב-Scheduler; שליחת קובץ במייל
+- Acceptance: קבצים נוצרים ב-`outputs/`; כפתור הורדה עובד; שילוב עם Alerter
 
-### 4. **חסר קובץ main.py ראשי** (דחוף)
-- **קובץ**: `main.py` (בשורש)
-- **בעיה**: לא קיים
-- **פעולה נדרשת**: יצירת נקודת כניסה ראשית למערכת
-- **תלות**: כל המערכת
-- **זמן משוער**: 2-3 שעות
+4) יישור מנוע אלפא (רשימת סוכנים בפועל)
+- קובץ: `core/alpha_score_engine.py`
+- דרישות: להסיר רפרנסים לסוכנים לא קיימים (למשל RSISniffer אם חסר), ליישר שמות לסוכנים הקיימים
+- Acceptance: `tests/test_alpha_score_engine.py` עובר; אין ImportErrors
+
+5) יישור TrendShift (שם אחיד וקובץ קיים)
+- קבצים: `live/multi_agent_runner.py`, `tests/test_trend_shift_detector.py`, `core/trend_shift_*`
+- דרישות: ליצור `core/trend_shift_detector.py` או ליישר ל-`TrendShiftAgent` בכל המקומות
+- Acceptance: ריצות Live/Tests עוברות עם שם אחיד
+
+6) `.env.example` (Rename והשלמה)
+- פעולה: שינוי שם `env_example.txt` ל-`.env.example` + השלמת המפתחות (OPENAI/FINNHUB/FMP/TWELVE/ALPHA_VANTAGE ...)
+- Acceptance: טעינת `.env` עובדת ב-`utils/credentials.py` וב־`charles_architect_env/*`
 
 ---
 
 ## 🟡 IMPORTANT - בעיות חשובות
 
-### 5. **חסרים קבצי __init__.py** (חשוב)
-- **קבצים חסרים**:
-  - `core/__init__.py` (קיים אבל ריק)
-  - `utils/__init__.py` (קיים אבל ריק)
-  - `live/__init__.py` (לא קיים)
-  - `dashboard/__init__.py` (לא קיים)
-  - `scripts/__init__.py` (קיים אבל ריק)
-  - `tests/__init__.py` (קיים אבל ריק)
-- **בעיה**: חבילות Python לא מוגדרות כראוי
-- **פעולה נדרשת**: הגדרת imports ו-exports
-- **תלות**: כל המערכת
-- **זמן משוער**: 1-2 שעות
+1) יישור `config/agent_config.yaml`
+- לנקות סוכנים כפולים/לא קיימים; לסנכרן שמות עם הקוד ועם מנוע אלפא
+- Acceptance: טעינה ללא שגיאות; אין הפניות לסוכנים שאינם קיימים
 
-### 6. **חסר קובץ setup.py** (חשוב)
-- **קובץ**: `setup.py` (בשורש)
-- **בעיה**: לא קיים
-- **פעולה נדרשת**: יצירת קובץ setup.py להתקנה
-- **תלות**: התקנת המערכת
-- **זמן משוער**: 1-2 שעות
+2) Data Resampling מנתוני Daily בלבד
+- לממש Weekly/Monthly מתוך Daily ב־`SmartDataManager` בהתאם להעדפת המשתמש
+- Acceptance: בדיקות עבור 3 סמלים; ביצועים תקינים; ללא פניות לנתוני weekly/monthly חיצוניים
 
-### 7. **חסר קובץ LICENSE** (חשוב)
-- **קובץ**: `LICENSE` (בשורש)
-- **בעיה**: לא קיים
-- **פעולה נדרשת**: יצירת קובץ רישיון MIT
-- **תלות**: הפצת המערכת
-- **זמן משוער**: 30 דקות
+3) בדיקות חדשות ל-Scheduler/Alerter/Reports
+- Acceptance: טסטי יחידה/אינטגרציה עוברים (`pytest` ירוק)
 
-### 8. **חסר קובץ CHANGELOG.md** (חשוב)
-- **קובץ**: `CHANGELOG.md` (בשורש)
-- **בעיה**: לא קיים
-- **פעולה נדרשת**: יצירת קובץ שינויי גרסאות
-- **תלות**: מעקב אחר שינויים
-- **זמן משוער**: 1-2 שעות
+4) Resampling שבועי/חודשי (חסר כרגע)
+- קוד: אין `resample` ב־`utils/smart_data_manager.py` – להוסיף `resample_to_weekly|monthly`
+- Acceptance: בדיקות התאמה ל־OHLCV aggregation; ביצועים טובים
+
+הבהרה: `requirements.txt`, `setup.py`, `LICENSE`, `CHANGELOG.md`, `main.py` – קיימים ומסודרים.
 
 ---
 
@@ -133,7 +117,6 @@
 - `gap_detector_ultimate.py` - זיהוי פערים מתקדם (תקין)
 - `breakout_retest_recognizer.py` - זיהוי פריצות (תקין)
 - `support_zone_strength_detector.py` - חוזק אזורי תמיכה (תקין)
-- `rsi_sniffer.py` - ניתוח RSI (תקין)
 - `parabolic_agent.py` - זיהוי תנועות פרבוליות (תקין)
 - `volume_tension_meter.py` - מדידת מתח נפח (תקין)
 - `return_forecaster.py` - חיזוי תשואות (תקין)
@@ -156,7 +139,7 @@
 #### **קבצים מתקדמים (🚀)**:
 - `advanced_pattern_analyzer.py` - ניתוח תבניות מתקדם (35KB)
 - `trend_shift_agent.py` - זיהוי שינויי מגמה (35KB)
-- `trend_shift_detector.py` - זיהוי שינויי מגמה (34KB)
+- `trend_shift_detector.py` - זיהוי שינויי מגמה (34KB) ← חסר בקוד בפועל; יש רפרנסים מרובים. ליצור או ליישר ל-`TrendShiftAgent`.
 - `profitability_metrics.py` - מדדי רווחיות (35KB)
 - `financials_parser.py` - פרסר פיננסי (41KB)
 - `pattern_detector.py` - זיהוי תבניות (46KB)
@@ -179,7 +162,7 @@
 - `relative_strength.py` - חוזק יחסי (23KB)
 - `short_interest_spike_agent.py` - זיהוי שורט (19KB)
 - `trend_detector.py` - זיהוי מגמות (18KB)
-- `vwap_trend_agent.py` - מגמות VWAP (18KB)
+- `vwap_trend_agent.py` - מגמות VWAP (18KB) ← לא נמצא בקוד, להסיר מהרשימות/בדיקות.
 - `vwap_agent.py` - ניתוח VWAP (18KB)
 - `volatility_score_agent.py` - ציון תנודתיות (15KB)
 - `atr_score_agent.py` - ציון ATR (16KB)
@@ -509,19 +492,18 @@
 
 ## 🎯 משימות לפי עדיפות
 
-### **עדיפות 1 - קריטי (1-2 ימים)**:
-1. יצירת `requirements.txt` ראשי
-2. יצירת `.env.example`
-3. יצירת `main.py` ראשי
-4. מילוי `core/TO-DO.md`
-5. הגדרת `__init__.py` קבצים
+### **עדיפות 1 - קריטי (1-3 ימים)**:
+1. Scheduler (`scheduler.py`)
+2. Alerter (`utils/alerter.py`)
+3. Report Generator (`utils/report_generator.py`)
+4. `.env.example` (rename+מפתחות)
+5. יישור מנוע אלפא (רשימת סוכנים בפועל)
+6. TrendShiftDetector/Agent – שם אחיד + קובץ תואם
 
 ### **עדיפות 2 - חשוב (3-5 ימים)**:
-1. יצירת `setup.py`
-2. יצירת `LICENSE`
-3. יצירת `CHANGELOG.md`
-4. תיקון קבצים קטנים
-5. השלמת סוכנים חסרים
+1. UI: כפתור הורדת דוח + תצוגת התראות
+2. Live: Cooldown/עצירה נקייה/שגיאות/פלט מסודר
+3. יישור `agent_config.yaml` והסרת כפילויות
 
 ### **עדיפות 3 - שיפור (1-2 שבועות)**:
 1. יצירת `CONTRIBUTING.md`
@@ -530,12 +512,10 @@
 4. הוספת בדיקות
 5. אופטימיזציה
 
-### **עדיפות 4 - הרחבה (2-4 שבועות)**:
-1. פיתוח מודלי ML מתקדמים
-2. הוספת כלי API נוספים
-3. שיפור Dashboard
-4. הוספת Backtesting
-5. שיפור Live Monitoring
+### **עדיפות 3 - שיפור (1-2 שבועות)**:
+1. קונקרנציה מבוקרת במנוע אלפא (קיצור זמן ≥30%)
+2. קאשינג אינדיקטורים/חדשות להורדת זמן חישוב (≥40%)
+3. הרחבת טסטים/כיסוי לקוד הקריטי
 
 ---
 
@@ -546,8 +526,8 @@
 - **סוכני ניתוח**: 208% ✅ (מעבר לאפיון)
 - **מערכת נתונים**: 100% ✅
 - **Dashboard**: 100% ✅
-- **Live Monitoring**: 100% ✅
-- **Testing**: 100% ✅
+- **Live Monitoring**: 80% 🔧 (דורש Scheduler/Alerter/Cooldown)
+- **Testing**: 80% 🔧 (להוסיף טסטים למודולים החדשים)
 - **Documentation**: 85% 🔧
 - **Configuration**: 90% 🔧
 - **Deployment**: 70% 🔧

@@ -1,4 +1,6 @@
 import requests
+import os
+import json
 import pandas as pd
 from datetime import datetime
 from utils.credentials import APICredentials
@@ -38,6 +40,96 @@ except Exception as e:
     summarizer = None
     logging.warning(f"⚠️ לא ניתן לטעון מודל summarizer - משתמש בפתרון חלופי: {e}")
 
+# כלים חלופיים קלים ל-NLP
+try:
+    from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer  # type: ignore
+    vader_analyzer = SentimentIntensityAnalyzer()
+except Exception:
+    vader_analyzer = None
+
+try:
+    from sumy.parsers.plaintext import PlaintextParser  # type: ignore
+    from sumy.nlp.tokenizers import Tokenizer  # type: ignore
+    from sumy.summarizers.lsa import LsaSummarizer  # type: ignore
+    sumy_available = True
+except Exception:
+    sumy_available = False
+
+def compute_sentiment_label_score(text: str) -> dict:
+    """החזרת label ו-score בהתאם לכלי הזמין (OpenAI → transformers → vader → fallback)."""
+    # 1) OpenAI (אם קיים מפתח)
+    try:
+        openai_key = APICredentials.get_openai_key()
+        if openai_key and text:
+            headers = {
+                "Authorization": f"Bearer {openai_key}",
+                "Content-Type": "application/json",
+            }
+            model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+            prompt = (
+                "You are a sentiment classifier for financial headlines. "
+                "Classify the sentiment as one of: positive, negative, neutral. "
+                "Also provide a score between -1 and 1 where positive is >0. Return pure JSON with keys 'label' and 'score'."
+            )
+            messages = [
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": text[:1500]},
+            ]
+            payload = {
+                "model": model,
+                "messages": messages,
+                "temperature": 0.0,
+                "response_format": {"type": "json_object"},
+                "max_tokens": 50,
+            }
+            resp = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, data=json.dumps(payload), timeout=20)
+            if resp.status_code == 200:
+                data = resp.json()
+                content = data.get("choices", [{}])[0].get("message", {}).get("content", "{}")
+                parsed = json.loads(content)
+                label = str(parsed.get("label", "neutral")).lower()
+                score = float(parsed.get("score", 0.0))
+                if label not in ("positive", "negative", "neutral"):
+                    label = "neutral"
+                # נרמל את score לטווח [-1,1]; נשמור כמו שהוא אם כבר
+                score = max(-1.0, min(1.0, score))
+                return {"label": label, "score": score}
+    except Exception:
+        pass
+
+    # 2) transformers מקומי
+    try:
+        if sentiment_classifier is not None and text:
+            res = sentiment_classifier(text[:512])[0]
+            label_raw = str(res.get('label', '')).lower()
+            score = float(res.get('score', 0.5))
+            if 'pos' in label_raw:
+                label = 'positive'
+            elif 'neg' in label_raw:
+                label = 'negative'
+            else:
+                label = 'neutral'
+            return {"label": label, "score": score}
+    except Exception:
+        pass
+    # 3) Vader
+    try:
+        if vader_analyzer is not None and text:
+            vs = vader_analyzer.polarity_scores(text)
+            compound = float(vs.get('compound', 0.0))
+            if compound >= 0.05:
+                return {"label": "positive", "score": compound}
+            elif compound <= -0.05:
+                return {"label": "negative", "score": compound}
+            else:
+                return {"label": "neutral", "score": compound}
+    except Exception:
+        pass
+    # 4) fallback פשוט
+    s = simple_sentiment_analysis(text)
+    label = 'positive' if s > 0.55 else 'negative' if s < 0.45 else 'neutral'
+    return {"label": label, "score": float(s)}
+
 # פונקציה חלופית לניתוח סנטימנט
 def simple_sentiment_analysis(text):
     """ניתוח סנטימנט פשוט ללא מודל ML"""
@@ -62,6 +154,9 @@ class DataFetcher:
         self.finnhub_key = APICredentials.get_finnhub_key()
         self.fmp_key = APICredentials.get_fmp_key()
         self.twelve_key = APICredentials.get_twelve_key()
+        self.polygon_key = APICredentials.get_polygon_key()
+        self.twitter_key = APICredentials.get_twitter_key()
+        self.reddit_creds = APICredentials.get_reddit_credentials()
 
         self.session = requests.Session()
         self.price_cache = {}
@@ -95,11 +190,15 @@ class DataFetcher:
             if df is None:
                 df = self._fallback_finnhub_prices(symbol, interval)
 
-            # 3. FMP
+            # 3. Polygon (אם יש מפתח)
+            if df is None:
+                df = self._fallback_polygon_prices(symbol, interval)
+
+            # 4. FMP
             if df is None:
                 df = self._fetch_fmp_prices(symbol, interval=interval)
 
-            # 4. TwelveData
+            # 5. TwelveData
             if df is None:
                 df = self._fallback_twelve_prices(symbol, interval)
 
@@ -170,6 +269,41 @@ class DataFetcher:
             return df
         # אם TwelveData לא מחזיר נתונים, ננסה Yahoo Finance
         return self._fallback_yahoo_prices(symbol, interval)
+
+    def _fallback_polygon_prices(self, symbol, interval="1day"):
+        """
+        שליפת נתוני מחירים מ-Polygon.io Aggregates API (אם קיים מפתח)
+        תומך בעיקר באינטרוול יומי.
+        """
+        try:
+            if not self.polygon_key:
+                return None
+            from datetime import datetime, timedelta
+            now = datetime.utcnow()
+            if interval in ("1day", "1d"):
+                multiplier, timespan, window_days = 1, "day", 365
+            else:
+                multiplier, timespan, window_days = 1, "day", 365
+            start = (now - timedelta(days=window_days)).strftime("%Y-%m-%d")
+            end = now.strftime("%Y-%m-%d")
+            url = (
+                f"https://api.polygon.io/v2/aggs/ticker/{symbol.upper()}/range/"
+                f"{multiplier}/{timespan}/{start}/{end}?adjusted=true&sort=desc&limit=50000&apiKey={self.polygon_key}"
+            )
+            data = self._safe_request(url)
+            results = data.get("results", []) if isinstance(data, dict) else []
+            if not results:
+                return None
+            df = pd.DataFrame(results)
+            # Polygon fields: t (timestamp ms), o,h,l,c,v
+            if not {'t','o','h','l','c','v'}.issubset(df.columns):
+                return None
+            df['timestamp'] = pd.to_datetime(df['t'], unit='ms')
+            df.set_index('timestamp', inplace=True)
+            df = df.rename(columns={'o':'open','h':'high','l':'low','c':'close','v':'volume'})
+            return df[['open','close','volume','high','low']]
+        except Exception:
+            return None
 
     def _fallback_yahoo_prices(self, symbol, interval="1day"):
         """
@@ -262,10 +396,20 @@ class DataFetcher:
 
     def summarize_text(self, text, max_length=60, min_length=20):
         if summarizer is None:
-            # פתרון חלופי - חיתוך טקסט פשוט
+            # נסה sumy
+            if sumy_available and text:
+                try:
+                    parser = PlaintextParser.from_string(text, Tokenizer('english'))
+                    lsa = LsaSummarizer()
+                    sentences = list(lsa(parser.document, 2))
+                    if sentences:
+                        s = ' '.join(str(s) for s in sentences)
+                        return s[:max_length] if len(s) > max_length else s
+                except Exception:
+                    pass
+            # חיתוך פשוט
             if len(text) <= max_length:
                 return text
-            # חיתוך חכם - מנסה לחתוך במשפט שלם
             words = text.split()
             summary = ""
             for word in words:
@@ -301,8 +445,8 @@ class DataFetcher:
 
     def fetch_news_batch(self, symbols: list, limit: int = 3) -> dict:
         result = {}
-        marketaux_key = "Dx8X1gzfxklRC5WETItJAncifB4bXp98EnSqzT6P"
-        newsdata_key = "pub_a54510d1206a48d39dd48b3b3b624a2f"
+        marketaux_key = APICredentials.get_marketaux_key()
+        newsdata_key = APICredentials.get_newsdata_key()
 
         for symbol in symbols:
             if symbol in self.news_cache:
@@ -319,7 +463,7 @@ class DataFetcher:
                 for item in articles[:limit]:
                     title = item.get("title", "")
                     summary = self.summarize_text(item.get("description", ""))
-                    sentiment = sentiment_classifier(title)[0] if sentiment_classifier and title else {}
+                    sentiment = compute_sentiment_label_score(f"{title}. {summary}")
                     headlines.append({
                         "title": title,
                         "summary": summary,
@@ -331,12 +475,36 @@ class DataFetcher:
                 for item in articles[:limit]:
                     title = item.get("title", "")
                     summary = self.summarize_text(item.get("description", ""))
-                    sentiment = sentiment_classifier(title)[0] if sentiment_classifier and title else {}
+                    sentiment = compute_sentiment_label_score(f"{title}. {summary}")
                     headlines.append({
                         "title": title,
                         "summary": summary,
                         "sentiment": sentiment
                     })
+
+            # נסיון משלים: Polygon News
+            if len(headlines) < limit:
+                poly_news = self.fetch_polygon_news(symbol, limit=limit)
+                for n in poly_news:
+                    if len(headlines) >= limit:
+                        break
+                    headlines.append(n)
+
+            # נסיון משלים: Twitter
+            if len(headlines) < limit:
+                tw = self.fetch_twitter_news(symbol, limit=limit)
+                for n in tw:
+                    if len(headlines) >= limit:
+                        break
+                    headlines.append(n)
+
+            # נסיון משלים: Reddit
+            if len(headlines) < limit:
+                rd = self.fetch_reddit_posts(symbol, limit=limit)
+                for n in rd:
+                    if len(headlines) >= limit:
+                        break
+                    headlines.append(n)
 
             if not headlines:
                 headlines.append({
@@ -348,6 +516,89 @@ class DataFetcher:
             self.news_cache[symbol] = headlines
             result[symbol] = headlines
         return result
+
+    def fetch_polygon_news(self, symbol: str, limit: int = 5) -> list:
+        """שליפת חדשות מ-Polygon (אם יש מפתח)."""
+        try:
+            if not self.polygon_key:
+                return []
+            url = f"https://api.polygon.io/v2/reference/news?ticker={symbol.upper()}&limit={limit}&apiKey={self.polygon_key}"
+            data = self._safe_request(url)
+            results = data.get('results', []) if isinstance(data, dict) else []
+            out = []
+            for item in results[:limit]:
+                title = item.get('title', '')
+                summary = self.summarize_text(item.get('description', ''))
+                published_at = item.get('published_utc', '')
+                out.append({
+                    'title': title,
+                    'summary': summary,
+                    'sentiment': {'label': 'neutral', 'score': 0.0},
+                    'source': item.get('publisher', {}).get('name', 'Polygon'),
+                    'published_at': published_at
+                })
+            return out
+        except Exception:
+            return []
+
+    def fetch_twitter_news(self, symbol: str, limit: int = 5) -> list:
+        """שליפת ציוצים רלוונטיים מטוויטר (אם יש Bearer)."""
+        try:
+            if not self.twitter_key:
+                return []
+            import requests
+            headers = {"Authorization": f"Bearer {self.twitter_key}"}
+            query = f"{symbol} (stock OR shares OR earnings) lang:en -is:retweet"
+            url = f"https://api.twitter.com/2/tweets/search/recent?query={requests.utils.quote(query)}&max_results=50&tweet.fields=created_at,lang"
+            r = requests.get(url, headers=headers, timeout=15)
+            r.raise_for_status()
+            data = r.json()
+            tweets = data.get('data', [])
+            out = []
+            for t in tweets:
+                text = t.get('text', '')
+                sent_score = simple_sentiment_analysis(text)
+                out.append({
+                    'title': text[:140],
+                    'summary': self.summarize_text(text, max_length=80, min_length=20),
+                    'sentiment': {'label': 'pos' if sent_score>0.55 else 'neg' if sent_score<0.45 else 'neutral', 'score': float(sent_score)},
+                    'source': 'Twitter',
+                    'published_at': t.get('created_at', '')
+                })
+                if len(out) >= limit:
+                    break
+            return out
+        except Exception:
+            return []
+
+    def fetch_reddit_posts(self, symbol: str, limit: int = 5) -> list:
+        """שליפת פוסטים רלוונטיים מרדיט באמצעות חיפוש ציבורי (דורש User-Agent)."""
+        try:
+            import requests
+            headers = {"User-Agent": self.reddit_creds.get('user_agent') or 'CharlesFocusedSpec/1.0'}
+            q = f"{symbol} stock"
+            url = f"https://www.reddit.com/search.json?q={requests.utils.quote(q)}&limit={limit}"
+            r = requests.get(url, headers=headers, timeout=15)
+            if r.status_code != 200:
+                return []
+            data = r.json()
+            children = data.get('data', {}).get('children', [])
+            out = []
+            for c in children:
+                d = c.get('data', {})
+                title = d.get('title', '')
+                summary = d.get('selftext', '')
+                sent_score = simple_sentiment_analysis(f"{title} {summary}")
+                out.append({
+                    'title': title,
+                    'summary': self.summarize_text(summary or title, max_length=100, min_length=20),
+                    'sentiment': {'label': 'pos' if sent_score>0.55 else 'neg' if sent_score<0.45 else 'neutral', 'score': float(sent_score)},
+                    'source': 'Reddit',
+                    'published_at': d.get('created_utc', '')
+                })
+            return out[:limit]
+        except Exception:
+            return []
 
     def fetch_alpha_vantage_news(self, symbol: str, limit: int = 5) -> list:
         """
@@ -670,12 +921,14 @@ class DataFetcher:
             # המרה לפורמט סטנדרטי
             headlines = []
             for article in filtered_articles[:limit]:
-                sentiment = sentiment_classifier(article["title"])[0] if sentiment_classifier and article["title"] else {"label": article["sentiment"], "score": 0.5}
+                title = article.get("title", "")
+                summ = article.get("summary", "")
+                sentiment = compute_sentiment_label_score(f"{title}. {summ}") if title or summ else {"label": article.get("sentiment", "neutral"), "score": 0.5}
                 headlines.append({
-                    "title": article["title"],
-                    "summary": self.summarize_text(article["summary"]),
+                    "title": title,
+                    "summary": self.summarize_text(summ),
                     "sentiment": sentiment,
-                    "source": article["source"],
+                    "source": article.get("source", ""),
                     "relevance_score": article.get("relevance_score", 0),
                     "quality_score": article.get("quality_score", 0)
                 })

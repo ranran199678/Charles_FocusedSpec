@@ -28,15 +28,58 @@ class APICredentials:
 
     @staticmethod
     def get_marketaux_key() -> str:
-        return os.getenv("MARKETAUX_API_KEY", "Dx8X1gzfxklRC5WETItJAncifB4bXp98EnSqzT6P")
+        # תומך גם במפתח בשם 'Marketaux'
+        return (
+            os.getenv("MARKETAUX_API_KEY")
+            or os.getenv("Marketaux")
+            or ""
+        )
 
     @staticmethod
     def get_newsdata_key() -> str:
-        return os.getenv("NEWSDATA_API_KEY", "pub_a54510d1206a48d39dd48b3b3b624a2f")
+        # תומך גם במפתח בשם 'NEWS_API'
+        return (
+            os.getenv("NEWSDATA_API_KEY")
+            or os.getenv("NEWS_API")
+            or ""
+        )
 
     @staticmethod
     def get_alpha_vantage_key() -> str:
         return os.getenv("ALPHA_VANTAGE_API_KEY", "")
+
+    @staticmethod
+    def get_polygon_key() -> str:
+        # תומך גם במפתח בשם 'POLYGON_IO' או 'Polygon.io'
+        return (
+            os.getenv("POLYGON_API_KEY")
+            or os.getenv("POLYGON_IO_API_KEY")
+            or os.getenv("POLYGON_IO")
+            or os.getenv("Polygon.io")
+            or ""
+        )
+
+    @staticmethod
+    def get_twitter_key() -> str:
+        # תומך גם ב-TWITTER_BEARER_TOKEN ובשם 'Twitter_API'
+        return (
+            os.getenv("TWITTER_API_KEY")
+            or os.getenv("TWITTER_BEARER_TOKEN")
+            or os.getenv("Twitter_API")
+            or ""
+        )
+
+    @staticmethod
+    def get_reddit_credentials() -> dict:
+        # תומך גם באיחוד בשם 'Reddit_API' אם נשמר כמחרוזת
+        return {
+            "client_id": os.getenv("REDDIT_CLIENT_ID", ""),
+            "client_secret": os.getenv("REDDIT_CLIENT_SECRET", ""),
+            "username": os.getenv("REDDIT_USERNAME", ""),
+            "password": os.getenv("REDDIT_PASSWORD", ""),
+            "user_agent": os.getenv("REDDIT_USER_AGENT", "CharlesFocusedSpec/1.0"),
+            "token": os.getenv("Reddit_API", "")
+        }
 
     @staticmethod
     def get_reuters_key() -> str:

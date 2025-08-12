@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-toolsai.jupyter",
+    "mikestead.dotenv",
+    "eamodio.gitlens",
+    "GrapeCity.gc-excelviewer",
+    "cursor.cursor"
+  ]
+}

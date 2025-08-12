@@ -26,16 +26,14 @@ altair>=5.0.0
 # Machine Learning & AI
 transformers>=4.46.0
 torch>=1.13.0
-tensorflow>=2.10.0
 scikit-learn>=1.0.0
 
 # Natural Language Processing
 nltk>=3.8
-spacy>=3.5.0
+#spacy>=3.5.0
 textblob>=0.17.0
 
 # Database & Storage
-sqlite3
 peewee>=3.18.0
 chromadb>=0.4.0
 
@@ -59,7 +57,7 @@ mypy>=1.0.0
 # Web & Networking
 websockets>=13.1
 aiohttp>=3.8.0
-asyncio
+#asyncio
 
 # Date & Time
 python-dateutil>=2.8.0
@@ -68,8 +66,8 @@ pytz>=2022.6
 # File Processing
 openpyxl>=3.1.0
 xlrd>=2.0.0
-gzip
-pathlib
+#gzip
+#pathlib
 
 # Security & Cryptography
 cryptography>=45.0.0

@@ -205,7 +205,7 @@ class AnalystRatingAgent(BaseAgent):
         """השוואה לתעשייה"""
         try:
             # שליפת מידע על התעשייה
-            company_info = self.fmp_client.get_company_profile(symbol)
+            company_info = self.fmp_client.fmp_get_company_profile(symbol)
             if not company_info:
                 return {"score": 50, "industry": "unknown"}
 

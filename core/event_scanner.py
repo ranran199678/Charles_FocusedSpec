@@ -19,6 +19,9 @@ from typing import Dict, List, Tuple, Optional
 import json
 import re
 
+from utils.credentials import APICredentials
+from utils.data_fetcher import compute_sentiment_label_score
+
 class EventScanner:
     def __init__(self, config=None):
         """
@@ -62,9 +65,8 @@ class EventScanner:
             "guidance", "forecast", "outlook", "missed", "beat", "expectations"
         ])
         
-        # API keys (יש להחליף במפתחות אמיתיים)
-        self.news_api_key = cfg.get("news_api_key", "")
-        self.marketaux_key = cfg.get("marketaux_key", "Dx8X1gzfxklRC5WETItJAncifB4bXp98EnSqzT6P")
+        # API keys (נטענים מקובץ הסביבה דרך APICredentials)
+        self.marketaux_key = APICredentials.get_marketaux_key()
         
         # Cache לתוצאות
         self.event_cache = {}
@@ -169,24 +171,28 @@ class EventScanner:
         news_items = []
         
         try:
-            # שימוש ב-MarketAux API
-            url = f"https://api.marketaux.com/v1/news/all?symbols={symbol}&language=en&limit=10&api_token={self.marketaux_key}"
-            response = requests.get(url, timeout=10)
-            
-            if response.status_code == 200:
-                data = response.json()
-                articles = data.get('data', [])
-                
-                for article in articles:
-                    news_items.append({
-                        'title': article.get('title', ''),
-                        'description': article.get('description', ''),
-                        'url': article.get('url', ''),
-                        'published_at': article.get('published_at', ''),
-                        'source': article.get('source', ''),
-                        'sentiment': article.get('sentiment', 'neutral')
-                    })
-                    
+            # שימוש ב-MarketAux API (אם יש מפתח)
+            if self.marketaux_key:
+                url = (
+                    f"https://api.marketaux.com/v1/news/all?symbols={symbol}"
+                    f"&language=en&limit=10&api_token={self.marketaux_key}"
+                )
+                response = requests.get(url, timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    articles = data.get('data', [])
+                    for article in articles:
+                        title = article.get('title', '')
+                        desc = article.get('description', '')
+                        sent = compute_sentiment_label_score(f"{title}. {desc}") if (title or desc) else {"label": "neutral", "score": 0.0}
+                        news_items.append({
+                            'title': title,
+                            'description': desc,
+                            'url': article.get('url', ''),
+                            'published_at': article.get('published_at', ''),
+                            'source': article.get('source', ''),
+                            'sentiment': sent.get('label', 'neutral')
+                        })
         except Exception as e:
             print(f"שגיאה בשליפת חדשות עבור {symbol}: {e}")
         

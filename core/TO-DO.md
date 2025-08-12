@@ -136,11 +136,9 @@
 - `gap_detector_ultimate.py` - זיהוי פערים מתקדם
 - `breakout_retest_recognizer.py` - זיהוי פריצות
 - `support_zone_strength_detector.py` - חוזק אזורי תמיכה
-- `rsi_sniffer.py` - ניתוח RSI
 - `parabolic_agent.py` - זיהוי תנועות פרבוליות
 - `volume_tension_meter.py` - מדידת מתח נפח
 - `trend_detector.py` - זיהוי מגמות
-- `vwap_trend_agent.py` - מגמות VWAP
 - `vwap_agent.py` - ניתוח VWAP
 - `volatility_score_agent.py` - ציון תנודתיות
 - `atr_score_agent.py` - ציון ATR
@@ -153,7 +151,6 @@
 - `enhanced_advanced_analyzer.py` - ניתוח טכני מתקדם
 - `advanced_pattern_analyzer.py` - ניתוח תבניות מתקדם
 - `trend_shift_agent.py` - זיהוי שינויי מגמה
-- `trend_shift_detector.py` - זיהוי שינויי מגמה
 - `profitability_metrics.py` - מדדי רווחיות
 - `financials_parser.py` - פרסר פיננסי
 
@@ -338,50 +335,52 @@
 
 ## 🟣 סטטוס אחידות נתונים (BaseAgent) - מעודכן
 
-### ✅ סוכנים שכבר הוסבו ל‑BaseAgent ואחידות נתונים (37 סוכנים):
-- trend_shift_agent.py
+### ✅ סוכנים שכבר הוסבו ל‑BaseAgent ואחידות נתונים (45 סוכנים):
 - analyst_rating_agent.py ✅ (הורחב)
-- financial_stability_agent.py ✅ (הורחב)
-- adx_score_agent.py
-- big_money_inflow_agent.py
+- market_data_connector.py
+- gap_detector_ultimate.py
+- support_zone_strength_detector.py
 - candlestick_agent.py ✅ (הורחב)
-- meta_agent.py
-- return_forecaster.py
-- parabolic_agent.py
-- volume_tension_meter.py
-- multi_agent_validator.py
-- dark_pool_agent.py
-- retail_sentiment_agent.py
-- liquidity_trap_agent.py
-- news_catalyst_agent.py
-- vcp_super_pattern_agent.py
-- volume_spike_agent.py
-- short_interest_spike_agent.py
-- sector_momentum_agent.py
-- relative_strength.py
-- profitability_metrics.py
+- financial_stability_agent.py ✅ (הורחב)
+- macro_event_sensitivity.py
+- v_reversal_agent.py
+- etf_flow_tracker.py
+- vwap_agent.py
+- breakout_retest_recognizer.py
+- float_pressure_evaluator.py
+- valuation_detector.py
+- pattern_detector.py
+- enhanced_advanced_analyzer.py
+- trend_detector.py
+- macro_trend_scanner.py
+- midterm_momentum_agent.py
+- moving_average_pressure_bot.py
+- social_media_hype_scanner.py
 - advanced_pattern_analyzer.py
+- bollinger_squeeze.py
 - bullish_pattern_spotter.py
 - golden_cross_detector.py
 - macd_momentum_detector.py
-- midterm_momentum_agent.py
-- moving_average_pressure_bot.py
-- macro_trend_scanner.py
-- social_media_hype_scanner.py
-- bollinger_squeeze.py
-- trend_detector.py
-- enhanced_advanced_analyzer.py
-- pattern_detector.py
-- valuation_detector.py
-- float_pressure_evaluator.py
-- gap_detector_ultimate.py
-- breakout_retest_recognizer.py
-- support_zone_strength_detector.py
-- vwap_agent.py
-- v_reversal_agent.py
-- etf_flow_tracker.py
-- market_data_connector.py
-- macro_event_sensitivity.py
+- profitability_metrics.py
+- sector_momentum_agent.py
+- volume_spike_agent.py
+- relative_strength.py
+- short_interest_spike_agent.py
+- vcp_super_pattern_agent.py
+- news_catalyst_agent.py
+- liquidity_trap_agent.py
+- retail_sentiment_agent.py
+- dark_pool_agent.py
+- multi_agent_validator.py
+- volume_tension_meter.py
+- big_money_inflow_agent.py
+- parabolic_agent.py
+- meta_agent.py
+- return_forecaster.py
+- adx_score_agent.py
+- trend_shift_agent.py
+- volatility_score_agent.py
+- atr_score_agent.py
 
 ### 🟡 קבצים שטרם הוסבו/דורשים בדיקה (14 סוכנים):
 - options_unusual_volume_agent.py

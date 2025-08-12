@@ -618,70 +618,70 @@ class GapDetectorUltimate(BaseAgent):
             if len(price_df) < 30:
                 return self.fallback()
 
-        gap_events = self._calculate_gap_scores(price_df, verbose=self.verbose)
-        
-        if not gap_events:
-            return {
-                "score": 1,
-                "explanation": "לא זוהו פערים משמעותיים",
-                "details": {
-                    "gap_events": [],
-                    "total_gaps": 0,
-                    "gap_and_run_count": 0,
-                    "avg_quality": 0
+            gap_events = self._calculate_gap_scores(price_df, verbose=self.verbose)
+            
+            if not gap_events:
+                return {
+                    "score": 1,
+                    "explanation": "לא זוהו פערים משמעותיים",
+                    "details": {
+                        "gap_events": [],
+                        "total_gaps": 0,
+                        "gap_and_run_count": 0,
+                        "avg_quality": 0
+                    }
                 }
-            }
 
-        # Calculate comprehensive score
-        gap_and_run_count = sum(1 for event in gap_events if event.is_gap_and_run)
-        avg_quality = sum(event.gap_quality for event in gap_events) / len(gap_events)
-        avg_volume_validation = sum(event.volume_validation_score for event in gap_events) / len(gap_events)
-        avg_historical_success = sum(event.historical_success_rate for event in gap_events) / len(gap_events)
-        
-        # Enhanced scoring algorithm
-        base_score = min(40, len(gap_events) * 8)  # Base points for having gaps
-        quality_bonus = (avg_quality / 100) * 30   # Quality-based bonus
-        gap_run_bonus = gap_and_run_count * 15     # Gap & Run bonus
-        volume_bonus = avg_volume_validation * 10   # Volume validation bonus
-        historical_bonus = avg_historical_success * 5  # Historical success bonus
-        
-        final_score = int(min(100, max(1, base_score + quality_bonus + gap_run_bonus + volume_bonus + historical_bonus)))
-        
-        # Generate detailed explanation
-        explanation = f"זוהו {len(gap_events)} פערים (איכות ממוצעת: {avg_quality:.1f})"
-        if gap_and_run_count > 0:
-            explanation += f", כולל {gap_and_run_count} דפוסי Gap&Run"
-        
-        return {
-            "score": final_score,
-            "explanation": explanation,
-            "signal": {
-                "type": "gap_analysis",
+            # Calculate comprehensive score
+            gap_and_run_count = sum(1 for event in gap_events if event.is_gap_and_run)
+            avg_quality = sum(event.gap_quality for event in gap_events) / len(gap_events)
+            avg_volume_validation = sum(event.volume_validation_score for event in gap_events) / len(gap_events)
+            avg_historical_success = sum(event.historical_success_rate for event in gap_events) / len(gap_events)
+            
+            # Enhanced scoring algorithm
+            base_score = min(40, len(gap_events) * 8)  # Base points for having gaps
+            quality_bonus = (avg_quality / 100) * 30   # Quality-based bonus
+            gap_run_bonus = gap_and_run_count * 15     # Gap & Run bonus
+            volume_bonus = avg_volume_validation * 10   # Volume validation bonus
+            historical_bonus = avg_historical_success * 5  # Historical success bonus
+            
+            final_score = int(min(100, max(1, base_score + quality_bonus + gap_run_bonus + volume_bonus + historical_bonus)))
+            
+            # Generate detailed explanation
+            explanation = f"זוהו {len(gap_events)} פערים (איכות ממוצעת: {avg_quality:.1f})"
+            if gap_and_run_count > 0:
+                explanation += f", כולל {gap_and_run_count} דפוסי Gap&Run"
+            
+            return {
                 "score": final_score,
-                "reason": explanation,
-                "confidence": round(avg_quality / 100, 3),
+                "explanation": explanation,
+                "signal": {
+                    "type": "gap_analysis",
+                    "score": final_score,
+                    "reason": explanation,
+                    "confidence": round(avg_quality / 100, 3),
+                    "details": {
+                        "gap_count": len(gap_events),
+                        "gap_and_run_count": gap_and_run_count,
+                        "avg_quality": round(avg_quality, 1),
+                        "avg_volume_validation": round(avg_volume_validation, 2)
+                    }
+                },
                 "details": {
-                    "gap_count": len(gap_events),
+                    "gap_events": gap_events[:5],  # Top 5 for details
+                    "total_gaps": len(gap_events),
                     "gap_and_run_count": gap_and_run_count,
                     "avg_quality": round(avg_quality, 1),
-                    "avg_volume_validation": round(avg_volume_validation, 2)
-                }
-            },
-            "details": {
-                "gap_events": gap_events[:5],  # Top 5 for details
-                "total_gaps": len(gap_events),
-                "gap_and_run_count": gap_and_run_count,
-                "avg_quality": round(avg_quality, 1),
-                "avg_volume_validation": round(avg_volume_validation, 2),
-                "avg_historical_success": round(avg_historical_success, 2),
-                "gap_statistics": {
-                    "largest_gap": max([g.gap_pct for g in gap_events]) if gap_events else 0,
-                    "smallest_gap": min([g.gap_pct for g in gap_events]) if gap_events else 0,
-                    "avg_gap_size": sum([g.gap_pct for g in gap_events]) / len(gap_events) if gap_events else 0
+                    "avg_volume_validation": round(avg_volume_validation, 2),
+                    "avg_historical_success": round(avg_historical_success, 2),
+                    "gap_statistics": {
+                        "largest_gap": max([g.gap_pct for g in gap_events]) if gap_events else 0,
+                        "smallest_gap": min([g.gap_pct for g in gap_events]) if gap_events else 0,
+                        "avg_gap_size": sum([g.gap_pct for g in gap_events]) / len(gap_events) if gap_events else 0
+                    }
                 }
             }
-        }
-        
+            
         except Exception as e:
             self.handle_error(e)
             return self.fallback()

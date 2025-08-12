@@ -14,6 +14,7 @@ from collections import Counter
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.base.base_agent import BaseAgent
+from utils.data_fetcher import compute_sentiment_label_score, DataFetcher
 
 class SocialMediaHypeScanner(BaseAgent):
     """
@@ -209,25 +210,52 @@ class SocialMediaHypeScanner(BaseAgent):
         """ניתוח סנטימנט מנתוני הרשתות החברתיות"""
         sentiment_scores = {}
         total_mentions = 0
-        
+
         for platform, data in social_data.items():
-            if isinstance(data, dict):
-                mentions = data.get("mentions", 0)
-                sentiment = data.get("sentiment", "neutral")
-                hype_score = data.get("hype_score", 50)
-                
-                # המרת סנטימנט לציון
-                sentiment_score = self._convert_sentiment_to_score(sentiment)
-                
-                sentiment_scores[platform] = {
-                    "mentions": mentions,
-                    "sentiment": sentiment,
-                    "sentiment_score": sentiment_score,
-                    "hype_score": hype_score,
-                    "weight": self.platform_weights.get(platform, 0.1)
-                }
-                
-                total_mentions += mentions
+            if not isinstance(data, dict):
+                continue
+
+            mentions = int(data.get("mentions", 0))
+            hype_score = int(data.get("hype_score", 50))
+
+            # ניסיון לחשב סנטימנט אמיתי מהתכנים (פוסטים/כותרות)
+            texts = []
+            if isinstance(data.get("top_posts"), list):
+                texts.extend([p.get("title") or p.get("content") or "" for p in data.get("top_posts", [])])
+            if isinstance(data.get("posts"), list):
+                texts.extend([p.get("title") or p.get("content") or "" for p in data.get("posts", [])])
+
+            score_vals = []
+            for t in texts[:50]:  # תקרה לחיסכון
+                res = compute_sentiment_label_score(t)
+                s = float(res.get("score", 0.0))
+                # מיפוי [-1,1] ל-[0,1]
+                score_vals.append((s + 1.0) / 2.0)
+
+            if score_vals:
+                avg01 = sum(score_vals) / len(score_vals)
+                sentiment_score = int(round(avg01 * 100))
+                sentiment_label = (
+                    "very_positive" if avg01 > 0.8 else
+                    "positive" if avg01 > 0.6 else
+                    "neutral" if avg01 > 0.4 else
+                    "negative" if avg01 > 0.2 else
+                    "very_negative"
+                )
+            else:
+                # fallback למחרוזת קיימת אם אין תכנים
+                sentiment_label = data.get("sentiment", "neutral")
+                sentiment_score = self._convert_sentiment_to_score(sentiment_label)
+
+            sentiment_scores[platform] = {
+                "mentions": mentions,
+                "sentiment": sentiment_label,
+                "sentiment_score": sentiment_score,
+                "hype_score": hype_score,
+                "weight": self.platform_weights.get(platform, 0.1)
+            }
+
+            total_mentions += mentions
         
         # חישוב סנטימנט כולל
         weighted_sentiment = 0
